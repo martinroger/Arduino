@@ -1,11 +1,8 @@
 //
 //    FILE: MCP4921_standalone.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: faster no checking MCP4921 specific code
-//    DATE: 2021-02-04
 //     URL: https://github.com/RobTillaart/MCP_DAC
-//
 
 
 #include "SPI.h"
@@ -14,14 +11,15 @@
 
 uint32_t start, stop;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
-  
+
   pinMode(MCP4921_CS_PIN, OUTPUT);
   digitalWrite(MCP4921_CS_PIN, HIGH);
-  
+
   SPI.begin();
 
   performance_test();
@@ -72,7 +70,7 @@ void performance_test()
   Serial.print(stop - start);
   Serial.print("\t");
   Serial.println((stop - start) / 4096.0 );
-  delay(10); 
+  delay(10);
 }
 
 
@@ -81,4 +79,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

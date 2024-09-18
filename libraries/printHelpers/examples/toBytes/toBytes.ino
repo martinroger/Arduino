@@ -1,9 +1,8 @@
 //
 //    FILE: toBytes.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo toBytes(double val);
-//    DATE: 2020-07-03
+//     URL: https://github.com/RobTillaart/printHelpers
 
 
 #include "printHelpers.h"
@@ -15,7 +14,11 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
-  delay(10);
+  Serial.print("PRINTHELPERS_VERSION: ");
+  Serial.println(PRINTHELPERS_VERSION);
+  Serial.println();
+
+  delay(100);
 
   Serial.println("20 random() values");
   for (uint8_t i = 0; i < 20; i++)
@@ -53,4 +56,4 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

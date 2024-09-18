@@ -1,26 +1,26 @@
 //
 //    FILE: LineFormatter_test_repeat.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo LineFormatter class
 //     URL: https://github.com/RobTillaart/LineFormatter
-//
-// HISTORY:
-// 0.1.0   2020-05-14 initial version
-//
+
 
 #include "LineFormatter.h"
 
 LineFormatter L;
 
+
 void setup()
 {
   Serial.begin(115200);
-  L.println(__FILE__);
-
   L.println();
+  L.println(__FILE__);
+  L.print("LINEFORMATTER_LIB_VERSION: ");
+  L.println(LINEFORMATTER_LIB_VERSION);
+  L.repeat(2, '\n');
+
   L.println("Make a simple tabular output");
-  L.repeat(3, "\n");  // 3 newlines
+  L.repeat(2, "\n");  //  3 newlines
 
   test_repeat();
   test_graph();
@@ -29,9 +29,11 @@ void setup()
   L.println("Done...");
 }
 
+
 void loop()
 {
 }
+
 
 ///////////////////////////////////////////////////////////////////
 
@@ -39,7 +41,7 @@ void test_repeat()
 {
   L.println();
   L.println(__FUNCTION__);
-  L.repeat(strlen(__FUNCTION__), "=", 2); 
+  L.repeat(strlen(__FUNCTION__), "=", 2);
 
   L.repeat(10, ">");
   L.print(" REPEAT DEMO ");
@@ -57,27 +59,28 @@ void test_repeat()
   L.repeat(3, '\n');
 }
 
+
 void test_graph()
 {
   L.println();
   L.println(__FUNCTION__);
-  L.repeat(strlen(__FUNCTION__), "=", 2); 
+  L.repeat(strlen(__FUNCTION__), "=", 2);
 
-
-  for (int i = 0; i < 30; i++)
+  for (int i = 0; i < 62; i++)
   {
-    uint8_t n = 40 + 20 * sin(i * 0.3);
+    uint8_t n = 40 + 30 * sin(i * 0.1);
     L.repeat(n, ' ');
     L.println('*');
   }
   L.repeat(3, '\n');
 }
 
+
 void test_setMaxLength()
 {
   L.println();
   L.println(__FUNCTION__);
-  L.repeat(strlen(__FUNCTION__), "=", 2); 
+  L.repeat(strlen(__FUNCTION__), "=", 2);
 
 
   L.setMaxLength(20);
@@ -87,4 +90,4 @@ void test_setMaxLength()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

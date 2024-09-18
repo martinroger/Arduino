@@ -1,13 +1,13 @@
 //
 //    FILE: BH1750FVI_cont_high_res.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo of BH1750FVI lux scanner library
-//    DATE: 2020-02-02
+//     URL: https://github.com/RobTillaart/BH1750FVI_RT
 //
-// This is a minimal version, which can be optimized by
-// using mylux.getRaw() instead of myLux.getLux();  line38
-// gain on UNO: ~350 bytes smaller
+//  This is a minimal version, which can be optimized by
+//  using mylux.getRaw() instead of myLux.getLux();  line 38
+//  gain on UNO: ~350 bytes smaller
+
 
 #include "BH1750FVI.h"
 
@@ -29,6 +29,7 @@ void setup()
   myLux.setContHighRes();
 }
 
+
 void loop()
 {
   uint16_t interval = 100;
@@ -41,4 +42,5 @@ void loop()
 
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

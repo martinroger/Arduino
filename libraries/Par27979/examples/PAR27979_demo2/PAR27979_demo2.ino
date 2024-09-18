@@ -1,15 +1,15 @@
 //
 //    FILE: par27979_demo.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-06-23
 //    (c) : MIT
-//
+
 
 #include "PAR27979.h"
 
 PAR27979 display(&Serial);
+
 
 void setup()
 {
@@ -67,9 +67,11 @@ void setup()
   display.print("Done...");
 }
 
+
 void loop()
 {
-
 }
 
+
 // -- END OF FILE --
+

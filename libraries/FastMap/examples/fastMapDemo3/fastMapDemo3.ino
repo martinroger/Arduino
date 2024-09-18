@@ -1,19 +1,20 @@
 //    FILE: fastMapDemo3.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo of FastMap class ==> a faster map function
-//    DATE: 2014-11-02
 //     URL: https://github.com/RobTillaart/FastMap
 //          http://forum.arduino.cc/index.php?topic=276194
 
+
 #include "FastMap.h"
 
-FastMap CtoF;
+FastMap CtoF;  //  Celsius to Fahrenheit
+
 
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("Start fastMapDemo3\nlib version: ");
+  Serial.println(__FILE__);
+  Serial.print("FASTMAP_LIB_VERSION: ");
   Serial.println(FASTMAP_LIB_VERSION);
   Serial.println();
 
@@ -38,12 +39,11 @@ void setup()
   Serial.print(f);
   Serial.print(char(176));
   Serial.println('C');
-
 }
 
 void loop()
 {
 }
-//
-// END OF FILE
-//
+
+
+//  -- END OF FILE --

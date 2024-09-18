@@ -30,29 +30,31 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "I2C_KEYPAD_LIB_VERSION: %s\n", (char *) I2C_KEYPAD_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-/*
-unittest(test_new_operator)
+
+unittest(test_constants)
 {
-  assertEqualINF(exp(800));
-  assertEqualINF(0.0/0.0);
-  assertEqualINF(42);
-  
-  assertEqualNAN(INFINITY - INFINITY);
-  assertEqualNAN(0.0/0.0);
-  assertEqualNAN(42);
+  assertEqual(16, I2C_KEYPAD_NOKEY);
+  assertEqual(17, I2C_KEYPAD_FAIL);
+  assertEqual(255, I2C_KEYPAD_THRESHOLD);
+
+  assertEqual(44, I2C_KEYPAD_4x4);
+  assertEqual(53, I2C_KEYPAD_5x3);
+  assertEqual(62, I2C_KEYPAD_6x2);
+  assertEqual(81, I2C_KEYPAD_8x1);
 }
-*/
+
+
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", I2C_KEYPAD_LIB_VERSION);
-
   const uint8_t KEYPAD_ADDRESS = 0x38;
   I2CKeyPad keyPad(KEYPAD_ADDRESS);
 
@@ -62,12 +64,63 @@ unittest(test_constructor)
   // assertTrue(keyPad.isConnected());
 }
 
+
+unittest(test_mode)
+{
+  const uint8_t KEYPAD_ADDRESS = 0x38;
+  I2CKeyPad keyPad(KEYPAD_ADDRESS);
+
+  assertEqual(I2C_KEYPAD_4x4, keyPad.getKeyPadMode());
+
+  keyPad.setKeyPadMode(I2C_KEYPAD_5x3);
+  assertEqual(I2C_KEYPAD_5x3, keyPad.getKeyPadMode());
+
+  keyPad.setKeyPadMode(I2C_KEYPAD_4x4);
+  assertEqual(I2C_KEYPAD_4x4, keyPad.getKeyPadMode());
+
+  keyPad.setKeyPadMode(I2C_KEYPAD_6x2);
+  assertEqual(I2C_KEYPAD_6x2, keyPad.getKeyPadMode());
+
+  keyPad.setKeyPadMode(I2C_KEYPAD_8x1);
+  assertEqual(I2C_KEYPAD_8x1, keyPad.getKeyPadMode());
+
+  //  invalid are mapped to 4x4
+  keyPad.setKeyPadMode(00);
+  assertEqual(I2C_KEYPAD_4x4, keyPad.getKeyPadMode());
+}
+
+
+unittest(test_KeyMap)
+{
+  const uint8_t KEYPAD_ADDRESS = 0x38;
+  I2CKeyPad keyPad(KEYPAD_ADDRESS);
+
+  char keymap[19] = "123A456B789C*0#DNF";
+  keyPad.loadKeyMap(keymap);
+  assertEqual('N', keyPad.getLastChar());
+}
+
+
+unittest(test_debounce_threshold)
+{
+  const uint8_t KEYPAD_ADDRESS = 0x38;
+  I2CKeyPad keyPad(KEYPAD_ADDRESS);
+
+  //  default 0
+  assertEqual(0, keyPad.getDebounceThreshold());
+
+  for (uint16_t th = 5000; th < 60000; th += 5000)
+  {
+    keyPad.setDebounceThreshold(th);
+    assertEqual(th, keyPad.getDebounceThreshold());
+  }
+}
+
+
 // Issues with Wire - to be investigated...
 //
 // unittest(test_read)
 // {
-  // fprintf(stderr, "VERSION: %s\n", I2C_KEYPAD_LIB_VERSION);
-
   // const uint8_t KEYPAD_ADDRESS = 0x38;
   // I2CKeyPad keyPad(KEYPAD_ADDRESS);
 
@@ -77,6 +130,7 @@ unittest(test_constructor)
   // // assertEqual(I2C_KEYPAD_NOKEY, keyPad.getKey());
   // // assertFalse(keyPad.isPressed());
 // }
+
 
 unittest_main()
 

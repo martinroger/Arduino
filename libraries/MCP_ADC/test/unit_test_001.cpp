@@ -38,29 +38,17 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "MCP_ADC_LIB_VERSION: %s\n", (char *) MCP_ADC_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-/*
-unittest(test_new_operator)
-{
-  assertEqualINF(exp(800));
-  assertEqualINF(0.0/0.0);
-  assertEqualINF(42);
-  
-  assertEqualNAN(INFINITY - INFINITY);
-  assertEqualNAN(0.0/0.0);
-  assertEqualNAN(42);
-}
-*/
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", "-");
-
   MCP3002 ADC2;
   MCP3004 ADC4;
   MCP3008 ADC8;
@@ -90,6 +78,7 @@ unittest(test_constructor)
   assertEqual(4095, ADC28.maxValue());
 }
 
+
 unittest(test_MCP3002)
 {
   MCP3002 mcp_adc;
@@ -98,7 +87,7 @@ unittest(test_MCP3002)
 
   for (int ch = 0; ch < mcp_adc.channels(); ch++)
   {
-    assertEqual(0, mcp_adc.analogRead(ch));
+    assertEqual(0, mcp_adc.read(ch));
   }
 
   for (int ch = 0; ch < mcp_adc.channels(); ch++)
@@ -113,6 +102,8 @@ unittest(test_MCP3002)
 
 }
 
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --

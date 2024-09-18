@@ -1,22 +1,18 @@
 //
 //    FILE: max44009_setContinuousMode.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo of max44009 library
-//    DATE: 2020-01-30
+//     URL: https://github.com/RobTillaart/MAX44009
 //
-// Released to the public domain
-//
-
-// note that lux values are repeated a number of times
-// if read faster than the integration time.
-// So it makes no sense to call getLux() more than once
-// per integration time.
-// NB the getLux() call takes a bit more than 1 millisecond
+//  note that lux values are repeated a number of times
+//  if read faster than the integration time.
+//  So it makes no sense to call getLux() more than once
+//  per integration time.
+//  NB the getLux() call takes a bit more than 1 millisecond
 
 
-#include "Wire.h"
 #include "Max44009.h"
+
 
 Max44009 myLux(0x4A);
 
@@ -29,8 +25,10 @@ int count = 0;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("\nStart max44009_setContinuousMode : ");
+  Serial.println(__FILE__);
+  Serial.print("MAX44009_LIB_VERSION: ");
   Serial.println(MAX44009_LIB_VERSION);
+  Serial.println();
 
   Wire.begin();
 
@@ -45,14 +43,16 @@ void loop()
   {
     lastDisplay += interval;
     count++;
+    //  time the measurement
     start = micros();
     float lux = myLux.getLux();
     stop = micros();
-    int err = myLux.getError();
-    if (err != 0)
+
+    int error = myLux.getError();
+    if (error != 0)
     {
       Serial.print("Error:\t");
-      Serial.println(err);
+      Serial.println(error);
     }
     else
     {
@@ -63,7 +63,10 @@ void loop()
       Serial.println();
     }
   }
-  if (count == 5) myLux.clrContinuousMode();
+  if (count == 5) 
+  {
+    myLux.clrContinuousMode();
+  }
   if (count == 10)
   {
     count = 0;
@@ -72,4 +75,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

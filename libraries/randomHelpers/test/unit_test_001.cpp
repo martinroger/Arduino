@@ -36,47 +36,39 @@
 #include "randomHelpers.h"
 
 
-
 unittest_setup()
 {
+  fprintf(stderr, "RANDOM_HELPERS_VERSION: %s\n", (char *) RANDOM_HELPERS_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-/*
-unittest(test_new_operator)
-{
-  assertEqualINF(exp(800));
-  assertEqualINF(0.0/0.0);
-  assertEqualINF(42);
-  
-  assertEqualNAN(INFINITY - INFINITY);
-  assertEqualNAN(0.0/0.0);
-  assertEqualNAN(42);
-}
-*/
 
 unittest(test_all)
 {
-  fprintf(stderr, "VERSION: %s\n", RANDOM_HELPERS_VERSION);
-
   for (int i = 0; i < 10; i ++)
   {
     fprintf(stderr, "\n round %d\n", i);
-    assertMore(2,   getRandom1());
-    assertMore(16,  getRandom4());
-    assertMore(32,  getRandom5());
-    assertMore(64,  getRandom6());
-    assertMore(255, getRandom8());
-    assertMore(65536, getRandom16());
-    assertMore(16777215, getRandom24());
+    assertMore(2,          getRandom1());
+    assertMore(4,          getRandom2());
+    assertMore(8,          getRandom3());
+    assertMore(16,         getRandom4());
+    assertMore(32,         getRandom5());
+    assertMore(64,         getRandom6());
+    assertMore(128,        getRandom7());
+    assertMore(256,        getRandom8());
+    assertMore(65536,      getRandom16());
+    assertMore(16777216,   getRandom24());
     assertMore(pow(2, 32), getRandom32());
   }
-  
 }
+
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

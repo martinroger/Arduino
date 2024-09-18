@@ -1,17 +1,18 @@
 //
 //    FILE: FractionMediant.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: Find fraction by binary search with mediant.
-//    DATE: 2020-04-21
+//     URL: https://github.com/RobTillaart/Fraction
 //
+//  This method is not fast but it shows an application for the mediant().
+//  Works for positive values only (for now).
 
-// this method is not that fast but it shows a nice application for 
-// the mediant.
 
 #include "fraction.h"
 
+
 uint32_t start, stop;
+
 
 void setup()
 {
@@ -25,7 +26,7 @@ void setup()
   Fraction x = fractionize(f);
   stop = micros();
   Serial.println(stop - start);
-  Serial.println(x);
+  Serial.println(x.toString());
   Serial.println(x.toDouble(), 10);
   Serial.println();
 
@@ -34,12 +35,11 @@ void setup()
   Fraction y = fractionize(f);
   stop = micros();
   Serial.println(stop - start);
-  Serial.println(y);
+  Serial.println(y.toString());
   Serial.println(y.toDouble(), 10);
   Serial.println();
 
   Serial.println("done...\n");
-
 }
 
 
@@ -55,7 +55,7 @@ void loop()
   Serial.println();
   Serial.print(stop - start);
   Serial.print("\t");
-  Serial.print(y);
+  Serial.print(y.toString());
   Serial.print("\t");
   Serial.print(f, 10);
   Serial.print("\t");
@@ -70,7 +70,7 @@ void loop()
 
   Serial.print(stop - start);
   Serial.print("\t");
-  Serial.print(y);
+  Serial.print(y.toString());
   Serial.print("\t");
   Serial.print(f, 10);
   Serial.print("\t");
@@ -82,27 +82,24 @@ void loop()
 
 Fraction fractionize(float f)
 {
-  float acc = 1e-6;
-  float d1 = 0;
-  float d2 = 0;
+  float accuracy = 1e-6;
+  int i;
   Fraction a(0, 1);
-  Fraction b(9999, 1);
-  Fraction q(f);
+  Fraction b(uint16_t(f) + 1, 1);
+  Fraction c;
 
-  for (int i = 0; i < 500; i++)
+  for (i = 0; i < 500; i++)
   {
-    Fraction c = Fraction::mediant(a, b);   // NOTE middle(a,b) is slower and worse!
-    if ( c.toDouble() < f) a = c;
+    c = Fraction::mediant(a, b);   //  NOTE middle(a, b) is slower and worse!
+    float t = c.toDouble();
+    if ( t < f) a = c;
     else b = c;
-
-    d1 = abs(f - a.toDouble());
-    d2 = abs(f - b.toDouble());
-    if (d1 < acc && d2 < acc) break;
+    //  check the last found value.
+    if (abs(f - t) < accuracy) break;
   }
-  if (d1 < d2) return a;
-  return b;
+  Serial.println(i);
+  return c;
 }
 
 
-
-// -- END OF FILE --
+//  -- END OF FILE --

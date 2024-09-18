@@ -1,8 +1,8 @@
 //
 //    FILE: sci_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.0.1
 // PURPOSE: test different values with sci function
+//     URL: https://github.com/RobTillaart/printHelpers
 
 
 #include "printHelpers.h"
@@ -14,6 +14,9 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PRINTHELPERS_VERSION: ");
+  Serial.println(PRINTHELPERS_VERSION);
+  Serial.println();
 
   test1();
   test2();
@@ -153,6 +156,7 @@ void test5()
   Serial.println();
 }
 
+
 void test6()
 {
   if (sizeof(double) >= 8)
@@ -194,4 +198,5 @@ void test6()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

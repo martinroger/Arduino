@@ -1,20 +1,16 @@
 //
 //    FILE: printString.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo experimental
 //     URL: https://github.com/RobTillaart/PrintString
-//
-// HISTORY:
-// 0.1.0    2017-12-09 initial version
-// 0.1.1    2020-04-30 align demo with latest XMLWriter lib
-//
+
 
 #include "PrintString.h"
-#include "XMLWriter.h"      // https://github.com/RobTillaart/XMLWriter
+#include "XMLWriter.h"      //  https://github.com/RobTillaart/XMLWriter
 
 PrintString ps;
 XMLWriter XML(&ps);
+
 
 void setup()
 {
@@ -49,8 +45,11 @@ void setup()
   Serial.println("done...");
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

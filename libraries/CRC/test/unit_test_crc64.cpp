@@ -30,11 +30,9 @@
 // assertNotNAN(arg);                              // !isnan(a)
 
 
+#include "CRC.h"
 #include <ArduinoUnitTests.h>
-
-
-#include "Arduino.h"
-#include "CRC64.h"
+#include <Arduino.h>
 
 
 char str[24] = "123456789";
@@ -42,29 +40,19 @@ uint8_t * data = (uint8_t *) str;
 
 
 unittest_setup()
-{
-}
+{}
+
 
 unittest_teardown()
-{
-}
+{}
 
 
 unittest(test_crc64)
 {
   fprintf(stderr, "TEST CRC64\n");
-
-  fprintf(stderr, "no reference yet\n");
-  assertEqual(1, 1);
   
-  // just a dummy test
-  CRC64 crc;
-  crc.setPolynome(0x04C11DB704C11DB7);
-  crc.add(data, 9);
-  assertEqual(0xCE5CA2AD34A16112, crc.getCRC());  // 14869938934466568466
+  assertEqual(0xCE5CA2AD34A16112, calcCRC64(data, 9, 0x04C11DB704C11DB7));  // 14869938934466568466
 }
 
 
 unittest_main()
-
-// --------

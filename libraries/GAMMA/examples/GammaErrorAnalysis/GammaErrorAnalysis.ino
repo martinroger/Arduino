@@ -1,12 +1,11 @@
 //
 //    FILE: GammaErrorAnalysis.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2020-08-08
 
 
 #include "gamma.h"
+
 
 GAMMA gt1(256);
 GAMMA gt2(128);
@@ -20,27 +19,43 @@ GAMMA gt8(2);
 uint32_t start, d1;
 volatile int x;
 
+int total = 0;
+
 void setup()
 {
   Serial.begin(115200);
+  Serial.println();
   Serial.println(__FILE__);
+  Serial.print("GAMMA_LIB_VERSION: ");
+  Serial.println(GAMMA_LIB_VERSION);
+
+  gt1.begin();
+  gt2.begin();
+  gt3.begin();
+  gt4.begin();
+  gt5.begin();
+  gt6.begin();
+  gt7.begin();
+  gt8.begin();
 
   Serial.println("\nError Analysis 256 elements = reference\n");
   Serial.println("Size\tErrors\tMaximum");
-  test_error(gt1);
-  test_error(gt2);
-  test_error(gt3);
-  test_error(gt4);
-  test_error(gt5);
-  test_error(gt6);
-  test_error(gt7);
-  test_error(gt8);
-  Serial.println();
+  total += test_error(gt1);
+  total += test_error(gt2);
+  total += test_error(gt3);
+  total += test_error(gt4);
+  total += test_error(gt5);
+  total += test_error(gt6);
+  total += test_error(gt7);
+//  total += test_error(gt8);
+  Serial.print("TOT\t");
+  Serial.println(total);
 
   Serial.println("\ndone...\n");
 }
 
-void test_error(GAMMA gt)
+
+int test_error(GAMMA gt)
 {
   int count = 0;
   int maxdiff = 0;
@@ -57,10 +72,13 @@ void test_error(GAMMA gt)
   Serial.print(count);
   Serial.print('\t');
   Serial.println(maxdiff);
+  return count;
 }
+
 
 void loop()
 {
 }
+
 
 // -- END OF FILE --

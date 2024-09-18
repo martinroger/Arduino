@@ -2,95 +2,174 @@
 //
 //    FILE: MultiMap.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.4
+// VERSION: 0.2.0
 //    DATE: 2011-01-26
 // PURPOSE: Arduino library for fast non-linear mapping or interpolation of values
 //     URL: https://github.com/RobTillaart/MultiMap
 //     URL: http://playground.arduino.cc/Main/MultiMap
-//
-//  HISTORY:
-//  0.0.1   2011-01-26 initial version (see forum)
-//  .....
-//  0.1.0   2015-03-29
-//  0.1.1   2020-04-09
-//  0.1.2   2020-06-19  fix library.json
-//  0.1.3   2021-01-02  add arduino-CI 
-//  0.1.4   2021-05-27  fix arduino-lint
 
 
-#define MULTIMAP_LIB_VERSION        (F("0.1.4"))
+
+#define MULTIMAP_LIB_VERSION                (F("0.2.0"))
 
 
 #include "Arduino.h"
 
-// note: the in array should have increasing values
+
+////////////////////////////////////////////////////////////////////////
+//
+//  SINGLE TYPE MULTIMAP - LINEAR SEARCH - the reference
+//
+//  note: the in array must have increasing values
 template<typename T>
-T multiMap(T val, T* _in, T* _out, uint8_t size)
+T multiMap(T value, T* _in, T* _out, uint8_t size)
 {
-    // take care the value is within range
-    // val = constrain(val, _in[0], _in[size-1]);
-    if (val <= _in[0]) return _out[0];
-    if (val >= _in[size-1]) return _out[size-1];
+  //  output is constrained to out array
+  if (value <= _in[0]) return _out[0];
+  if (value >= _in[size-1]) return _out[size-1];
 
-    // search right interval
-    uint8_t pos = 1;  // _in[0] allready tested
-    while(val > _in[pos]) pos++;
+  //  search right interval
+  uint8_t pos = 1;  // _in[0] already tested
+  while(value > _in[pos]) pos++;
 
-    // this will handle all exact "points" in the _in array
-    if (val == _in[pos]) return _out[pos];
+  //  this will handle all exact "points" in the _in array
+  if (value == _in[pos]) return _out[pos];
 
-    // interpolate in the right segment for the rest
-    return (val - _in[pos-1]) * (_out[pos] - _out[pos-1]) / (_in[pos] - _in[pos-1]) + _out[pos-1];
+  //  interpolate in the right segment for the rest
+  return (value - _in[pos-1]) * (_out[pos] - _out[pos-1]) / (_in[pos] - _in[pos-1]) + _out[pos-1];
 }
 
 
-/*
- * speed optimized version if inputs do not change often e.g.  2 2 2 2 2 3 3 3 3 5 5 5 5 5 5 8 8 8 8 5 5 5 5 5 
- *
-// note: the in array should have increasing values
-
+////////////////////////////////////////////////////////////////////////
+//
+//  SINGLE TYPE MULTIMAP CACHE - LINEAR SEARCH
+//
+//  note: the in array must have increasing values
+//  performance optimized version if inputs do not change often
+//     e.g.  2 2 2 2 2 3 3 3 3 5 5 5 5 5 5 8 8 8 8 5 5 5 5 5
+//  implements a minimal cache of the lastValue.
 template<typename T>
-T multiMap(T val, T* _in, T* _out, uint8_t size)
+T multiMapCache(T value, T* _in, T* _out, uint8_t size)
 {
-  static T lastvalue = -1;
-  static T cache = -1;  
+  static T lastValue = -1;
+  static T cache = -1;
 
-  if (val == lastvalue)
+  if (value == lastValue)
   {
     return cache;
   }
-  lastvalue = val;
+  lastValue = value;
 
-  // take care the value is within range
-  // val = constrain(val, _in[0], _in[size-1]);
-  if (val <= _in[0])
+  //  output is constrained to out array
+  if (value <= _in[0])
   {
     cache = _out[0];
   }
-  else if (val >= _in[size-1])
+  else if (value >= _in[size-1])
   {
     cache = _out[size-1];
   }
   else
   {
-    // search right interval; index 0 _in[0] already tested
-    uint8_t pos = 1;  
-    while(val > _in[pos]) pos++;
-    
-    // this will handle all exact "points" in the _in array
-    if (val == _in[pos]) 
+    //  search right interval; index 0 _in[0] already tested
+    uint8_t pos = 1;
+    while(value > _in[pos]) pos++;
+
+    //  this will handle all exact "points" in the _in array
+    if (value == _in[pos])
     {
       cache = _out[pos];
     }
     else
     {
-      // interpolate in the right segment for the rest
-      cache = (val - _in[pos-1]) * (_out[pos] - _out[pos-1]) / (_in[pos] - _in[pos-1]) + _out[pos-1];
+      //  interpolate in the right segment for the rest
+      cache = (value - _in[pos-1]) * (_out[pos] - _out[pos-1]) / (_in[pos] - _in[pos-1]) + _out[pos-1];
     }
   }
   return cache;
 }
-*/
 
 
-// -- END OF FILE --
+////////////////////////////////////////////////////////////////////////
+//
+//  SINGLE TYPE MULTIMAP - BINARY SEARCH
+//
+//  should be faster for size >= 10
+//  (rule of thumb)
+//
+//  note: the in array must have increasing values
+template<typename T>
+T multiMapBS(T value, T* _in, T* _out, uint8_t size)
+{
+  //  output is constrained to out array
+  if (value <= _in[0]) return _out[0];
+  if (value >= _in[size-1]) return _out[size-1];
+
+  //  Binary Search, uint16_t needed to prevent overflow.
+  uint16_t lower = 0;
+  uint16_t upper = size - 1;
+  while (lower < upper - 1)
+  {
+    uint8_t mid = (lower + upper) / 2;
+    if (value >= _in[mid]) lower = mid;
+    else upper = mid;
+  }
+
+  return (value - _in[lower]) * (_out[upper] - _out[lower]) / (_in[upper] - _in[lower]) + _out[lower];
+}
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  MULTITYPE MULTIMAP - LINEAR SEARCH
+//
+//  note: the in array must have increasing values
+template<typename T1, typename T2>
+T2 multiMap(T1 value, T1* _in, T2* _out, uint8_t size)
+{
+  //  output is constrained to out array
+  if (value <= _in[0]) return _out[0];
+  if (value >= _in[size-1]) return _out[size-1];
+
+  //  search right interval
+  uint16_t pos = 1;  // _in[0] already tested
+  while(value > _in[pos]) pos++;
+
+  //  this will handle all exact "points" in the _in array
+  if (value == _in[pos]) return _out[pos];
+
+  //  interpolate in the right segment for the rest
+  return (value - _in[pos-1]) * (_out[pos] - _out[pos-1]) / (_in[pos] - _in[pos-1]) + _out[pos-1];
+}
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  MULTITYPE MULTIMAP - BINARY SEARCH
+//  should be faster for size >= 10
+//  (rule of thumb)
+//
+//  note: the in array must have increasing values
+template<typename T1, typename T2>
+T2 multiMapBS(T1 value, T1* _in, T2* _out, uint8_t size)
+{
+  //  output is constrained to out array
+  if (value <= _in[0]) return _out[0];
+  if (value >= _in[size-1]) return _out[size-1];
+
+  //  Binary Search, uint16_t needed to prevent overflow.
+  uint16_t lower = 0;
+  uint16_t upper = size - 1;
+  while (lower < upper - 1)
+  {
+    uint16_t mid = (lower + upper) / 2;
+    if (value >= _in[mid]) lower = mid;
+    else upper = mid;
+  }
+
+  return (value - _in[lower]) * (_out[upper] - _out[lower]) / (_in[upper] - _in[lower]) + _out[lower];
+}
+
+
+//  -- END OF FILE --
+

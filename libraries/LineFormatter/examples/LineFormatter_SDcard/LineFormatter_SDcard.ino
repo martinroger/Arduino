@@ -1,36 +1,41 @@
 //
 //    FILE: LineFormatter_SDcard.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo LineFormatter for SDcard
-//    DATE: 2020-05-23
 //     URL: https://github.com/RobTillaart/LineFormatter
-//
 
-#include <SPI.h>
-#include <SD.h>
-// SPI     PINS
-// MOSI   11
-// MISO   12
-// CLOCK  13
-// CS   10
-#define CS    10      // adjust this ChipSelect line if needed !
 
-#include <LineFormatter.h>
+#include "SPI.h"
+#include "SD.h"
+
+//  SPI     PINS UNO
+//  MOSI     11
+//  MISO     12
+//  CLOCK    13
+//  CS       10
+
+#define CS          10      //  adjust this ChipSelect line if needed !
+
+#include "LineFormatter.h"
+
 
 void setup()
 {
   Serial.begin(115200);
+  Serial.println();
   Serial.println(__FILE__);
+  Serial.print("LINEFORMATTER_LIB_VERSION: ");
+  Serial.println(LINEFORMATTER_LIB_VERSION);
+  Serial.println();
 
-  // initialize the SD card
+  //  initialize the SD card
   if (!SD.begin(CS))
   {
     Serial.println("Error: SD card failure");
     while (1);
   }
 
-  // remove file for proper timing
+  //  remove file for proper timing
   SD.remove("data.txt");
   delay(1000);
 
@@ -54,7 +59,6 @@ void loop()
 }
 
 
-
 void test_table(LineFormatter L)
 {
   L.println();
@@ -71,7 +75,7 @@ void test_table(LineFormatter L)
   L.addRelTab(10);
   L.addRelTab(6);
   L.addRelTab(6);
-  // L.println(L.getTabCount());
+  //  L.println(L.getTabCount());
 
   int measurement = 1;
 
@@ -117,4 +121,5 @@ void test_table(LineFormatter L)
   L.repeat(3, '\n');
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

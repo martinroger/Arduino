@@ -1,26 +1,22 @@
 //
 //    FILE: AM2320.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
 // PURPOSE: AM2320 demo sketch for AM2320 I2C humidity & temperature sensor
 //
-// HISTORY:
-// 0.1.0   2017-12-11  initial version
-// 0.1.1   2020-05-03  updated to 0.2.0 version of lib.
-// 0.1.2   2021-01-28  added begin() ++
-
-//  Bottom view
+//  AM232X PIN layout             AM2315 COLOR
+//  ============================================
+//   bottom view  DESCRIPTION     COLOR
 //       +---+
-//  VDD  |o  |
-//  SDA  |o  |
-//  GND  |o  |
-//  SCL  |o  |
+//       |o  |       VDD          RED
+//       |o  |       SDA          YELLOW
+//       |o  |       GND          BLACK
+//       |o  |       SCL          GREY
 //       +---+
 //
-// do not forget pull up resistors between SDA, SCL and VDD.
+//  do not forget pull up resistors between SDA, SCL and VDD..
 
 
-#include <AM232X.h>
+#include "AM232X.h"
 
 AM232X AM2320;
 
@@ -33,11 +29,14 @@ void setup()
   Serial.println(AM232X_LIB_VERSION);
   Serial.println();
 
+  Wire.begin();
   if (! AM2320.begin() )
   {
     Serial.println("Sensor not found");
     while (1);
   }
+  AM2320.wakeUp();
+  delay(2000);
 
   Serial.println("Type,\tStatus,\tHumidity (%),\tTemperature (C)");
 }
@@ -45,7 +44,7 @@ void setup()
 
 void loop()
 {
-  // READ DATA
+  //  READ DATA
   Serial.print("AM2320, \t");
   int status = AM2320.read();
   switch (status)
@@ -58,7 +57,7 @@ void loop()
       Serial.print("\t");
       break;
   }
-  // DISPLAY DATA, sensor only returns one decimal.
+  //  DISPLAY DATA, sensor only returns one decimal.
   Serial.print(AM2320.getHumidity(), 1);
   Serial.print(",\t");
   Serial.println(AM2320.getTemperature(), 1);
@@ -66,4 +65,5 @@ void loop()
   delay(2000);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

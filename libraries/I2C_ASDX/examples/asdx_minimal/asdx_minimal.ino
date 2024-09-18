@@ -1,23 +1,28 @@
 //
 //    FILE: asdx_minimal.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo
-//    DATE: 2020-06-18
 //     URL: https://github.com/RobTillaart/I2C_ASDX
+
 
 #include "I2C_ASDX.h"
 
-// adjust to type of sensor
+
+//  adjust to type of sensor  (address, psi)
 I2C_ASDX sensor(0x58, 100);
+
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("I2C_ASDX_VERSION: ");
+  Serial.println(I2C_ASDX_VERSION);
 
+  Wire.begin();
   sensor.begin();
 }
+
 
 void loop()
 {
@@ -37,4 +42,6 @@ void loop()
   delay(1000);
 }
 
-// =- END OF FILE --
+
+//  -- END OF FILE --
+

@@ -1,16 +1,14 @@
 //
 //    FILE: AD5144A_test_EEPROM.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: test EEPROM functions
-//    DATE: 2021-05-04
 //     URL: https://github.com/RobTillaart/AD5144A
 
 
 #include "AD5144A.h"
 
-// select the right type
-// adjust address
+//  select the right type
+//  adjust address
 AD5144A AD(0x77);
 
 
@@ -26,22 +24,22 @@ void setup()
     return;
   }
 
-  // values should be same after start
-  for (int ch = 0; ch < AD.pmCount(); ch++)
+  //  values should be same after start
+  for (int potMeter = 0; potMeter < AD.pmCount(); potMeter++)
   {
-    Serial.print(ch);
+    Serial.print(potMeter);
     Serial.print('\t');
-    Serial.print(AD.recallEEPROM(ch));
+    Serial.print(AD.recallEEPROM(potMeter));
     Serial.print('\t');
-    Serial.print(AD.readBackRDAC(ch));
+    Serial.print(AD.readBackRDAC(potMeter));
     Serial.println();
   }
 
-  // update values for after next (full) power up.
-  for (int ch = 0; ch < AD.pmCount(); ch++)
+  //  update values for after next (full) power up.
+  for (int potMeter = 0; potMeter < AD.pmCount(); potMeter++)
   {
-    uint8_t val = AD.recallEEPROM(ch);
-    AD.storeEEPROM(ch, val + 1);
+    uint8_t value = AD.recallEEPROM(potMeter);
+    AD.storeEEPROM(potMeter, value + 1);
   }
 
   Serial.println("done...");
@@ -53,4 +51,4 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

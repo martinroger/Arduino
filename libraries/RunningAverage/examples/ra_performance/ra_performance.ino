@@ -1,13 +1,13 @@
 //
 //    FILE: ra_performance.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 //    DATE: 2020-04-16
-//
-// PUPROSE: timing of runningAverage
-//
+// PURPOSE: timing of runningAverage
+//     URL: https://github.com/RobTillaart/RunningAverage
+
 
 #include "RunningAverage.h"
+
 
 RunningAverage myRA(50);
 int samples = 0;
@@ -15,46 +15,52 @@ int samples = 0;
 uint32_t start, stop;
 volatile float x;
 
-void setup(void) 
+
+void setup(void)
 {
   Serial.begin(115200);
-  Serial.print("\nPerformance RunningAverage lib: ");
+  Serial.println();
+  Serial.println(__FILE__);
+  Serial.print("RUNNINGAVERAGE_LIB_VERSION: ");
   Serial.println(RUNNINGAVERAGE_LIB_VERSION);
   Serial.println();
 
-  myRA.clear(); // explicitly start clean
-  
+  myRA.clear();  //  explicitly start clean
+
   for (int i = 0; i < 10; i++)
   {
     myRA.addValue(random(1000) * 0.001);
   }
-  
+
   test_clear();
   test_addvalue();
+
   test_fillValue();
   test_getValue();
-  
+
   test_getAverage();
   test_getFastAverage();
-  
+
   test_getStandardDeviation();
   test_getStandardError();
-  
+
   test_getMin();
   test_getMax();
   test_getMinInBuffer();
   test_getMaxInBuffer();
-  
+  test_getSum();
+
   test_bufferIsFull();
   test_getElement();
-  
+
   test_getSize();
   test_getCount();
-  
+
   Serial.println("\ndone...\n");
 }
 
-void test_clear(void) 
+
+void test_clear(void)
 {
   start = micros();
   myRA.clear();
@@ -63,6 +69,7 @@ void test_clear(void)
   Serial.println(stop - start);
   delay(10);
 }
+
 
 void test_addvalue()
 {
@@ -74,6 +81,7 @@ void test_addvalue()
   delay(10);
 }
 
+
 void test_fillValue()
 {
   start = micros();
@@ -84,6 +92,7 @@ void test_fillValue()
   delay(10);
 }
 
+
 void test_getValue()
 {
   start = micros();
@@ -93,7 +102,8 @@ void test_getValue()
   Serial.println(stop - start);
   delay(10);
 }
- 
+
+
 void test_getAverage()
 {
   start = micros();
@@ -103,7 +113,8 @@ void test_getAverage()
   Serial.println(stop - start);
   delay(10);
 }
- 
+
+
 void test_getFastAverage()
 {
   start = micros();
@@ -113,6 +124,7 @@ void test_getFastAverage()
   Serial.println(stop - start);
   delay(10);
 }
+
 
 void test_getStandardDeviation()
 {
@@ -124,6 +136,7 @@ void test_getStandardDeviation()
   delay(10);
 }
 
+
 void test_getStandardError()
 {
   start = micros();
@@ -133,6 +146,7 @@ void test_getStandardError()
   Serial.println(stop - start);
   delay(10);
 }
+
 
 void test_getMin()
 {
@@ -144,6 +158,7 @@ void test_getMin()
   delay(10);
 }
 
+
 void test_getMax()
 {
   start = micros();
@@ -153,6 +168,7 @@ void test_getMax()
   Serial.println(stop - start);
   delay(10);
 }
+
 
 void test_getMinInBuffer()
 {
@@ -164,6 +180,7 @@ void test_getMinInBuffer()
   delay(10);
 }
 
+
 void test_getMaxInBuffer()
 {
   start = micros();
@@ -173,6 +190,18 @@ void test_getMaxInBuffer()
   Serial.println(stop - start);
   delay(10);
 }
+
+
+void test_getSum()
+{
+  start = micros();
+  x = myRA.getSum();
+  stop = micros();
+  Serial.print("\tgetSum \t\t: ");
+  Serial.println(stop - start);
+  delay(10);
+}
+
 
 void test_bufferIsFull()
 {
@@ -184,6 +213,7 @@ void test_bufferIsFull()
   delay(10);
 }
 
+
 void test_getElement()
 {
   start = micros();
@@ -193,6 +223,7 @@ void test_getElement()
   Serial.println(stop - start);
   delay(10);
 }
+
 
 void test_getSize()
 {
@@ -204,6 +235,7 @@ void test_getSize()
   delay(10);
 }
 
+
 void test_getCount()
 {
   start = micros();
@@ -214,8 +246,10 @@ void test_getCount()
   delay(10);
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

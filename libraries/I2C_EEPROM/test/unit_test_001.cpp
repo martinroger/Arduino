@@ -38,11 +38,13 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "I2C_EEPROM_VERSION: %s\n", ( char * ) I2C_EEPROM_VERSION);
 }
 
 unittest_teardown()
 {
 }
+
 
 /*
 unittest(test_new_operator)
@@ -50,7 +52,7 @@ unittest(test_new_operator)
   assertEqualINF(exp(800));
   assertEqualINF(0.0/0.0);
   assertEqualINF(42);
-  
+
   assertEqualNAN(INFINITY - INFINITY);
   assertEqualNAN(0.0/0.0);
   assertEqualNAN(42);
@@ -61,7 +63,7 @@ unittest(test_new_operator)
 unittest(test_constructor)
 {
   Wire.resetMocks();
-
+  Wire.begin();
   I2C_eeprom EE(0x50, 0x8000);
 
   assertTrue(EE.begin());
@@ -74,6 +76,8 @@ unittest(test_constructor)
 
 unittest(test_constants)
 {
+  Wire.resetMocks();
+  Wire.begin();
   I2C_eeprom EE(0x50, 0x8000);
 
   assertEqual(I2C_DEVICESIZE_24LC512, 65536);
@@ -86,12 +90,13 @@ unittest(test_constants)
   assertEqual(I2C_DEVICESIZE_24LC04,  512);
   assertEqual(I2C_DEVICESIZE_24LC02,  256);
   assertEqual(I2C_DEVICESIZE_24LC01,  128);
-
 }
 
 
 unittest(test_getPageSize)
 {
+  Wire.resetMocks();
+  Wire.begin();
   I2C_eeprom EE(0x50, 0x8000);
 
   assertEqual(EE.getPageSize(I2C_DEVICESIZE_24LC512), 128);
@@ -104,9 +109,68 @@ unittest(test_getPageSize)
   assertEqual(EE.getPageSize(I2C_DEVICESIZE_24LC04),  16);
   assertEqual(EE.getPageSize(I2C_DEVICESIZE_24LC02),  8);
   assertEqual(EE.getPageSize(I2C_DEVICESIZE_24LC01),  8);
+
+  I2C_eeprom prom(0x50, 0x8123);
+  assertEqual(prom.getDeviceSize(), 0x8000);
+  assertEqual(prom.getPageSize(),   64);
+}
+
+
+unittest(test_setDeviceSize)
+{
+  Wire.resetMocks();
+  Wire.begin();
+  I2C_eeprom EE(0x50, 0x8000);
+
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC512), I2C_DEVICESIZE_24LC512);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC256), I2C_DEVICESIZE_24LC256);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC128), I2C_DEVICESIZE_24LC128);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC64),  I2C_DEVICESIZE_24LC64);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC32),  I2C_DEVICESIZE_24LC32);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC16),  I2C_DEVICESIZE_24LC16);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC08),  I2C_DEVICESIZE_24LC08);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC04),  I2C_DEVICESIZE_24LC04);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC02),  I2C_DEVICESIZE_24LC02);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC01),  I2C_DEVICESIZE_24LC01);
+
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC512 + 1), I2C_DEVICESIZE_24LC512);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC256 + 1), I2C_DEVICESIZE_24LC256);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC128 + 1), I2C_DEVICESIZE_24LC128);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC64 + 1),  I2C_DEVICESIZE_24LC64);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC32 + 1),  I2C_DEVICESIZE_24LC32);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC16 + 1),  I2C_DEVICESIZE_24LC16);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC08 + 1),  I2C_DEVICESIZE_24LC08);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC04 + 1),  I2C_DEVICESIZE_24LC04);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC02 + 1),  I2C_DEVICESIZE_24LC02);
+  assertEqual(EE.setDeviceSize(I2C_DEVICESIZE_24LC01 + 1),  I2C_DEVICESIZE_24LC01);
+
+}
+
+
+unittest(test_setPageSize)
+{
+  Wire.resetMocks();
+  Wire.begin();
+  I2C_eeprom EE(0x50, 0x8000);
+
+  assertEqual(EE.setPageSize(129), 128);
+  assertEqual(EE.setPageSize(128), 128);
+  assertEqual(EE.setPageSize(127), 64);
+  assertEqual(EE.setPageSize(65),  64);
+  assertEqual(EE.setPageSize(64),  64);
+  assertEqual(EE.setPageSize(63),  32);
+  assertEqual(EE.setPageSize(33),  32);
+  assertEqual(EE.setPageSize(32),  32);
+  assertEqual(EE.setPageSize(31),  16);
+  assertEqual(EE.setPageSize(17),  16);
+  assertEqual(EE.setPageSize(16),  16);
+  assertEqual(EE.setPageSize(9),   8);
+  assertEqual(EE.setPageSize(8),   8);
 }
 
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

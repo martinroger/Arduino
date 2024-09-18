@@ -2,13 +2,14 @@
 //    FILE: correlation_statistical.ino
 //  AUTHOR: Rob Tillaart
 //    DATE: 2020-05-17
-// VERSION: 0.1.0
-// PUPROSE: demo of the Correlation Library
-//
+// PURPOSE: demo of the Correlation Library
+//     URL: https://github.com/RobTillaart/Correlation
+
 
 #include "Correlation.h"
 
 Correlation C;
+
 
 void setup()
 {
@@ -31,13 +32,14 @@ void setup()
     Serial.print(C.getMaxY(), 2);
     Serial.println();
   }
-
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

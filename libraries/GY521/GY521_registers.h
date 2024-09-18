@@ -7,7 +7,7 @@
 //
 
 
-// keep names in sync with BIG MPU6050 lib
+//  keep names in sync with BIG MPU6050 lib
 
 
 #define GY521_XG_OFFS_TC             0x00
@@ -140,4 +140,6 @@
 #define GY521_FIFO_R_W               0x74
 #define GY521_WHO_AM_I               0x75
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

@@ -2,23 +2,25 @@
 //    FILE: DAC8551_powerdown.ino
 //  AUTHOR: Rob Tillaart
 // PURPOSE: demo DAC8551 library Arduino
-// VERSION: 0.2.0
 //     URL: https://github.com/RobTillaart/DAC8551
-//
 
 
 #include "DAC8551.h"
 
 
-// HW SPI uses slave spin since 0.2.0
-DAC8551 mydac(10);
+//  select, address HW SPI
+DAC8551 mydac(10);  //  uses default
 
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("DAC8551_LIB_VERSION: ");
   Serial.println(DAC8551_LIB_VERSION);
+
+  SPI.begin();
+
   mydac.begin();
 }
 
@@ -50,4 +52,6 @@ void loop()
   mydac.setPowerDown(DAC8551_POWERDOWN_NORMAL);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

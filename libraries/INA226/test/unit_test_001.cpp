@@ -38,6 +38,7 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "\n INA226_LIB_VERSION: %s\n", (char *) INA226_LIB_VERSION);
 }
 
 unittest_teardown()
@@ -47,18 +48,20 @@ unittest_teardown()
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "\nVERSION: %s\n", INA226_LIB_VERSION);
+
   INA226 INA(0x40);
-  
+
+  Wire.begin();
   assertTrue(INA.begin());
   assertTrue(INA.isConnected());
+  assertEqual(0x40, INA.getAddress());
+
+  assertFalse(INA.isCalibrated());
 }
 
 
 unittest(test_constants)
 {
-  fprintf(stderr, "\nVERSION: %s\n", INA226_LIB_VERSION);
-
   assertEqual(0x8000, INA226_SHUNT_OVER_VOLTAGE);
   assertEqual(0x4000, INA226_SHUNT_UNDER_VOLTAGE);
   assertEqual(0x2000, INA226_BUS_OVER_VOLTAGE);
@@ -71,13 +74,48 @@ unittest(test_constants)
   assertEqual(0x0004, INA226_MATH_OVERFLOW_FLAG);
   assertEqual(0x0002, INA226_ALERT_POLARITY_FLAG);
   assertEqual(0x0001, INA226_ALERT_LATCH_ENABLE_FLAG);
+
+  assertEqual(0x0000, INA226_ERR_NONE);
+  assertEqual(0x8000, INA226_ERR_SHUNTVOLTAGE_HIGH);
+  assertEqual(0x8001, INA226_ERR_MAXCURRENT_LOW);
+  assertEqual(0x8002, INA226_ERR_SHUNT_LOW);
+
+  assertEqualFloat(0.001, INA226_MINIMAL_SHUNT, 0.0001);
+}
+
+
+unittest(test_enum_setAverage)
+{
+  assertEqual(0, INA226_1_SAMPLE);
+  assertEqual(1, INA226_4_SAMPLES);
+  assertEqual(2, INA226_16_SAMPLES);
+  assertEqual(3, INA226_64_SAMPLES);
+  assertEqual(4, INA226_128_SAMPLES);
+  assertEqual(5, INA226_256_SAMPLES);
+  assertEqual(6, INA226_512_SAMPLES);
+  assertEqual(7, INA226_1024_SAMPLES);
+}
+
+
+unittest(test_enum_BVCT_SVCT)
+{
+  assertEqual(0, INA226_140_us );
+  assertEqual(1, INA226_204_us );
+  assertEqual(2, INA226_332_us );
+  assertEqual(3, INA226_588_us );
+  assertEqual(4, INA226_1100_us);
+  assertEqual(5, INA226_2100_us);
+  assertEqual(6, INA226_4200_us);
+  assertEqual(7, INA226_8300_us);
 }
 
 
 unittest(test_core_functions)
 {
   INA226 INA(0x40);
-  // assertTrue(INA.begin());
+
+  Wire.begin();
+  //  assertTrue(INA.begin());
 
   fprintf(stderr, "need mock up\n");
   /*
@@ -92,9 +130,11 @@ unittest(test_core_functions)
 unittest(test_configuration)
 {
   INA226 INA(0x40);
-  // assertTrue(INA.begin());
 
-  // only errors can be tested
+  Wire.begin();
+  //  assertTrue(INA.begin());
+
+  //  only errors can be tested
   assertFalse(INA.setAverage(8));
   assertFalse(INA.setAverage(255));
 
@@ -109,25 +149,35 @@ unittest(test_configuration)
 unittest(test_calibration)
 {
   INA226 INA(0x40);
-  // assertTrue(INA.begin());
 
-  // only errors can be tested
-  assertFalse(INA.setMaxCurrentShunt(30));
-  assertFalse(INA.setMaxCurrentShunt(0.0009));
-  assertFalse(INA.setMaxCurrentShunt(0));
-  assertFalse(INA.setMaxCurrentShunt(-1));
+  Wire.begin();
+  //  assertTrue(INA.begin());
 
-  assertFalse(INA.setMaxCurrentShunt(10, 0));
-  assertFalse(INA.setMaxCurrentShunt(10, 0.0009));
+  assertEqual(INA226_ERR_NONE, INA.setMaxCurrentShunt(30, 0.002));
+  assertEqual(INA226_ERR_NONE, INA.setMaxCurrentShunt(1,  0.05));
+  assertEqual(INA226_ERR_NONE, INA.setMaxCurrentShunt(1,  0.080));
+
+  assertEqual(INA226_ERR_SHUNTVOLTAGE_HIGH, INA.setMaxCurrentShunt(80.1, 0.001));
+  assertEqual(INA226_ERR_SHUNTVOLTAGE_HIGH, INA.setMaxCurrentShunt(40.1, 0.002));
+  assertEqual(INA226_ERR_SHUNTVOLTAGE_HIGH, INA.setMaxCurrentShunt(20.1, 0.004));
+  assertEqual(INA226_ERR_SHUNTVOLTAGE_HIGH, INA.setMaxCurrentShunt(1.1, 0.080));
+
+  assertEqual(INA226_ERR_MAXCURRENT_LOW,    INA.setMaxCurrentShunt(0.0009));
+  assertEqual(INA226_ERR_MAXCURRENT_LOW,    INA.setMaxCurrentShunt(0));
+  assertEqual(INA226_ERR_MAXCURRENT_LOW,    INA.setMaxCurrentShunt(-1));
+  assertEqual(INA226_ERR_SHUNT_LOW,         INA.setMaxCurrentShunt(10, 0));
+  assertEqual(INA226_ERR_SHUNT_LOW,         INA.setMaxCurrentShunt(10, 0.0009));
 }
 
 
 unittest(test_setMode)
 {
   INA226 INA(0x40);
-  // assertTrue(INA.begin());
 
-  // only errors can be tested
+  Wire.begin();
+  //  assertTrue(INA.begin());
+
+  //  only errors can be tested
   assertFalse(INA.setMode(8));
   assertFalse(INA.setMode(255));
   assertFalse(INA.setMode(-1));
@@ -143,8 +193,8 @@ unittest(test_setMode)
 }
 
 
-
-
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

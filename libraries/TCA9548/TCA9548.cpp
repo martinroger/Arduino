@@ -1,46 +1,28 @@
 //
 //    FILE: TCA9548.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
+// VERSION: 0.3.0
 //    DATE: 2021-03-16
-// PURPOSE: Library for TCA9548 I2C multiplexer
-//
-//  HISTORY:
-//  0.1.0   2021-03-16  initial version
+// PURPOSE: Arduino Library for TCA9548 I2C multiplexer and compatibles.
 
 
 #include "TCA9548.h"
 
 
-TCA9548::TCA9548(const uint8_t deviceAddress, TwoWire *wire)
+TCA9548::TCA9548(uint8_t deviceAddress, TwoWire *wire)
 {
   _address  = deviceAddress;
   _wire     = wire;
   _mask     = 0x00;
   _resetPin = -1;
   _forced   = false;
+  _error    = TCA9548_OK;
+  _channels = 8;
 }
-
-
-#if defined (ESP8266) || defined(ESP32)
-bool TCA9548::begin(uint8_t dataPin, uint8_t clockPin, uint8_t mask)
-{
-  if ((dataPin < 255) && (clockPin < 255))
-  {
-    _wire->begin(dataPin, clockPin);
-  } else {
-    _wire->begin();
-  }
-  if (! isConnected()) return false;
-  setChannelMask(mask);
-  return true;
-}
-#endif
 
 
 bool TCA9548::begin(uint8_t mask)
 {
-  _wire->begin();
   if (! isConnected()) return false;
   setChannelMask(mask);
   return true;
@@ -49,58 +31,95 @@ bool TCA9548::begin(uint8_t mask)
 
 bool TCA9548::isConnected()
 {
-  _wire->beginTransmission(_address);
+  return isConnected(_address);
+}
+
+
+bool TCA9548::isConnected(uint8_t address)
+{
+  _wire->beginTransmission(address);
   return ( _wire->endTransmission() == 0);
 }
 
 
-bool TCA9548::isConnected(uint8_t addr)
+bool TCA9548::isConnected(uint8_t address, uint8_t channel)
 {
-  _wire->beginTransmission(addr);
-  return ( _wire->endTransmission() == 0);
+  if (!selectChannel(channel)) return false;
+  return isConnected(address);
 }
 
 
-
-void TCA9548::enableChannel(uint8_t channel)
+uint8_t TCA9548::find(uint8_t address)
 {
-  if (isEnabled(channel)) return;
-  setChannelMask(_mask | (0x01 << channel));
+  uint8_t mask = 0x00;
+  for (uint8_t ch = 0; ch < _channels; ch++)
+  {
+    //  will work partially if MP is off line (by choice).
+    selectChannel(ch);
+    if (isConnected(address)) mask |= (1 << ch);
+  }
+  return mask;
 }
 
 
-void TCA9548::disableChannel(uint8_t channel)
+uint8_t TCA9548::channelCount()
 {
-  if (!isEnabled(channel)) return;
-  setChannelMask(_mask & ~(0x01 << channel));
+  return _channels;
 }
 
 
-void TCA9548::selectChannel(uint8_t channel)
+bool TCA9548::enableChannel(uint8_t channel)
 {
-  setChannelMask(0x01 << channel);
+  if (channel >= _channels) return false;
+  return setChannelMask(_mask | (0x01 << channel));
+}
+
+
+bool TCA9548::disableChannel(uint8_t channel)
+{
+  if (channel >= _channels) return false;
+  return setChannelMask(_mask & ~(0x01 << channel));
+}
+
+
+bool TCA9548::selectChannel(uint8_t channel)
+{
+  if (channel >= _channels) return false;
+  return setChannelMask(0x01 << channel);
 }
 
 
 bool TCA9548::isEnabled(uint8_t channel)
 {
-  if (channel > 7) return false;
+  if (channel >= _channels) return false;
   return (_mask & (0x01 << channel));
 }
 
 
-void TCA9548::setChannelMask(uint8_t mask)
+bool TCA9548::disableAllChannels()
 {
-  if ((_mask == mask) && (! _forced)) return;
+  return setChannelMask(0x00);
+}
+
+
+bool TCA9548::setChannelMask(uint8_t mask)
+{
+  if ((_mask == mask) && (not _forced)) return true;
   _mask = mask;
   _wire->beginTransmission(_address);
   _wire->write(_mask);
   _error = _wire->endTransmission();
+  return (_error == 0);
 }
 
 
 uint8_t TCA9548::getChannelMask()
 {
+  if (_forced)  //  read from device.
+  {
+    _wire->requestFrom(_address, (uint8_t)1);
+    _mask = _wire->read();
+  }
   return _mask;
 }
 
@@ -109,26 +128,123 @@ void TCA9548::setResetPin(uint8_t resetPin)
 {
   _resetPin = resetPin;
   pinMode(_resetPin, OUTPUT);
-  digitalWrite(_resetPin, LOW);  // CHECK
+  digitalWrite(_resetPin, HIGH);  //  page 3 HIGH is normal operation
 }
 
 
 void TCA9548::reset()
 {
-  digitalWrite(_resetPin, HIGH);  // CHECK
-  delay(1);
   digitalWrite(_resetPin, LOW);
+  delayMicroseconds(1);           //  datasheet page 6 & 7 - 500 ns
+  digitalWrite(_resetPin, HIGH);
 }
+
+
+void TCA9548::setForced(bool forced)
+{
+  _forced = forced;
+};
+
+
+bool TCA9548::getForced()
+{
+  return _forced;
+};
 
 
 int TCA9548::getError()
 {
-  int e = _error;
-  _error = 0;
-  return e;
+  int error = _error;
+  _error = TCA9548_OK;
+  return error;
 }
 
 
-// -- END OF FILE -- 
+/////////////////////////////////////////////////////////////
+//
+//  PCA9548
+//
+PCA9548::PCA9548(uint8_t deviceAddress, TwoWire *wire) : TCA9548(deviceAddress, wire)
+{
+  _channels = 8;
+}
 
+
+/////////////////////////////////////////////////////////////
+//
+//  PCA9546
+//
+PCA9546::PCA9546(uint8_t deviceAddress, TwoWire *wire) : TCA9548(deviceAddress, wire)
+{
+  _channels = 4;
+}
+
+uint8_t PCA9546::getChannelMask()
+{
+  if (_forced)  //  read from device.
+  {
+    _wire->requestFrom(_address, (uint8_t)1);
+    _mask = _wire->read();
+  }
+  return _mask &= 0x0F;
+}
+
+
+/////////////////////////////////////////////////////////////
+//
+//  PCA9545
+//
+PCA9545::PCA9545(uint8_t deviceAddress, TwoWire *wire) : TCA9548(deviceAddress, wire)
+{
+  _channels = 4;
+}
+
+uint8_t PCA9545::getChannelMask()
+{
+  if (_forced)  //  read from device.
+  {
+    _wire->requestFrom(_address, (uint8_t)1);
+    _mask = _wire->read();
+  }
+  return _mask &= 0x0F;
+}
+
+uint8_t PCA9545::getInterruptMask()
+{
+  _wire->requestFrom(_address, (uint8_t)1);
+  uint8_t mask = _wire->read();
+  mask >>= 4;
+  return mask;
+}
+
+
+/////////////////////////////////////////////////////////////
+//
+//  PCA9548
+//
+PCA9543::PCA9543(uint8_t deviceAddress, TwoWire *wire) : TCA9548(deviceAddress, wire)
+{
+  _channels = 2;
+}
+
+uint8_t PCA9543::getChannelMask()
+{
+  if (_forced)  //  read from device.
+  {
+    _wire->requestFrom(_address, (uint8_t)1);
+    _mask = _wire->read();
+  }
+  return _mask &= 0x03;
+}
+
+uint8_t PCA9543::getInterruptMask()
+{
+  _wire->requestFrom(_address, (uint8_t)1);
+  uint8_t mask = _wire->read();
+  mask >>= 4;
+  return mask;
+}
+
+
+//  -- END OF FILE --
 

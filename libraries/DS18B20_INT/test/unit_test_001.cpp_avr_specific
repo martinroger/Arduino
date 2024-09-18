@@ -31,17 +31,23 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "DS18B20_INT_LIB_VERSION: %s\n", (char *) DS18B20_INT_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
 
+unittest(test_constants)
+{
+  assertEqual(-127, DEVICE_DISCONNECTED);
+}
+
+
 unittest(test_constructor)
 {
-  fprintf(stderr, "DS18B20_INT_LIB_VERSION: %s\n", DS18B20_INT_LIB_VERSION);
-
   OneWire oneWire(4);
   DS18B20_INT sensor(&oneWire);
 
@@ -54,6 +60,9 @@ unittest(test_constructor)
   assertEqual(0, sensor.getTempC());
 }
 
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

@@ -1,7 +1,6 @@
 //
 //    FILE: permutations.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2021-08-06
 //     URL: https://github.com/RobTillaart/statHelpers
@@ -14,10 +13,15 @@
 uint32_t start, duration1, duration2;
 volatile uint32_t x;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("STATHELPERS_LIB_VERSION: ");
+  Serial.println(STATHELPERS_LIB_VERSION);
+  Serial.println();
+
 
   ///////////////////////////////////////////
 
@@ -123,7 +127,8 @@ void setup()
   Serial.println();
   */
 
-  // pick 1000 persons from 4294967295  (maxLong)
+
+  //  pick 1000 persons from 4294967295  (maxLong)
   double   mant = 0;
   uint32_t expo = 0;
   bigPermutations(4294967295, 1000, mant, expo);
@@ -135,9 +140,11 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

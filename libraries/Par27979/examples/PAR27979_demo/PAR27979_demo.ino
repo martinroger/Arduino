@@ -1,11 +1,10 @@
 //
 //    FILE: par27979_demo.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-06-23
 //    (c) : MIT
-//
+
 
 #include <SoftwareSerial.h>
 
@@ -14,6 +13,7 @@ SoftwareSerial sws(3, 3);
 #include "PAR27979.h"
 
 PAR27979 display(&sws);
+
 
 void setup()
 {
@@ -72,7 +72,11 @@ void setup()
 
 }
 
+
 void loop()
 {
-
 }
+
+
+// -- END OF FILE --
+

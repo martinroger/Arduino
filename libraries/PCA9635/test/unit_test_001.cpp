@@ -37,32 +37,96 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "PCA9635_LIB_VERSION: %s\n", (char *) PCA9635_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
 
+unittest(test_constants)
+{
+  fprintf(stderr, "\nregisters");
+  assertEqual(PCA963X_MODE1      , 0x00);
+  assertEqual(PCA963X_MODE2      , 0x01);
+
+  assertEqual(PCA963X_PWM(0)     , 0x82);
+  assertEqual(PCA963X_PWM(1)     , 0x83);
+  assertEqual(PCA963X_GRPPWM     , 0x12);
+  assertEqual(PCA963X_GRPFREQ    , 0x13);
+  assertEqual(PCA963X_LEDOUT_BASE, 0x14);
+
+  assertEqual(PCA963X_LEDOFF     , 0x00);
+  assertEqual(PCA963X_LEDON      , 0x01);
+  assertEqual(PCA963X_LEDPWM     , 0x02);
+  assertEqual(PCA963X_LEDGRPPWM  , 0x03);
+
+  fprintf(stderr, "\nerrorcodes");
+  assertEqual(PCA963X_OK         , 0x00);
+  assertEqual(PCA963X_ERROR      , 0xFF);
+  assertEqual(PCA963X_ERR_WRITE  , 0xFE);
+  assertEqual(PCA963X_ERR_CHAN   , 0xFD);
+  assertEqual(PCA963X_ERR_MODE   , 0xFC);
+  assertEqual(PCA963X_ERR_REG    , 0xFB);
+  assertEqual(PCA963X_ERR_I2C    , 0xFA);
+}
+
+
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", PCA9635_LIB_VERSION);
-  
   PCA9635 ledArray(0x20);
+
+  Wire.begin();
+
   assertTrue(ledArray.begin());
   assertTrue(ledArray.isConnected());
+  assertEqual(16, ledArray.channelCount());
 }
 
 
 unittest(test_LedDriverMode)
 {
   PCA9635 ledArray(0x20);
+
+  Wire.begin();
+
   assertTrue(ledArray.begin());
 
-  // TODO
+  //  TODO
+}
+
+
+unittest(test_OutputEnable)
+{
+  PCA9635 ledArray(0x20);
+
+  Wire.begin();
+
+  assertTrue(ledArray.begin());
+
+  assertEqual(HIGH, ledArray.getOutputEnable());
+
+  assertTrue(ledArray.setOutputEnablePin(12));
+  //  assertEqual(HIGH, ledArray.getOutputEnable());  //  need mock
+
+  assertTrue(ledArray.setOutputEnable(true));
+  //  assertEqual(LOW, ledArray.getOutputEnable());
+
+  assertTrue(ledArray.setOutputEnable(false));
+  //  assertEqual(HIGH, ledArray.getOutputEnable());
+
+  assertTrue(ledArray.setOutputEnable(true));
+  //  assertEqual(LOW, ledArray.getOutputEnable());
+
+  assertFalse(ledArray.setOutputEnablePin(255));
+  //  assertEqual(HIGH, ledArray.getOutputEnable());
 }
 
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

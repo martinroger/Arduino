@@ -1,12 +1,9 @@
 //
 //    FILE: ansiDemo01.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2020-04-28
 //     URL: https://github.com/RobTillaart/ANSI
-//    (c) : MIT
-//
+
 
 #include "ansi.h"
 
@@ -18,9 +15,12 @@ void setup()
   Serial.begin(115200);
 
   ansi.clearScreen();
+  ansi.println("Hello world");
   ansi.bold();
   ansi.println("Hello world");
   ansi.blink();
+  ansi.println("Hello world");
+  ansi.blinkFast();
   ansi.println("Hello world");
   ansi.underline();
   ansi.println("Hello world");
@@ -41,14 +41,14 @@ void setup()
   ansi.clearScreen();
   for (int i = 1; i < 25; i++)
   {
-    ansi.gotoXY(i, 2 * i);
+    ansi.gotoXY(2 * i, i);
     ansi.println("Hello world");
     delay(100);
   }
   delay(1000);
 
   ansi.clearScreen();
-  // 4 bit color test
+  //  4 bit color test
   for (int color = 0; color < 16; ++color) {
     ansi.foreground(color);
     ansi.print("foreground");
@@ -70,7 +70,7 @@ void setup()
   delay(1000);
 
   ansi.clearScreen();
-  // 8 bit color test
+  //  8 bit color test
   ansi.foreground(ansi.rgb2color(180, 0, 158));
   ansi.print("foreground");
   ansi.normal();
@@ -87,10 +87,37 @@ void setup()
 
   delay(1000);
   ansi.normal();
+
+  //////////////////////////////////////////////////////////
+  //
+  //  EXPERIMENTAL PART
+  //
+  ansi.clearScreen();
+  ansi.println("Experimental");
+  ansi.invisible();
+  ansi.println("invisible");
+  ansi.normal();
+  ansi.strikeThrough();
+  ansi.println("strikethrough");
+  ansi.normal();
+
+  //  RGB color test
+  ansi.println("Experimental");
+  ansi.setRGBforeground(180, 0, 158);
+  ansi.print("foreground");
+  ansi.normal();
+  ansi.setRGBbackground(180, 0, 158);
+  ansi.println("background");
+  ansi.normal();
+
+
+  ansi.println("\ndone...");
 }
+
 
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

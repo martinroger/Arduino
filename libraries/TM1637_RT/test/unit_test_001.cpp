@@ -1,7 +1,6 @@
 //
 //    FILE: unit_test_001.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 //    DATE: 2021-04-16
 // PURPOSE: unit tests for the TM1637 library
 //          https://github.com/RobTillaart/TM_1637_RT
@@ -40,16 +39,19 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "TM1637_LIB_VERSION: %s\n", (char *) TM1637_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
+
 unittest(test_begin)
 {
   TM1637 TM;
-  TM.init(2, 3, 6);
+  TM.begin(2, 3, 6);
 
   TM.displayClear();
   // TODO real tests....
@@ -60,7 +62,7 @@ unittest(test_begin)
 unittest(test_brightness)
 {
   TM1637 TM;
-  TM.init(2, 3, 6);
+  TM.begin(2, 3, 6);
   
   for (uint8_t b = 0; b < 8; b++)
   {
@@ -80,7 +82,7 @@ unittest(test_brightness)
 unittest(test_set_bit_delay)
 {
   TM1637 TM;
-  TM.init(2, 3, 6);
+  TM.begin(2, 3, 6);
   
   for (uint8_t b = 0; b < 100; b += 10)
   {
@@ -91,6 +93,9 @@ unittest(test_set_bit_delay)
 
 }
 
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

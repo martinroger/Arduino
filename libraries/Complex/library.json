@@ -1,7 +1,7 @@
 {
   "name": "Complex",
   "keywords": "Complex,numbers,Imaginary,phase,modulus,polar,conjugate,math,sin,cos,tan,exp,pow",
-  "description": "Library for Complex math.",
+  "description": "Library for Complex math. Implements Printable interface.",
   "authors":
   [
     {
@@ -15,8 +15,9 @@
     "type": "git",
     "url": "https://github.com/RobTillaart/Complex.git"
   },
-  "version": "0.2.2",
+  "version": "0.3.4",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "Complex.h"
 }

@@ -1,20 +1,19 @@
 //
 //    FILE: MCP4911_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: test MCP4921 lib
-//    DATE: 2021-05-26
-//     URL: https://github.com/RobTillaart/MCP4921
-//
+// PURPOSE: test MCP_DAC lib
+//     URL: https://github.com/RobTillaart/MCP_DAC
 
 
 #include "MCP_DAC.h"
 
-// MCP4911 MCP(11, 13);  // SW SPI
-MCP4911 MCP;  // HW SPI
+
+// MCP4911 MCP(11, 13);  //  SW SPI
+MCP4911 MCP;  //  HW SPI
 
 volatile int x;
 uint32_t start, stop;
+
 
 void setup()
 {
@@ -23,6 +22,8 @@ void setup()
 
   Serial.print("SPI:\t");
   Serial.println(MCP.usesHWSPI());
+
+  SPI.begin();
 
   MCP.begin(10);
 
@@ -54,7 +55,7 @@ void analogWrite_test()
     Serial.println(channel);
     for (uint16_t value = 0; value < MCP.maxValue(); value += 0xFF)
     {
-      MCP.analogWrite(value, channel);
+      MCP.write(value, channel);
       Serial.print(value);
       Serial.print("\t");
       Serial.println(analogRead(A0));
@@ -72,11 +73,11 @@ void performance_test()
   start = micros();
   for (uint16_t value = 0; value < MCP.maxValue(); value++)
   {
-    x = MCP.analogWrite(value, 0);
+    x = MCP.write(value, 0);
   }
   stop = micros();
   Serial.print(MCP.maxValue());
-  Serial.print(" x MCP.analogWrite():\t");
+  Serial.print(" x MCP.write():\t");
   Serial.print(stop - start);
   Serial.print("\t");
   Serial.println((stop - start) / (MCP.maxValue() + 1.0) );
@@ -102,4 +103,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

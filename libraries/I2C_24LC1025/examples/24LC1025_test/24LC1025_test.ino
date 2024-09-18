@@ -1,11 +1,7 @@
 //
 //    FILE: 24LC1025_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2020
-//    (c) : MIT
-//
 
 
 #include "I2C_24LC1025.h"
@@ -19,6 +15,10 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("I2C_24LC1025_LIB_VERSION: ");
+  Serial.println(I2C_24LC1025_LIB_VERSION);
+
+  Wire.begin();
 
   if (! ee.begin())
   {
@@ -44,6 +44,7 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
 }
@@ -59,10 +60,14 @@ void dump(uint32_t from, uint32_t to)
     {
       char buffer[24];
       Serial.print('\n');
-      sprintf(buffer, "%08lX\t", i);
+#if defined (ESP8266) || defined(ESP32)
+      sprintf(buffer, "%08X\t", i);   //  ESP cast (long unsigned int)
+#else
+      sprintf(buffer, "%08lX\t", i);  //  AVR needs lX
+#endif
       Serial.print(buffer);
     }
-    sprintf(buffer, "%02X\t", ee.readByte(i));
+    sprintf(buffer, "%02X\t", x);
     Serial.print(buffer);
   }
   Serial.println();
@@ -92,5 +97,5 @@ void test(uint32_t offset)
 }
 
 
+//  -- END OF FILE --
 
-// -- END OF FILE --

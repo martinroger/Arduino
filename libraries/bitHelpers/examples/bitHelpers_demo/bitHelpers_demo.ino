@@ -1,14 +1,14 @@
 //
 //    FILE: bitHelpers_demo.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2020-07-28
 //     URL: https://github.com/RobTillaart/bitHelpers
+
 
 #include "bitHelpers.h"
 
 uint32_t start, stop;
+
 
 void setup()
 {
@@ -31,9 +31,11 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
 }
+
 
 //////////////////////////////////
 
@@ -110,6 +112,7 @@ void test_bitCount1_32_bits_variations()
   Serial.println();
 }
 
+
 void test_bitCount2()
 {
   Serial.println();
@@ -176,6 +179,7 @@ void test_bitCount2()
   Serial.println();
 }
 
+
 void test_bitReverse()
 {
   Serial.println();
@@ -212,6 +216,7 @@ void test_bitReverse()
   Serial.println((stop - start) / 1000.0, 3);
   Serial.println();
 }
+
 
 void test_nybbleReverse()
 {
@@ -250,6 +255,7 @@ void test_nybbleReverse()
   Serial.println();
 }
 
+
 void test_byteReverse()
 {
   Serial.println();
@@ -280,6 +286,7 @@ void test_byteReverse()
   Serial.println((stop - start) / 1000.0, 3);
   Serial.println();
 }
+
 
 void test_swap()
 {
@@ -402,6 +409,7 @@ void test_bitRotateRight()
   Serial.println();
 }
 
+
 void test_bitRot()
 {
   Serial.println();
@@ -431,4 +439,5 @@ void test_bitRot()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

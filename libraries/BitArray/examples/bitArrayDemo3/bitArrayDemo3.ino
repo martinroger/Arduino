@@ -1,21 +1,20 @@
 //
 //    FILE: bitArrayDemo3.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: demo performance reading boolean array
-//    DATE: 2017-07-15
+// PURPOSE: demo performance bit array
+//     URL: https://github.com/RobTillaart/BitArray
 //     URL: https://forum.arduino.cc/index.php?topic=361167.0
-//
-// Released to the public domain
-//
+
 
 #include "BitArray.h"
+
 
 BitArray b;
 
 uint32_t start;
 uint32_t stop;
 volatile int32_t x = 0;
+
 
 void setup()
 {
@@ -30,6 +29,7 @@ void setup()
     test(3, 3333);
     test(4, 2500);
 }
+
 
 void test(uint8_t bits, uint16_t cnt)
 {
@@ -125,6 +125,11 @@ void test(uint8_t bits, uint16_t cnt)
     Serial.println("Done...");
 }
 
+
 void loop()
 {
 }
+
+
+//  -- END OF FILE --
+

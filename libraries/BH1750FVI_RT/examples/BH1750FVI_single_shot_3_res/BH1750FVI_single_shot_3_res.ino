@@ -1,10 +1,9 @@
 //
 //    FILE: BH1750FVI_single_shot_3_res.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo of BH1750FVI lux scanner library
-//    DATE: 2020-08-20
-//
+//     URL: https://github.com/RobTillaart/BH1750FVI_RT
+
 
 #include "BH1750FVI.h"
 
@@ -13,6 +12,7 @@ BH1750FVI myLux(0x23);
 uint32_t lastUpdate = 0;
 float val;
 uint32_t count = 0;
+
 
 void setup()
 {
@@ -26,6 +26,7 @@ void setup()
   myLux.powerOn();
   myLux.setContLowRes();
 }
+
 
 void loop()
 {
@@ -61,4 +62,5 @@ void loop()
   Serial.println();
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

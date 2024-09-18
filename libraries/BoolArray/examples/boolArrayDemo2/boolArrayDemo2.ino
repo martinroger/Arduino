@@ -1,15 +1,8 @@
 //
 //    FILE: boolArrayDemo2.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo performance boolean array
-//    DATE: 2015-12-12
-//     URL: https://forum.arduino.cc/index.php?topic=361167.0
-//
-// Released to the public domain
-//
-// 0.1.1 - added performance for toggle
-//
+//     URL: https://github.com/RobTillaart/BoolArray
 
 
 #include "BoolArray.h"
@@ -25,7 +18,6 @@ volatile long x = 0;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("Start ");
   Serial.println(__FILE__);
   Serial.print("BOOLARRAY_LIB_VERSION:\t");
   Serial.println(BOOLARRAY_LIB_VERSION);
@@ -36,6 +28,7 @@ void setup()
   Serial.println(b.size());
 
   Serial.println("\nget");
+  delay(10);
   start = micros();
   for (int i = 0; i < 1000; i++)
   {
@@ -44,6 +37,7 @@ void setup()
   stop = micros();
   Serial.print("DURATION:\t");
   Serial.println(stop - start);
+  delay(10);
 
   start = micros();
   for (int i = 0; i < 1000; i++)
@@ -58,6 +52,7 @@ void setup()
   Serial.println(x);
 
   Serial.println("\nset");
+  delay(10);
   start = micros();
   for (int i = 0; i < 1000; i++)
   {
@@ -66,6 +61,7 @@ void setup()
   stop = micros();
   Serial.print("DURATION:\t");
   Serial.println(stop - start);
+  delay(10);
 
   start = micros();
   for (int i = 0; i < 1000; i++)
@@ -78,6 +74,7 @@ void setup()
   Serial.println(stop - start);
 
   Serial.println("\nclear");
+  delay(10);
   start = micros();
   for (int i = 0; i < 1000; i++)
   {
@@ -86,6 +83,7 @@ void setup()
   stop = micros();
   Serial.print("DURATION:\t");
   Serial.println(stop - start);
+  delay(10);
 
   start = micros();
   for (int i = 0; i < 1000; i++)
@@ -98,6 +96,7 @@ void setup()
   Serial.println(stop - start);
 
   Serial.println("\nsetAll");
+  delay(10);
   start = micros();
   for (int i = 0; i < 1000; i++)
   {
@@ -109,8 +108,9 @@ void setup()
 
   for (int i = 0; i < 1000; i++)
   {
-    if (b.get(i) == 0) Serial.println("Error in CLr()");
+    if (b.get(i) == 0) Serial.println("Error in clear()");
   }
+  delay(10);
 
   start = micros();
   for (int i = 0; i < 1000; i++)
@@ -123,6 +123,7 @@ void setup()
   Serial.println(stop - start);
 
   Serial.println("\ntoggle");
+  delay(10);
   start = micros();
   for (int i = 0; i < 1000; i++)
   {
@@ -131,6 +132,7 @@ void setup()
   stop = micros();
   Serial.print("DURATION:\t");
   Serial.println(stop - start);
+  delay(10);
 
   start = micros();
   for (int i = 0; i < 1000; i++)
@@ -150,4 +152,5 @@ void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

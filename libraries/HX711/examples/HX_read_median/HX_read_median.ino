@@ -1,13 +1,10 @@
 //
 //    FILE: HX_read_median.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: HX711 demo
 //     URL: https://github.com/RobTillaart/HX711
-//
-// HISTORY:
-// 0.1.0    2021-05-10 initial version
-//
+
+
 
 #include "HX711.h"
 
@@ -18,6 +15,7 @@ uint8_t clockPin = 7;
 
 uint32_t start, stop;
 volatile float f;
+
 
 void setup()
 {
@@ -30,10 +28,10 @@ void setup()
   scale.begin(dataPin, clockPin);
 
   // TODO find a nice solution for this calibration..
-  // loadcell factor 20 KG
-  scale.set_scale(127.15);
+  // load cell factor 20 KG
+  scale.set_scale(127.15);       // TODO you need to calibrate this yourself.
 
-  // loadcell factor 5 KG
+  // load cell factor 5 KG
   // scale.set_scale(420.0983);
   // reset the scale to zero = 0
   scale.tare();
@@ -52,6 +50,7 @@ void setup()
   Serial.println(f, 2);
 }
 
+
 void loop()
 {
   // continuous scale once per second
@@ -62,3 +61,4 @@ void loop()
 
 
 // -- END OF FILE --
+

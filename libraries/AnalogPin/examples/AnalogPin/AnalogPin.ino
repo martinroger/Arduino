@@ -1,10 +1,9 @@
 //
 //    FILE: AnalogPin.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.3.0
 // PURPOSE: example sketch
 //     URL: https://github.com/RobTillaart/AnalogPin
-//
+
 
 #include "AnalogPin.h"
 
@@ -14,11 +13,15 @@ AnalogPin INB(A1);
 uint32_t start, stop;
 uint32_t val;
 
+
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("example AnalogPin: ");
+  Serial.println(__FILE__);
+  Serial.print("ANALOGPIN_LIB_VERSION: ");
   Serial.println(ANALOGPIN_LIB_VERSION);
+  Serial.println();
+
   Serial.println("time in msec");
 
   INB.setPrescaler(5);  // fast sampling
@@ -66,7 +69,7 @@ void setup()
   Serial.print("VALUE:\t ");
   Serial.println(val / 1000);
 
-  Serial.println("\nINB.read() - prescaler=5");
+  Serial.println("\nINB.read() - prescale = 5");
   val = 0;
   start = millis();
   for (int i = 0; i < 1000; i++)
@@ -94,4 +97,6 @@ void loop()
   delay(1000);
 }
 
+
 // -- END OF FILE --
+

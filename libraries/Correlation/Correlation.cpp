@@ -1,22 +1,9 @@
 //
 //    FILE: Correlation.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
+// VERSION: 0.3.2
 // PURPOSE: Arduino Library to determine correlation between X and Y dataset
-//
-//  HISTORY:
-//  0.2.0  2021-08-26  Add flags to skip Rsquare and Esquare calculation
-//                     will improve performance calculate
-//                     fixed sign of R correlation coefficient
-//
-//  0.1.4  2021-08-26  improve performance calculate
-//  0.1.3  2021-01-16  add size in constructor,
-//                     add statistical + debug functions
-//  0.1.2  2020-12-17  add arduino-CI + unit tests
-//                     + size() + getAvgX() + getAvgY()
-//  0.1.1  2020-06-05  fix library.json
-//  0.1.0  2020-05-17  initial version
-
+//     URL: https://github.com/RobTillaart/Correlation
 
 
 #include "Correlation.h"
@@ -42,13 +29,14 @@ Correlation::~Correlation()
 void Correlation::clear()
 {
   _count           = 0;
-  _idx             = 0;
+  _index           = 0;
   _needRecalculate = true;
   _runningMode     = false;
   _avgX            = 0;
   _avgY            = 0;
   _a               = 0;
   _b               = 0;
+  _div_b           = -1;  //  as 1/_b is undefined
   _r               = 0;
   _sumErrorSquare  = 0;
   _sumXiYi         = 0;
@@ -63,10 +51,10 @@ bool Correlation::add(float x, float y)
 {
   if ( (_count < _size) || _runningMode)
   {
-    _x[_idx] = x;
-    _y[_idx] = y;
-    _idx++;
-    if (_idx >= _size) _idx = 0;
+    _x[_index] = x;
+    _y[_index] = y;
+    _index++;
+    if (_index >= _size) _index = 0;
     if (_count < _size) _count++;
     _needRecalculate = true;
     return true;
@@ -80,21 +68,22 @@ bool Correlation::calculate(bool forced)
   if (_count == 0) return false;
   if (! (_needRecalculate || forced)) return true;
 
-  // CALC AVERAGE X, AVERAGE Y
+  //  CALC AVERAGE X, AVERAGE Y
   float avgx = 0;
   float avgy = 0;
+  float div_count = 1.0 / _count;  //  speed up averaging
   for (uint8_t i = 0; i < _count; i++)
   {
     avgx += _x[i];
     avgy += _y[i];
   }
-  avgx /= _count;
-  avgy /= _count;
+  avgx *= div_count;
+  avgy *= div_count;
 
   _avgX = avgx;
   _avgY = avgy;
 
-  // CALC A and B  ==>  formula  Y = A + B*X
+  //  CALC A and B  ==>  formula  Y = A + B * X
   float sumXiYi = 0;
   float sumXi2  = 0;
   float sumYi2  = 0;
@@ -111,14 +100,15 @@ bool Correlation::calculate(bool forced)
 
   _a       = a;
   _b       = b;
+  _div_b   = 1.0 / b;
   _sumXiYi = sumXiYi;
   _sumXi2  = sumXi2;
   _sumYi2  = sumYi2;
 
   if (_doR2 == true)
   {
-    // R is calculated instead of rSquared so we do not loose the sign.
-    // Rsquare  from R is much faster than R from Rsquare.
+    //  R is calculated instead of rSquared so we do not loose the sign.
+    //  Rsquared  from R is much faster than R from Rsquared.
     _r = sumXiYi / sqrt(sumXi2 * sumYi2);
   }
 
@@ -150,13 +140,13 @@ float Correlation::getEstimateX(float y)
 {
   if (_count == 0) return NAN;
   if (_needRecalculate) calculate();
-  return (y - _a) / _b;
+  return (y - _a) * _div_b;
 }
 
 
 //////////////////////////////////////////////////////
 //
-// STATISTICAL
+//  STATISTICAL
 //
 float Correlation::getMaxX()
 {
@@ -169,6 +159,7 @@ float Correlation::getMaxX()
   return rv;
 }
 
+
 float Correlation::getMinX()
 {
   if (_count == 0) return NAN;
@@ -179,6 +170,7 @@ float Correlation::getMinX()
   }
   return rv;
 }
+
 
 float Correlation::getMaxY()
 {
@@ -191,6 +183,7 @@ float Correlation::getMaxY()
   return rv;
 }
 
+
 float Correlation::getMinY()
 {
   if (_count == 0) return NAN;
@@ -202,45 +195,70 @@ float Correlation::getMinY()
   return rv;
 }
 
+
 //////////////////////////////////////////////////////
 //
-// DEBUGGING - access to internal arrays.
+//  DEBUGGING - access to internal arrays.
 //
-bool Correlation::setXY(uint8_t idx, float x, float y)
+bool Correlation::setXY(uint8_t index, float x, float y)
 {
-  if (idx >= _count) return false;
-  _x[idx] = x;
-  _y[idx] = y;
+  if (index >= _count) return false;
+  _x[index] = x;
+  _y[index] = y;
   _needRecalculate = true;
   return true;
 }
 
-bool Correlation::setX(uint8_t idx, float x)
+
+bool Correlation::setX(uint8_t index, float x)
 {
-  if (idx >= _count) return false;
-  _x[idx] = x;
+  if (index >= _count) return false;
+  _x[index] = x;
   _needRecalculate = true;
   return true;
 }
 
-float Correlation::getX(uint8_t idx)
+
+float Correlation::getX(uint8_t index)
 {
-  if (idx >= _count) return NAN;
-  return _x[idx];
+  if (index >= _count) return NAN;
+  return _x[index];
 }
 
-bool Correlation::setY(uint8_t idx, float y)
+
+bool Correlation::setY(uint8_t index, float y)
 {
-  if (idx >= _count) return false;
-  _y[idx] = y;
+  if (index >= _count) return false;
+  _y[index] = y;
   _needRecalculate = true;
   return true;
 }
 
-float Correlation::getY(uint8_t idx)
+
+float Correlation::getY(uint8_t index)
 {
-  if (idx > _count) return NAN;
-  return _y[idx];
+  if (index > _count) return NAN;
+  return _y[index];
 }
 
-// -- END OF FILE --
+
+float  Correlation::getSumXY()
+{
+  return _sumXiYi;
+}
+
+
+float  Correlation::getSumX2()
+{
+  return _sumXi2;
+}
+
+
+float  Correlation::getSumY2()
+{
+  return _sumYi2;
+}
+
+
+//  -- END OF FILE --
+

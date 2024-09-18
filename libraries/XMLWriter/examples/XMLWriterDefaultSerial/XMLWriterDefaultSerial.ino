@@ -1,17 +1,17 @@
 //
 //    FILE: XMLWriterDefaultSerial.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: make a simple XML generating lib
 //    DATE: 2020-04-24
 //     URL: https://github.com/RobTillaart/XMLWriter
-//
+
 
 #include <XMLWriter.h>
 
 XMLWriter XML;
 
 char buffer[24];
+
 
 void setup()
 {
@@ -33,11 +33,13 @@ void setup()
   DataTypes();
 
   XML.tagClose();
+  XML.flush();
 
   uint32_t stop = micros();
   Serial.println();
   Serial.println(stop - start);
 }
+
 
 void Weather2()
 {
@@ -55,6 +57,7 @@ void Weather2()
   }
 }
 
+
 void Weather()
 {
   XML.comment("The weather in Nebraska");
@@ -67,6 +70,7 @@ void Weather()
   XML.writeNode("Sun", "40");
   XML.tagClose();
 }
+
 
 // casting to keep some compilers happy
 void AnalogPorts(const char* name)
@@ -81,6 +85,7 @@ void AnalogPorts(const char* name)
   XML.tagClose();
 }
 
+
 // casting to keep some compilers happy
 void DigitalPorts()
 {
@@ -90,6 +95,7 @@ void DigitalPorts()
   XML.writeNode("D13", (uint8_t) digitalRead(13));
   XML.tagClose();
 }
+
 
 void DataTypes()
 {
@@ -118,8 +124,11 @@ void DataTypes()
   }
 }
 
+
 void loop()
 {
 }
 
+
 // -- END OF FILE --
+

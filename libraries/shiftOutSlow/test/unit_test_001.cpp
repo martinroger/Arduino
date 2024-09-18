@@ -28,16 +28,18 @@
 #include "ShiftOutSlow.h"
 
 
-// PATCH FOR DUE & ZERO FOR UNIT TEST - https://github.com/Arduino-CI/arduino_ci/issues/252
+//  PATCH FOR DUE & ZERO FOR UNIT TEST - https://github.com/Arduino-CI/arduino_ci/issues/252
 #if defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
-// - due         #  ARDUINO_ARCH_SAM    does not support shiftIn apparently
-// - zero        #  ARDUINO_ARCH_SAMD
+//  - due         #  ARDUINO_ARCH_SAM    does not support shiftIn apparently
+//  - zero        #  ARDUINO_ARCH_SAMD
 #endif
 
 
 unittest_setup()
 {
+  fprintf(stderr, "SHIFTOUTSLOW_LIB_VERSION:\t%s\n", (char *) SHIFTOUTSLOW_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
@@ -48,13 +50,15 @@ unittest(test_constructor)
 {
   ShiftOutSlow SOS(12, 13);
 
-  fprintf(stderr, "VERSION:\t%s\n", SHIFTOUTSLOW_LIB_VERSION);
   assertEqual(1, SOS.write(65));
   assertEqual(65, SOS.lastWritten());
   assertEqual(LSBFIRST, SOS.getBitOrder());
 
   SOS.setBitOrder(MSBFIRST);
   assertEqual(MSBFIRST, SOS.getBitOrder());
+
+  SOS.setBitOrder();
+  assertEqual(LSBFIRST, SOS.getBitOrder());
 }
 
 
@@ -62,7 +66,6 @@ unittest(test_constructor_LSB)
 {
   ShiftOutSlow SOS(12, 13, LSBFIRST);
 
-  fprintf(stderr, "VERSION:\t%s\n", SHIFTOUTSLOW_LIB_VERSION);
   assertEqual(1, SOS.write(65));
   assertEqual(65, SOS.lastWritten());
   assertEqual(LSBFIRST, SOS.getBitOrder());
@@ -76,7 +79,6 @@ unittest(test_constructor_MSB)
 {
   ShiftOutSlow SOS(12, 13, MSBFIRST);
 
-  fprintf(stderr, "VERSION:\t%s\n", SHIFTOUTSLOW_LIB_VERSION);
   assertEqual(1, SOS.write(65));
   assertEqual(65, SOS.lastWritten());
   assertEqual(MSBFIRST, SOS.getBitOrder());
@@ -90,12 +92,13 @@ unittest(test_setDelay)
 {
   ShiftOutSlow SOS(12, 13);
 
-  fprintf(stderr, "VERSION:\t%s\n", SHIFTOUTSLOW_LIB_VERSION);
   for (uint16_t d = 0; d < 1000; d += 100)
   {
     SOS.setDelay(d);
     assertEqual(d, SOS.getDelay());
   }
+  SOS.setDelay();
+  assertEqual(0, SOS.getDelay());
 }
 
 
@@ -103,7 +106,6 @@ unittest(test_print_interface)
 {
   ShiftOutSlow SOS(12, 13);
 
-  fprintf(stderr, "VERSION:\t%s\n", SHIFTOUTSLOW_LIB_VERSION);
   int x = SOS.print("hello world");
   assertEqual(11, x);
 
@@ -116,6 +118,9 @@ unittest(test_print_interface)
   assertEqual(8, z);
 }
 
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

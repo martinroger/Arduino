@@ -1,12 +1,10 @@
 //
 //    FILE: SHT85_demo_plotter.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
 // PURPOSE: demo
 //     URL: https://github.com/RobTillaart/SHT85
-
-
-// TOPVIEW
+//
+// TOPVIEW SHT85  (check datasheet)
 //            +-------+
 // +-----\    | SDA 4 -----
 // | +-+  ----+ GND 3 -----
@@ -14,9 +12,10 @@
 // +-----/    | SCL 1 -----
 //            +-------+
 
+
 #include "SHT85.h"
 
-#define SHT85_ADDRESS   0x44
+#define SHT85_ADDRESS       0x44
 
 uint32_t start;
 uint32_t stop;
@@ -24,7 +23,8 @@ uint32_t stop;
 uint16_t count = 0;
 uint32_t last = 0;
 
-SHT85 sht;
+//  SHT85 sht(SHT85_ADDRESS, &Wire1);
+SHT85 sht(SHT85_ADDRESS);
 
 
 void setup()
@@ -35,8 +35,8 @@ void setup()
   //  Serial.println(SHT_LIB_VERSION);
 
   Wire.begin();
-  sht.begin(SHT85_ADDRESS);
   Wire.setClock(100000);
+  sht.begin();
 
   //  uint16_t stat = sht.readStatus();
   //  Serial.print(stat, HEX);
@@ -48,7 +48,7 @@ void setup()
 void loop()
 {
   start = micros();
-  sht.read();         // default = true/fast       slow = false
+  sht.read();         //  default = true/fast       slow = false
   stop = micros();
 
   Serial.print("\t");
@@ -59,7 +59,7 @@ void loop()
   Serial.print(sht.getTemperature(), 2);
   Serial.print("\t");
   Serial.println(sht.getHumidity(), 2);
-  if (millis() - last >= 100)
+  if (millis() - last >= 1000)
   {
     last = millis();
     count = 0;
@@ -67,4 +67,4 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

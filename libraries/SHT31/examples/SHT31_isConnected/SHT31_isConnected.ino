@@ -1,7 +1,6 @@
 //
 //    FILE: SHT31_isConnected.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo  (needs 0.2.4 or up)
 //     URL: https://github.com/RobTillaart/SHT31
 
@@ -14,7 +13,8 @@
 uint32_t start;
 uint32_t stop;
 
-SHT31 sht;
+SHT31 sht;  //  use default address and Wire
+
 uint32_t connectionFails = 0;
 
 
@@ -26,8 +26,8 @@ void setup()
   Serial.println(SHT31_LIB_VERSION);
 
   Wire.begin();
-  sht.begin(SHT31_ADDRESS);
   Wire.setClock(100000);
+  sht.begin();
 
   uint16_t stat = sht.readStatus();
   Serial.print(stat, HEX);
@@ -40,11 +40,21 @@ void loop()
   if ( sht.isConnected()  )
   {
     start = micros();
-    sht.read();         // default = true/fast       slow = false
+    bool b = sht.read();         //  default = true/fast       slow = false
     stop = micros();
+
+    int error = sht.getError();
+    uint16_t stat = sht.readStatus();
+
     Serial.print(millis());
     Serial.print("\t");
     Serial.print(stop - start);
+    Serial.print("\t");
+    Serial.print(b, HEX);
+    Serial.print("\t");
+    Serial.print(error, HEX);
+    Serial.print("\t");
+    Serial.print(stat, HEX);
     Serial.print("\t");
     Serial.print(sht.getTemperature(), 1);
     Serial.print("\t");
@@ -59,8 +69,9 @@ void loop()
     // sht.reset();
   }
   Serial.println();
-  delay(100);
+  delay(1000);
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

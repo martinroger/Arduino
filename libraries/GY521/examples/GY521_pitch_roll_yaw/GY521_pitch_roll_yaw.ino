@@ -1,20 +1,25 @@
 //
 //    FILE: GY521_pitch_roll_yaw.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: demo PRY
-//    DATE: 2020-08-06
+// PURPOSE: demo pitch roll yaw
+//     URL: https://github.com/RobTillaart/GY521
+
 
 #include "GY521.h"
 
-GY521 sensor(0x69);
+GY521 sensor(0x68);
 
 uint32_t counter = 0;
+
 
 void setup()
 {
   Serial.begin(115200);
+  Serial.println();
   Serial.println(__FILE__);
+  Serial.print("GY521_LIB_VERSION: ");
+  Serial.println(GY521_LIB_VERSION);
+  Serial.println("warning: Pitch roll yaw is work in progress.");
 
   Wire.begin();
 
@@ -22,23 +27,29 @@ void setup()
   while (sensor.wakeup() == false)
   {
     Serial.print(millis());
-    Serial.println("\tCould not connect to GY521");
+    Serial.println("\tCould not connect to GY521: please check the GY521 address (0x68/0x69)");
     delay(1000);
   }
-  sensor.setAccelSensitivity(2);  // 8g
-  sensor.setGyroSensitivity(1);   // 500 degrees/s
 
+  sensor.setAccelSensitivity(2);  //  8g
+  sensor.setGyroSensitivity(1);   //  500 degrees/s
   sensor.setThrottle();
   Serial.println("start...");
-  
-  // set callibration values from calibration sketch.
-  sensor.axe = 0;
-  sensor.aye = 0;
-  sensor.aze = 0;
-  sensor.gxe = 0;
-  sensor.gye = 0;
-  sensor.gze = 0;
+
+  // uint32_t startCalibrate = micros();
+  sensor.calibrate(100);
+  //  Serial.print("Duration: ");
+  //  Serial.println(micros() - startCalibrate);
+
+  //  set calibration values from calibration sketch.
+  //  sensor.axe = 0.574;
+  //  sensor.aye = -0.002;
+  //  sensor.aze = -1.043;
+  //  sensor.gxe = 10.702;
+  //  sensor.gye = -6.436;
+  //  sensor.gze = -0.676;
 }
+
 
 void loop()
 {
@@ -64,4 +75,6 @@ void loop()
   counter++;
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

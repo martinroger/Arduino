@@ -30,36 +30,55 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "HT16K33_LIB_VERSION: %s\n", (char *) HT16K33_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-/*
-unittest(test_new_operator)
-{
-  assertEqualINF(exp(800));
-  assertEqualINF(0.0/0.0);
-  assertEqualINF(42);
-  
-  assertEqualNAN(INFINITY - INFINITY);
-  assertEqualNAN(0.0/0.0);
-  assertEqualNAN(42);
-}
-*/
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", HT16K33_LIB_VERSION);
-
   HT16K33 seg(0x70);
 
+  Wire.begin();
   fprintf(stderr, "None of the functions return anything...\n");
 
   assertEqual(1, 1);
 }
 
+
+unittest(test_constants)
+{
+  assertEqual(HT16K33_0     ,  0);
+  assertEqual(HT16K33_1     ,  1);
+  assertEqual(HT16K33_2     ,  2);
+  assertEqual(HT16K33_3     ,  3);
+  assertEqual(HT16K33_4     ,  4);
+  assertEqual(HT16K33_5     ,  5);
+  assertEqual(HT16K33_6     ,  6);
+  assertEqual(HT16K33_7     ,  7);
+  assertEqual(HT16K33_8     ,  8);
+  assertEqual(HT16K33_9     ,  9);
+  assertEqual(HT16K33_A     ,  10);
+  assertEqual(HT16K33_B     ,  11);
+  assertEqual(HT16K33_C     ,  12);
+  assertEqual(HT16K33_D     ,  13);
+  assertEqual(HT16K33_E     ,  14);
+  assertEqual(HT16K33_F     ,  15);
+  assertEqual(HT16K33_SPACE ,  16);
+  assertEqual(HT16K33_MINUS ,  17);
+  assertEqual(HT16K33_TOP_C ,  18);
+  assertEqual(HT16K33_DEGREE,  19);
+
+  assertEqual(HT16K33_NONE  ,  99);
+}
+
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

@@ -1,20 +1,13 @@
 //
 //    FILE: I2Ckeypad_demo02.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
 // PURPOSE: demo
 //     URL: https://github.com/RobTillaart/I2CKeyPad
 //
-//  HISTORY:
-//  2019-10-01  0.0.1  initial version
-//  2020-06-26  0.1.0  updated with lib
-//  2021-05-06  0.2.0  updated with lib
-
-
-// PCF8574
+//  PCF8574
 //    pin p0-p3 rows
-//    pin p4-p7 colums
-// 4x4 or smaller keypad.
+//    pin p4-p7 columns
+//  4x4 or smaller keypad.
 
 
 #include "Wire.h"
@@ -51,27 +44,29 @@ void loop()
   {
     lastKeyPressed = now;
 
-    bool c = keyPad.isConnected();
-    bool b = keyPad.isPressed();
-    uint8_t lk = keyPad.getLastKey();
-    
+    bool connected  = keyPad.isConnected();
+    bool pressed    = keyPad.isPressed();
+    uint8_t lastKey = keyPad.getLastKey();
+
     start = micros();
-    uint8_t idx = keyPad.getKey();
+    uint8_t index = keyPad.getKey();
     stop = micros();
     Serial.print(millis());
     Serial.print("\t");
-    Serial.print(idx);
+    Serial.print(index);
     Serial.print("\t");
-    Serial.print((char)"123A456B789C*0#DNF"[idx]);  // Nokey, Fail
+    Serial.print((char)"123A456B789C*0#DNF"[index]);  //  NoKey, Fail
     Serial.print("\t");
-    Serial.print(lk);
+    Serial.print(lastKey);
     Serial.print("\t");
-    Serial.print(b?"True":"False");
+    Serial.print(pressed ? "True" : "False");
     Serial.print("\t");
-    Serial.print(c?"True":"False");
+    Serial.print(connected ? "True" : "False");
     Serial.print("\t");
     Serial.println(stop - start);
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

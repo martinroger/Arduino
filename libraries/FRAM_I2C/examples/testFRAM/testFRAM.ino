@@ -1,14 +1,12 @@
 //
 //    FILE: testFRAM.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: test for FRAM library for Arduino
 //     URL: https://github.com/RobTillaart/FRAM_I2C
-//
-// Released to the public domain
-//
+
 
 #include "FRAM.h"
+
 
 FRAM fram;
 
@@ -43,6 +41,7 @@ void setup()
   Serial.println("done...");
 }
 
+
 void loop()
 {
 }
@@ -52,17 +51,16 @@ void testID()
 {
   Serial.println();
   Serial.println(__FUNCTION__);
-  Serial.println("takes ~32 seconds");
-
   Serial.print("ManufacturerID: ");
   Serial.println(fram.getManufacturerID());
   Serial.print("     ProductID: ");
   Serial.println(fram.getProductID());
-  Serial.print("    memory size: ");
+  Serial.print("     memory KB: ");
   Serial.println(fram.getSize());
 
   Serial.println();
 }
+
 
 void testFRAMmemory()
 {
@@ -92,6 +90,7 @@ void testFRAMmemory()
   Serial.println(" ms");
   Serial.println();
 }
+
 
 void testReadWriteSmall()
 {
@@ -136,6 +135,7 @@ void testReadWriteSmall()
   Serial.println();
 }
 
+
 void testReadWriteLarge()
 {
   Serial.println();
@@ -171,6 +171,7 @@ void testReadWriteLarge()
   Serial.println();
 }
 
+
 void testWriteText()
 {
   char str[10][20] =
@@ -196,8 +197,8 @@ void testWriteText()
   Serial.print(stop - start);
   Serial.println(" ms");
   Serial.println();
-
 }
+
 
 void testReadText1()
 {
@@ -221,6 +222,7 @@ void testReadText1()
   Serial.println();
 }
 
+
 void testReadText2()
 {
   char str[20];
@@ -237,4 +239,4 @@ void testReadText2()
 }
 
 
-// END OF FILE
+//  -- END OF FILE --

@@ -1,26 +1,26 @@
 //
 //    FILE: printCharArray3.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo with XML writer
 //     URL: https://github.com/RobTillaart/PrintCharArray
-//
-//  HISTORY:
-//  0.1.0   2017-12-09  initial version
-//  0.1.1   2020-04-30  minor refactor
-//  0.3.0   2021-01-06  free() -> available()
+//          https://github.com/RobTillaart/XMLWriter
+
 
 #include "PrintCharArray.h"
 
-#include "XMLWriter.h"    //   https://github.com/RobTillaart/XMLWriter
+#include "XMLWriter.h"          //  https://github.com/RobTillaart/XMLWriter
 
 PrintCharArray ps(250);
 XMLWriter XML(&ps);
+
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PRINTCHARARRAY_VERSION: ");
+  Serial.println(PRINTCHARARRAY_VERSION);
+  Serial.println();
 
   ps.clear();
 
@@ -36,15 +36,16 @@ void setup()
   XML.tagClose();
   XML.flush();
 
-  // write the XML generated in one call
+  //  write the XML generated in one call
   Serial.println(ps.getBuffer());
   Serial.println(ps.available());
-
 }
+
 
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

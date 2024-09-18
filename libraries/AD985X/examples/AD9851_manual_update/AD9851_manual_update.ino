@@ -1,14 +1,15 @@
 //
 //    FILE: AD9851_manual update.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
+//     URL: https://github.com/RobTillaart/AD985X
 
 
 #include "AD985X.h"
 
 
-AD9851 freqGen;
+AD9851 freqGen(10, 9, 8, 7, 6);  //  SW SPI
+//  AD9851 freqGen(10, 9, 8, &SPI, 6);  //  HW SPI
 
 uint32_t freq    = 0;
 uint32_t maxFreq = 2000000UL;
@@ -17,6 +18,7 @@ bool up = true;
 
 uint32_t lastUpdate = 0;
 
+
 void setup()
 {
   Serial.begin(115200);
@@ -24,7 +26,9 @@ void setup()
   Serial.print("AD985X_LIB_VERSION: \t");
   Serial.println(AD985X_LIB_VERSION);
 
-  freqGen.begin(10, 9, 8, 7, 6);
+  // SPI.begin();  //  HW SPI
+
+  freqGen.begin();
   freqGen.powerUp();
   freqGen.setAutoRefClock(true);
 
@@ -55,8 +59,8 @@ void loop()
   }
   freqGen.setFrequency(freq);
 
-  // only update once per second
-  // effectively have a random frequency
+  //  only update once per second
+  //  effectively have a random frequency
   if (millis() - lastUpdate >= 1000)
   {
     lastUpdate = millis();
@@ -67,4 +71,6 @@ void loop()
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

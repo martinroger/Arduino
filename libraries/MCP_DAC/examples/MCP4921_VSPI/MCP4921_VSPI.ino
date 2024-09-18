@@ -1,19 +1,22 @@
 //
 //    FILE: MCP4921_VSPI.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: test MCP4921 lib
-//    DATE: 2021-07-31
-//     URL: https://github.com/RobTillaart/MCP4921
-//
+// PURPOSE: test MCP_DAC lib
+//     URL: https://github.com/RobTillaart/MCP_DAC
+
 
 #ifndef ESP32
 #error ESP32 only example, please select appropriate board
 #endif
 
+
 #include "MCP_DAC.h"
 
-MCP4921 MCP;  // HW SPI
+
+//  HSPI uses default   SCLK=14, MISO=12, MOSI=13, SELECT=15
+//  VSPI uses default   SCLK=18, MISO=19, MOSI=23, SELECT=5
+SPIClass * myspi = new SPIClass(VSPI);
+MCP4921 MCP(myspi);  // HW SPI
 
 
 volatile int x;
@@ -25,14 +28,10 @@ void setup()
   Serial.begin(115200);
   Serial.println(__FILE__);
 
-  MCP.selectVSPI();     // needs to be called before begin()
-                        // uses default HSPI SCLK=14, MISO=12, MOSI=13, SELECT=15
-                        // uses default VSPI SCLK=18, MISO=19, MOSI=23, SELECT=5
-  MCP.begin(5);         // 5 for VSPI and 15 for HSPI
+  myspi->begin();
 
-  // experimental
-  // MCP.setGPIOpins(23, 18, 19, 15);  //  CLK MISO MOSI SELECT
-  
+  MCP.begin(5);         //  5 for VSPI and 15 for HSPI
+
   Serial.print("MCP_DAC_LIB_VERSION: ");
   Serial.println(MCP_DAC_LIB_VERSION);
   Serial.println();
@@ -42,7 +41,7 @@ void setup()
   Serial.println(MCP.maxValue());
   delay(100);
 
-  // MCP.setSPIspeed(100000);  // for slower scopes
+  // MCP.setSPIspeed(100000);  //  for slower scopes
   performance_test();
 
   Serial.println("\nDone...");
@@ -57,11 +56,11 @@ void performance_test()
   start = micros();
   for (uint16_t value = 0; value < MCP.maxValue(); value++)
   {
-    x = MCP.analogWrite(value, 0);
+    x = MCP.write(value, 0);
   }
   stop = micros();
   Serial.print(MCP.maxValue());
-  Serial.print(" x MCP.analogWrite():\t");
+  Serial.print(" x MCP.write():\t");
   Serial.print(stop - start);
   Serial.print("\t");
   Serial.println((stop - start) / (MCP.maxValue() + 1.0) );
@@ -88,4 +87,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

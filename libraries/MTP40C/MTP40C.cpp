@@ -1,29 +1,25 @@
 //
-//    FILE: MTP40C.h
+//    FILE: MTP40C.cpp
 //  AUTHOR: Rob Tillaart
 //    DATE: 2021-08-20
-// VERSION: 0.2.0
+// VERSION: 0.3.1
 // PURPOSE: Arduino library for MTP40C MTP40D CO2 sensor
 //     URL: https://github.com/RobTillaart/MTP40C
-//
-// HISTORY:
-//  0.1.0   2021-08-20  initial version
-//  0.1.1   2021-08-23  added examples, minor fixes
-//  0.2.0   2021-08-27  added MTP40D derived class
-//                      + many fixes after testing
+
 
 
 #include "MTP40C.h"
 
-// debug flag, development.
-// #define MTP40_DEBUG    1
+//  debug flag, development.
+//  #define MTP40_DEBUG    1
 
 
 
-MTP40::MTP40(Stream * str)
+MTP40::MTP40(Stream * stream)
 {
-  _ser = str;
+  _ser = stream;
   _buffer[0] = '\0';
+  _type = 0xFF;
 }
 
 
@@ -89,7 +85,7 @@ float MTP40::getAirPressureReference()
 
   _lastError = MTP40_OK;
 
-  // max read freq 1x per 4 seconds
+  //  max read freq 1x per 4 seconds
   if (millis() - _lastRead < 4000) return _airPressureReference;  // last value
   _lastRead = millis();
 
@@ -136,26 +132,32 @@ bool MTP40::setAirPressureReference(float apr)
 
 uint16_t MTP40::getGasConcentration()
 {
-
   _lastError = MTP40_OK;
 
-  // max read freq 1x per 4 seconds
-  if (millis() - _lastRead < 4000) return _gasLevel;  // last value
+  //  max read freq 1x per 4 seconds
+  if (millis() - _lastRead < 4000)
+  {
+    return _gasLevel;  //  last value
+  }
   _lastRead = millis();
 
   uint8_t cmd[5] = { 0xFE, 0x69, 0x03, 0x7E, 0x61 };
   if (request(cmd, 5, 14) )
   {
-    // check valid
+    //  check valid
     for (uint8_t i = 8; i < 12; i++)
     {
-      if (_buffer[i] != 0) return 0;
+      if (_buffer[i] != 0)
+      {
+        _lastError = MTP40_INVALID_GAS_LEVEL;
+        if (_suppressError) return _gasLevel;
+        return _lastError;
+      }
     }
-    _gasLevel = _buffer[5] *256 + _buffer[4];
+    _gasLevel = _buffer[5] * 256 + _buffer[4];
     return _gasLevel;
   }
-
-  _lastError = MTP40_INVALID_GAS_LEVEL;
+  _lastError = MTP40_REQUEST_FAILED;
   if (_suppressError) return _gasLevel;
   return _lastError;
 }
@@ -163,7 +165,10 @@ uint16_t MTP40::getGasConcentration()
 
 bool MTP40::setSinglePointCorrection(float spc)
 {
-  if ((spc < 400) || (spc > 5000)) return false;
+  if ((spc < 400) || (spc > 5000))
+  {
+    return false;
+  }
 
   union
   {
@@ -218,23 +223,23 @@ bool MTP40::closeSelfCalibration()
 }
 
 
-uint8_t MTP40::getSelfCalibrationStatus()
+uint16_t MTP40::getSelfCalibrationStatus()
 {
   uint8_t cmd[5] = { 0xFE, 0x28, 0x67, 0x4F, 0xDA };
   if (request(cmd, 5, 6) )
   {
     return _buffer[3];
   }
-  return 0x02;
+  return MTP40_REQUEST_FAILED;
 }
 
 
-bool MTP40::setSelfCalibrationHours(uint16_t hrs)
+bool MTP40::setSelfCalibrationHours(uint16_t hours)
 {
-  if ((hrs < 24) || (hrs > 720)) return false;
+  if ((hours < 24) || (hours > 720)) return false;
   uint8_t cmd[7] = { 0xFE, 0x28, 0x6A, 0x64, 0x00, 0x0E, 0xA8 };
-  cmd[4] = hrs & 0xFF;
-  cmd[5] = hrs / 256;
+  cmd[4] = hours & 0xFF;
+  cmd[5] = hours / 256;
   if (request(cmd, 7, 6) )
   {
     return (_buffer[3] == 0x00);
@@ -250,7 +255,8 @@ uint16_t MTP40::getSelfCalibrationHours()
   {
     return _buffer[4] * 256 + _buffer[3];
   }
-  return 0xFFFF;  // to indicate error.
+  _lastError = MTP40_REQUEST_FAILED;
+  return _lastError;
 }
 
 
@@ -265,20 +271,20 @@ int MTP40::lastError()
 
 //////////////////////////////////////////////////////////////////////
 //
-// PRIVATE
+//  PROTECTED
 //
 bool MTP40::request(uint8_t *data, uint8_t commandLength, uint8_t answerLength)
 {
-  // generic or specific address
+  //  generic or specific address
   if (_useAddress)
   {
     data[0] = _address;
   }
   else
   {
-    data[0] = 0xFE;  // broadcast
+    data[0] = 0xFE;     //  broadcast
   }
-  // calculate CRC of command
+  //  calculate CRC of command
   uint16_t crc = CRC(data, commandLength - 2);
   data[commandLength - 1] = crc / 256;
   data[commandLength - 2] = crc & 0xFF;
@@ -291,7 +297,7 @@ bool MTP40::request(uint8_t *data, uint8_t commandLength, uint8_t answerLength)
 #else
     _ser->write(*data++);
 #endif
-     yield();  // because baud rate is low!
+     yield();   //  because baud rate is low!
   }
 
   uint32_t start = millis();
@@ -305,15 +311,83 @@ bool MTP40::request(uint8_t *data, uint8_t commandLength, uint8_t answerLength)
       i++;
       answerLength--;
     }
-    yield();  // because baud rate is low!
+    yield();  //  because baud rate is low!
   }
   return true;
 }
 
 
-// from datasheet
+/////////////////////////////////////////////////////////////
+//
+//  CRC
+//
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_MEGAAVR)
+
+//  derived from https://github.com/RobTillaart/CRC 0.3.3
+uint16_t MTP40::CRC(uint8_t *array, uint16_t length)
+{
+  //    parameters           MODBUS
+  const uint16_t polynome  = 0x8005;
+  const uint16_t startmask = 0xFFFF;
+  const uint16_t endmask   = 0x0000;
+  const bool reverseIn     = true;
+  const bool reverseOut    = true;
+
+  //  start
+  uint16_t crc = startmask;
+  while (length--)
+  {
+    if ((length & 0xFF) == 0) yield();  // RTOS
+
+    uint8_t data = *array++;
+    if (reverseIn) data = reverse8(data);
+    crc ^= ((uint16_t)data) << 8;
+    for (uint8_t i = 8; i; i--)
+    {
+      if (crc & (1 << 15))
+      {
+        crc <<= 1;
+        crc ^= polynome;
+      }
+      else
+      {
+        crc <<= 1;
+      }
+    }
+  }
+  if (reverseOut) crc = reverse16(crc);
+  crc ^= endmask;
+  return crc;
+}
+
+uint8_t MTP40::reverse8(uint8_t in)
+{
+  uint8_t x = in;
+  x = (((x & 0xAA) >> 1) | ((x & 0x55) << 1));
+  x = (((x & 0xCC) >> 2) | ((x & 0x33) << 2));
+  x =          ((x >> 4) | (x << 4));
+  return x;
+}
+
+uint16_t MTP40::reverse16(uint16_t in)
+{
+  uint16_t x = in;
+  x = (((x & 0XAAAA) >> 1) | ((x & 0X5555) << 1));
+  x = (((x & 0xCCCC) >> 2) | ((x & 0X3333) << 2));
+  x = (((x & 0xF0F0) >> 4) | ((x & 0X0F0F) << 4));
+  x = (( x >> 8) | (x << 8));
+  return x;
+}
+
+#else
+
+//  from datasheet
 uint16_t MTP40::CRC(uint8_t *data, uint16_t len)
 {
+  //  auchCRCHi contains 2 repeating patterns
+  //  0x00, 0xC1, 0x81, 0x40
+  //  0x01, 0xC0, 0x80, 0x41
+  //  check CRC lib MODBUS polynome (slower and smaller).
 const uint8_t auchCRCHi[] = {
   0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81,
   0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
@@ -357,14 +431,14 @@ const uint8_t auchCRCLo[] = {
   0x40
 };
 
-  uint8_t  uchCRCHi = 0xFF ; // High byte initialization of the CRC
-  uint8_t  uchCRCLo = 0xFF ; // The low byte of the CRC is initialized
-  uint16_t uIndex;           // Query the CRC table index
+  uint8_t  uchCRCHi = 0xFF ; //  High byte initialization of the CRC
+  uint8_t  uchCRCLo = 0xFF ; //  The low byte of the CRC is initialized
+  uint16_t uIndex;           //  Query the CRC table index
   uint16_t crc;
 
-  while (len--) /* Complete the entire message buffer*/
+  while (len--)               //  Complete the entire message buffer
   {
-    uIndex   = uchCRCLo ^ *data++;            /* Calculate CRC */;
+    uIndex   = uchCRCLo ^ *data++;            //  Calculate CRC
     uchCRCLo = uchCRCHi ^ auchCRCHi[uIndex];
     uchCRCHi = auchCRCLo[uIndex];
   }
@@ -373,12 +447,13 @@ const uint8_t auchCRCLo[] = {
   return crc;
 }
 
+#endif
+
 
 /////////////////////////////////////////////////////////////
 //
-// DERIVED CLASSES
+//  DERIVED CLASSES
 //
-
 MTP40C::MTP40C(Stream * str) : MTP40(str)
 {
   _type = 2;
@@ -391,5 +466,5 @@ MTP40D::MTP40D(Stream * str) : MTP40(str)
 };
 
 
+//  -- END OF FILE --
 
-// -- END OF FILE --

@@ -1,27 +1,24 @@
 //
 //    FILE: INA226_dump_registers.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2021-06-21
 //     URL: https://github.com/RobTillaart/INA226
-
-/*
-   expected output something like
-
-    REGISTER      VALUE   VALUE_X
-  -----------------------------------
-  CONFIGURATION:  16679   4127
-          SHUNT:  65533   FFFD
-    BUS VOLTAGE:  2       2
-          POWER:  0       0
-        CURRENT:  0       0
-    CALIBRATION:  0       0
-*/
+//
+//     expected output something like
+//
+//      REGISTER      VALUE   VALUE_X
+//    -----------------------------------
+//    CONFIGURATION:  16679   4127
+//            SHUNT:  65533   FFFD
+//      BUS VOLTAGE:  2       2
+//            POWER:  0       0
+//          CURRENT:  0       0
+//      CALIBRATION:  0       0
+//
 
 
 #include "INA226.h"
-#include "Wire.h"
+
 
 INA226 INA(0x40);
 
@@ -36,10 +33,13 @@ char names[6][20] =
   "  CALIBRATION: "
 };
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("INA226_LIB_VERSION: ");
+  Serial.println(INA226_LIB_VERSION);
 
   Wire.begin();
   if (!INA.begin() )
@@ -67,5 +67,5 @@ void loop()
 }
 
 
+//  -- END OF FILE --
 
-// -- END OF FILE --

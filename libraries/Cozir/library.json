@@ -18,8 +18,9 @@
     "type": "git",
     "url": "https://github.com/RobTillaart/Cozir.git"
   },
-  "version": "0.3.0",
+  "version": "0.3.8",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "cozir.h"
 }

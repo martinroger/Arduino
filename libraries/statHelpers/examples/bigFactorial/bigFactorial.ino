@@ -1,14 +1,13 @@
 //
 //    FILE: bigFactorial.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2021-08-05
 //     URL: https://github.com/RobTillaart/statHelpers
 
 
 #include "statHelpers.h"
-#include "printHelpers.h"  // to print large numbers....
+#include "printHelpers.h"  //  to print large numbers ...
 
 
 uint32_t start, duration1, duration2, duration3;
@@ -18,6 +17,9 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("STATHELPERS_LIB_VERSION: ");
+  Serial.println(STATHELPERS_LIB_VERSION);
+  Serial.println();
 
   uint32_t m    = 10000001;
   double   mant = 0;
@@ -72,8 +74,11 @@ void setup()
   Serial.println("\n Done...");
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

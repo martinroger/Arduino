@@ -1,14 +1,15 @@
 //
 //    FILE: AD9851_six_potmeter.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
+//     URL: https://github.com/RobTillaart/AD985X
 
 
 #include "AD985X.h"
 
 
-AD9851 freqGen; 
+AD9851 freqGen(10, 9, 8, 7, 6);  //  SW SPI
+//  AD9851 freqGen(10, 9, 8, &SPI, 6);  //  HW SPI
 
 
 void setup()
@@ -18,7 +19,9 @@ void setup()
   Serial.print("AD985X_LIB_VERSION: \t");
   Serial.println(AD985X_LIB_VERSION);
 
-  freqGen.begin(10, 9, 8, 7, 6);
+  // SPI.begin();  //  HW SPI
+
+  freqGen.begin();
 }
 
 
@@ -46,4 +49,4 @@ float readFreq(bool KHZ)
   return freq;
 }
 
-// END OF FILE
+//  -- END OF FILE --

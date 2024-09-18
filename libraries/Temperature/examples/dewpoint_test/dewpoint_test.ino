@@ -1,7 +1,6 @@
 //
 //    FILE: dewpoint_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-04-04
 
@@ -16,10 +15,14 @@ uint32_t duration2;
 float maxError;
 volatile float dp;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("TEMPERATURE_LIB_VERSION: ");
+  Serial.println(TEMPERATURE_LIB_VERSION);
+  Serial.println();
   Serial.println("takes ~40 seconds");
 
   Serial.println(dewPoint(25, 50), 2);
@@ -68,9 +71,11 @@ void setup()
   Serial.print("Done...");
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

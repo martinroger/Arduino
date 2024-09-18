@@ -1,34 +1,36 @@
 //
 //    FILE: dhtnew_minimum.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
 // PURPOSE: DHTNEW library test sketch
 //     URL: https://github.com/RobTillaart/DHTNew
-//
-// HISTORY:
-// 0.1.0    2018-01-08 initial version
-// 0.1.1    2020-04-30 replaced humidity and temperature with functions
-// 0.1.2    2020-06-15 match 0.3.0 error handling
-//
-// DHT PIN layout from left to right
-// =================================
-// FRONT : DESCRIPTION  
-// pin 1 : VCC
-// pin 2 : DATA
-// pin 3 : Not Connected
-// pin 4 : GND
+
+//  DHT PIN layout from left to right
+//  =================================
+//  FRONT : DESCRIPTION  
+//  pin 1 : VCC
+//  pin 2 : DATA
+//  pin 3 : Not Connected
+//  pin 4 : GND
+
 
 #include <dhtnew.h>
 
-DHTNEW mySensor(16);
+DHTNEW mySensor(5);   //  ESP 16    UNO 5    MKR1010 5
+
 
 void setup()
 {
+  while(!Serial);     //  MKR1010 needs this
+
   Serial.begin(115200);
   Serial.println(__FILE__);
   Serial.println();
 
+  //  MKR1010 needs this
+  //  mySensor.setDisableIRQ(false);
+
   Serial.println("BEFORE OFFSET");
+  delay(2000);
   mySensor.read();
   Serial.print(mySensor.getHumidity(), 1);
   Serial.print("\t");
@@ -39,6 +41,7 @@ void setup()
 
   Serial.println("AFTER OFFSET");
 }
+
 
 void loop()
 {
@@ -51,4 +54,6 @@ void loop()
   }
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

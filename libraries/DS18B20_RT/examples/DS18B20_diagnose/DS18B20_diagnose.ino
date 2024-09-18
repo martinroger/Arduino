@@ -1,28 +1,28 @@
 //
 //    FILE: DS18B20_diagnose.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.0.1
 // PURPOSE: Minimal DS18B20 lib with async support.
-//
-// HISTORY:
-// 0.0.1 = 2020-04-23 initial version
+//     URL: https://github.com/RobTillaart/DS18B20_RT
 
-#include <OneWire.h>
-#include <DS18B20.h>
 
-#define ONE_WIRE_BUS 2
+#include "DS18B20.h"
+
+
+#define ONE_WIRE_BUS            2
 
 OneWire oneWire(ONE_WIRE_BUS);
 DS18B20 sensor(&oneWire);
 
 uint32_t start, stop;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
-  Serial.print("DS18B20 Library version: ");
+  Serial.print("DS18B20_LIB_VERSION: ");
   Serial.println(DS18B20_LIB_VERSION);
+  Serial.println();
 
   if (sensor.begin() == false)
   {
@@ -59,10 +59,14 @@ void loop()
     Serial.print("\t");
     Serial.print(stop - start);
     Serial.print("\t");
-    Serial.println(temperature, 1); // 1 decimal makes perfect sense
+    //  1 decimal makes perfect sense
+    Serial.println(temperature, 1); 
   }
   Serial.println();
+
   delay(1000);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

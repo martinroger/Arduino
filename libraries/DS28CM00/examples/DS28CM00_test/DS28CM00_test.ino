@@ -1,25 +1,23 @@
 //
 //    FILE: DS28CM00_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.2
 // PURPOSE: test DS28CM00 lib
 //    DATE: 2017-07-15
 //     URL: https://github.com/RobTillaart/DS28CM00
-//
+
 
 #include "Wire.h"
 #include "DS28CM00.h"
 
 #if defined(ESP32) || defined(ESP8266)
-#include "rom/crc.h"        // ESP32 specific
-DS28CM00 DS28(10, 12);      // ESP32 I2C pins (choice)
+#include "rom/crc.h"        //  ESP32 specific
+DS28CM00 DS28(10, 12);      //  ESP32 I2C pins (choice)
 #else
 #include "util/crc16.h"
 DS28CM00 DS28(&Wire);
 #endif
 
 uint8_t uid[8];
-
 
 
 void setup()
@@ -81,8 +79,8 @@ void test()
       DS28.setI2CMode();
     }
 
-    // CRC GENERATION
-    // TODO VERIFY WHICH CRC
+    //  CRC GENERATION
+    //  TODO VERIFY WHICH CRC
 
 #if defined(ESP32) || defined(ESP8266)
     // uint8_t crc8_le(uint8_t crc, uint8_t const *buf, uint32_t len);
@@ -109,4 +107,6 @@ void test()
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

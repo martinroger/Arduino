@@ -1,20 +1,22 @@
 //
 //    FILE: testFRAMPerformance.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: test for FRAM library for Arduino
 //     URL: https://github.com/RobTillaart/FRAM_I2C
 //
 
+
 #include "FRAM.h"
+
 
 FRAM fram;
 
 uint32_t start;
 uint32_t stop;
 
-int ar[600];
-  
+int ar[600];  //  == 1200 bytes
+
+
 void setup()
 {
   Serial.begin(115200);
@@ -33,7 +35,7 @@ void setup()
   }
   else
   {
-    for (int s = 1; s < 9; s++)  // test up to 800 KB
+    for (int s = 1; s < 9; s++)  //  test up to 800 KB
     {
       uint32_t speed = s * 100000UL;
       Serial.print("CLOCK: ");
@@ -46,32 +48,38 @@ void setup()
   Serial.println("done...");
 }
 
+
 void loop()
 {
 }
 
+
 void testReadWriteLarge()
 {
-  Serial.println();
-  Serial.println(__FUNCTION__);
-
+  int size = 600 * sizeof(int);
   for (int i = 0; i < 600; i++) ar[i] = i;
 
-  start = millis();
-  fram.write(1000, (uint8_t*)ar, 1200);
-  stop = millis();
-  Serial.print("WRITE 1200 bytes TIME:\t");
+  start = micros();
+  fram.write(1000, (uint8_t*)ar, size);
+  stop = micros();
+  Serial.print("WRITE 1200 bytes TIME: \t");
   Serial.print(stop - start);
-  Serial.println(" ms");
+  Serial.print(" us ==> \t");
+  Serial.print((stop - start) / (1.0 * size), 2);
+  Serial.println(" us/byte.");
+  delay(100);
 
   for (int i = 0; i < 600; i++) ar[i] = 0;
 
-  start = millis();
-  fram.read(1000, (uint8_t*)ar, 1200);
-  stop = millis();
-  Serial.print("READ 1200 bytes TIME:\t");
+  start = micros();
+  fram.read(1000, (uint8_t*)ar, size);
+  stop = micros();
+  Serial.print("READ 1200 bytes TIME: \t");
   Serial.print(stop - start);
-  Serial.println(" ms");
+  Serial.print(" us ==> \t");
+  Serial.print((stop - start) / (1.0 * size), 2);
+  Serial.println(" us/byte.");
+  delay(100);
 
   for (int i = 0; i < 600; i++)
   {
@@ -86,4 +94,6 @@ void testReadWriteLarge()
   Serial.println();
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

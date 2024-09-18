@@ -1,13 +1,8 @@
 //
-//    FILE: boolArrayDemo2.ino
+//    FILE: boolArrayDemo0.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
 // PURPOSE: demo performance reading boolean array
-//    DATE: 2015-12-06
-//     URL: https://forum.arduino.cc/index.php?topic=361167.0
-//
-// Released to the public domain
-//
+//     URL: https://github.com/RobTillaart/BoolArray
 
 
 #include "BoolArray.h"
@@ -25,14 +20,17 @@ uint32_t duration1, duration2;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("Start ");
   Serial.println(__FILE__);
-  Serial.print("LIB VERSION:\t");
+  Serial.print("BOOLARRAY_LIB_VERSION:\t");
   Serial.println(BOOLARRAY_LIB_VERSION);
 
-  int rv = b.begin(BOOLARRAY_MAXSIZE);
-  Serial.print("SIZE:\t");
+  int rv = b.begin(2000);
+  Serial.print("SIZE bits:\t");
   Serial.println(b.size());
+  Serial.print("MEM bytes:\t");
+  Serial.println(b.memory());
+  Serial.print("freeMemory:\t");
+  Serial.println(freeMemory());
 
   if (rv != BOOLARRAY_OK)
   {
@@ -57,7 +55,8 @@ void loop()
 void test0()
 {
   Serial.println();
-  Serial.println("SET TEST0");
+  Serial.println("TEST SET(1)");
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
@@ -67,6 +66,7 @@ void test0()
   duration1 = micros() - start;
   Serial.print("DURATION:\t");
   Serial.println(duration1);
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
@@ -77,17 +77,18 @@ void test0()
   duration2 = micros() - start;
   Serial.print("DURATION:\t");
   Serial.println(duration2);
-  Serial.print("\t\t\t");
-  Serial.println(duration2 - duration1);
-  Serial.print("       X:\t");
-  Serial.println(x);
+  Serial.print("\t\t");
+  Serial.print(duration2 - duration1);
+  Serial.print("\t");
+  Serial.println((duration2 - duration1) / (1.0 * b.size()));
 }
 
 
 void test1()
 {
   Serial.println();
-  Serial.println("SET TEST0");
+  Serial.println("TEST SET(0)");
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
@@ -97,6 +98,7 @@ void test1()
   duration1 = micros() - start;
   Serial.print("DURATION:\t");
   Serial.println(duration1);
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
@@ -107,17 +109,18 @@ void test1()
   duration2 = micros() - start;
   Serial.print("DURATION:\t");
   Serial.println(duration2);
-  Serial.print("\t\t\t");
-  Serial.println(duration2 - duration1);
-  Serial.print("       X:\t");
-  Serial.println(x);
+  Serial.print("\t\t");
+  Serial.print(duration2 - duration1);
+  Serial.print("\t");
+  Serial.println((duration2 - duration1) / (1.0 * b.size()));
 }
 
 
 void test2()
 {
   Serial.println();
-  Serial.println("GET TEST");
+  Serial.println("TEST GET(i)");
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
@@ -127,6 +130,7 @@ void test2()
   duration1 = micros() - start;
   Serial.print("DURATION:\t");
   Serial.println(duration1);
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
@@ -137,40 +141,85 @@ void test2()
   duration2 = micros() - start;
   Serial.print("DURATION:\t");
   Serial.println(duration2);
-  Serial.print("\t\t\t");
-  Serial.println(duration2 - duration1);
-  Serial.print("       X:\t");
-  Serial.println(x);
+  Serial.print("\t\t");
+  Serial.print(duration2 - duration1);
+  Serial.print("\t");
+  Serial.println((duration2 - duration1) / (1.0 * b.size()));
 }
 
 
 void test3()
 {
   Serial.println();
-  Serial.println("SET TEST");
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
   {
     b.set(i, 0);
   }
-  duration1 = micros();
-  Serial.print("DURATION:\t");
+  duration1 = micros() - start;
+  Serial.print("TEST SET(0):\t");
   Serial.println(duration1);
+  delay(10);
+
+  start = micros();
+  b.setAll(0);
+  duration2 = micros() - start;
+  Serial.print("TEST SETALL(0):\t");
+  Serial.println(duration2);
+  Serial.print("FACTOR:\t\t");
+  Serial.println(1.0 * duration1 / duration2);
+  Serial.println();
+  delay(10);
 
   start = micros();
   for (int i = 0; i < BOOLARRAY_MAXSIZE; i++)
   {
-    b.set(i, 0);
-    b.set(i, 0);
+    b.set(i, 1);
   }
-  duration2 = micros();
-  Serial.print("DURATION:\t");
+  duration1 = micros() - start;
+  Serial.print("TEST SET(1):\t");
+  Serial.println(duration1);
+  delay(10);
+
+  start = micros();
+  b.setAll(1);
+  duration2 = micros() - start;
+  Serial.print("TEST SETALL(1):\t");
   Serial.println(duration2);
-  Serial.print("\t\t\t");
-  Serial.println(duration2 - duration1);
-  Serial.print("       X:\t");
-  Serial.println(x);
+  Serial.print("FACTOR:\t\t");
+  Serial.println(1.0 * duration1 / duration2);
 }
 
-// -- END OF FILE --
+
+#ifdef AVR
+
+extern unsigned int __bss_end;
+extern unsigned int __heap_start;
+extern void *__brkval;
+
+int freeMemory()
+{
+  int free_memory;
+
+  if ((int)__brkval == 0)
+    free_memory = ((int)&free_memory) - ((int)&__bss_end);
+  else
+    free_memory = ((int)&free_memory) - ((int)__brkval);
+
+  return free_memory;
+};
+
+#else
+
+int freeMemory()
+{
+  return 0;
+};
+
+#endif
+
+
+
+//  -- END OF FILE --

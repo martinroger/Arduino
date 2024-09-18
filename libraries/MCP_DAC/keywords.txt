@@ -1,6 +1,6 @@
-# Syntax Coloring Map For MCP_DAC
+# Syntax Colouring Map For MCP_DAC
 
-# Datatypes (KEYWORD1)
+# Data types (KEYWORD1)
 MCP_DAC	KEYWORD1
 MCP4801	KEYWORD1
 MCP4802	KEYWORD1
@@ -51,6 +51,11 @@ setGPIOpins	KEYWORD2
 
 increment	KEYWORD2
 decrement	KEYWORD2
+
+selectSPI	KEYWORD2
+selectSPI1	KEYWORD2
+usesSPI	KEYWORD2
+usesSPI1	KEYWORD2
 
 # Instances (KEYWORD2)
 

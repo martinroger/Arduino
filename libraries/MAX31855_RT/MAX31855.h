@@ -2,30 +2,43 @@
 //
 //    FILE: MAX31855.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.3.0
+// VERSION: 0.6.1
 // PURPOSE: Arduino library for MAX31855 chip for K type thermocouple
 //    DATE: 2014-01-01
 //     URL: https://github.com/RobTillaart/MAX31855_RT
 //          http://forum.arduino.cc/index.php?topic=208061
 
 
-// Breakout board
+//        Breakout board
 //
-//     +---------+
-// Vin | o       |
-// 3V3 | o       |
-// GND | o     O | Thermocouple
-//  D0 | o     O | Thermocouple
-//  CS | o       |
-// CLK | o       |
-//     +---------+
+//         +---------+
+//     Vin | o       |
+//     3V3 | o       |
+//     GND | o     O |   Thermocouple
+//      D0 | o     O |   Thermocouple
+//      CS | o       |
+//     CLK | o       |
+//         +---------+
 
 
 #include "Arduino.h"
 #include "SPI.h"
 
 
-#define MAX31855_VERSION              (F("0.3.0"))
+#define MAX31855_VERSION              (F("0.6.1"))
+
+
+#ifndef __SPI_CLASS__
+  //  MBED must be tested before RP2040
+  #if defined(ARDUINO_ARCH_MBED)
+  #define __SPI_CLASS__   SPIClass
+  #elif defined(ARDUINO_ARCH_RP2040)
+  #define __SPI_CLASS__   SPIClassRP2040
+  #else
+  #define __SPI_CLASS__   SPIClass
+  #endif
+#endif
+
 
 #define MAX31855_NO_TEMPERATURE       -999
 
@@ -64,13 +77,13 @@ class MAX31855
 {
 public:
   // HW SPI
-  MAX31855(uint8_t select);
+  MAX31855(uint8_t select, __SPI_CLASS__ * mySPI);
   // SW SPI
-  MAX31855(uint8_t clock, uint8_t select, uint8_t miso);
+  MAX31855(uint8_t select, uint8_t miso, uint8_t clock);
 
   void     begin();
 
-  // returns state - bit field: 0 = STATUS_OK
+  //  returns state - bit field: 0 = STATUS_OK
   uint8_t  read();
 
   float    getInternal(void) const { return _internal; }
@@ -84,7 +97,7 @@ public:
   inline   bool noRead()          { return _status == STATUS_NOREAD; };
   inline   bool noCommunication() { return _status == STATUS_NO_COMMUNICATION; };
 
-  // use offset to calibrate the TC.
+  //  use offset to calibrate the TC.
   void     setOffset(const float  t)   { _offset = t; };
   float    getOffset() const           { return _offset; };
 
@@ -99,17 +112,8 @@ public:
   //       speed in Hz
   void     setSPIspeed(uint32_t speed);
   uint32_t getSPIspeed() { return _SPIspeed; };
-
-  //       ESP32 specific
-  #if defined(ESP32)
-  void     selectHSPI() { _useHSPI = true;  };
-  void     selectVSPI() { _useHSPI = false; };
-  bool     usesHSPI()   { return _useHSPI;  };
-  bool     usesVSPI()   { return !_useHSPI; };
-
-  // to overrule ESP32 default hardware pins
-  void     setGPIOpins(uint8_t clock, uint8_t miso, uint8_t mosi, uint8_t select);
-  #endif
+  void     setSWSPIdelay(uint16_t del = 0)  { _swSPIdelay = del; };
+  uint16_t getSWSPIdelay() { return _swSPIdelay; };
 
 
 private:
@@ -128,13 +132,11 @@ private:
   uint8_t  _miso;
   uint8_t  _select;
 
-  uint32_t    _SPIspeed = 1000000;
-  SPIClass    * mySPI;
-  SPISettings _spi_settings;
-  #if defined(ESP32)
-  bool        _useHSPI = true;
-  #endif
+  uint16_t    _swSPIdelay = 0;
+  uint32_t    _SPIspeed;
+  __SPI_CLASS__ * _mySPI;
+  SPISettings   _spi_settings;
 };
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

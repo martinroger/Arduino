@@ -1,20 +1,16 @@
 //
 //    FILE: AverageAngle.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.5
-// PURPOSE: class for averaging angles
+// VERSION: 0.2.2
+//    DATE: 2017-11-21
+// PURPOSE: Arduino library to calculate correctly the average of multiple angles.
 //     URL: https://github.com/RobTillaart/AverageAngle
-//
-// HISTORY:
-//
-// 0.1.0 2017-11-21  initial version
-// 0.1.1 2017-12-09  fixed negative values of average
-// 0.1.2 2018-03-30  added getAverageLength, getTotalLength + zero-test
-// 0.1.3 2020-03-26  #pragma once; removed pre 1.00 support; readme.md
-// 0.1.4 2020-05-27  update library.json
-// 0.1.5 2020-12-12  added arduino-CI, unit tests, minor refactor.
+
 
 #include "AverageAngle.h"
+
+
+const float  AA_OVERFLOW_THRESHOLD = 10000;
 
 
 AverageAngle::AverageAngle(const enum AngleType type)
@@ -23,35 +19,76 @@ AverageAngle::AverageAngle(const enum AngleType type)
   reset();
 }
 
+
 uint32_t AverageAngle::add(float alpha, float length)
 {
   if (_type == AverageAngle::DEGREES )
   {
-    alpha *= DEG_TO_RAD;              // (PI / 180.0);
+    alpha *= DEG_TO_RAD;              //  (PI / 180.0);
   }
-  _sumx += (cos(alpha) * length);
-  _sumy += (sin(alpha) * length);
+  else if (_type == AverageAngle::GRADIANS )
+  {
+    alpha *= GRAD_TO_RAD;             //  (PI / 200.0);
+  }
+  float dx = cos(alpha);
+  float dy = sin(alpha);
+  if (length != 1.0)
+  {
+    dx *= length;
+    dy *= length;
+  }
+  _sumx += dx;
+  _sumy += dy;
+  _error = AVERAGE_ANGLE_OK;
+  if ((abs(_sumx) > AA_OVERFLOW_THRESHOLD) || (abs(_sumy) > AA_OVERFLOW_THRESHOLD))
+  {
+    _error = AVERAGE_ANGLE_OVERFLOW;
+  }
   _count++;
   return _count;
 }
 
+
 void AverageAngle::reset()
 {
-  _sumx = 0;
-  _sumy = 0;
+  _sumx  = 0;
+  _sumy  = 0;
   _count = 0;
+  _error = AVERAGE_ANGLE_OK;
 }
+
+
+uint32_t AverageAngle::count()
+{
+  return _count;
+}
+
 
 float AverageAngle::getAverage()
 {
   float angle = atan2(_sumy, _sumx);
-  if (angle < 0) angle += TWO_PI;      // (PI * 2);
+  if (isnan(angle))
+  {
+    _error = AVERAGE_ANGLE_SINGULARITY;
+    return angle;
+  }
+
+  _error = AVERAGE_ANGLE_OK;
+  if (angle < 0)
+  {
+    angle += TWO_PI;                   //  (PI * 2);
+  }
   if (_type == AverageAngle::DEGREES )
   {
-    angle *=  RAD_TO_DEG;              // (180.0 / PI);
+    angle *= RAD_TO_DEG;               //  (180.0 / PI);
+  }
+  else if (_type == AverageAngle::GRADIANS )
+  {
+    angle *= RAD_TO_GRAD;              //  (200.0 / PI);
   }
   return angle;
 }
+
 
 float AverageAngle::getTotalLength()
 {
@@ -59,10 +96,47 @@ float AverageAngle::getTotalLength()
   return hypot(_sumy, _sumx);
 }
 
+
 float AverageAngle::getAverageLength()
 {
   if (_count == 0) return 0;
   return hypot(_sumy, _sumx) / _count;
 }
 
-// -- END OF FILE --
+
+float AverageAngle::getSumX()
+{
+  return _sumx;
+}
+
+
+float AverageAngle::getSumY()
+{
+  return _sumy;
+}
+
+
+AverageAngle::AngleType AverageAngle::type()
+{
+  return _type;
+}
+
+
+bool AverageAngle::setType(const enum AngleType type)
+{
+  if (type > GRADIANS) return false;
+  _type = type;
+  return true;
+}
+
+
+int AverageAngle::lastError()
+{
+  int e = _error;
+  _error = AVERAGE_ANGLE_OK;
+  return e;
+}
+
+
+//  -- END OF FILE --
+

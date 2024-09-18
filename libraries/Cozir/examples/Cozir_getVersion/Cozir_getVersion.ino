@@ -1,26 +1,27 @@
 //
 //    FILE: Cozir_getVersion.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: demo of Cozir lib (>= 0.1.06)
-//    DATE: 2021-01-31
-//     URL: http://forum.arduino.cc/index.php?topic=91467.0
+// PURPOSE: demo of Cozir lib
+//     URL: https://github.com/RobTillaart/Cozir
 //
+//    NOTE: this sketch needs a MEGA or a Teensy that supports a second
+//          Serial port named Serial1
 
-// Note: this sketch needs a MEGA or a Teensy that supports a second
-//       Serial port named Serial1
 
+#include "Arduino.h"
 #include "cozir.h"
 
+
 COZIR czr(&Serial1);
+
 
 void setup()
 {
   Serial1.begin(9600);
   czr.init();
-  
+
   Serial.begin(115200);
-  Serial.print("Cozir HardwareSerial: ");
+  Serial.print("COZIR_LIB_VERSION: ");
   Serial.println(COZIR_LIB_VERSION);
   Serial.println();
 
@@ -41,9 +42,11 @@ void setup()
   }
   delay(1000);
 
-  // reset to polling again.
+  //  set to polling explicitly.
   czr.setOperatingMode(CZR_POLLING);
+  delay(1000);
 }
+
 
 void loop()
 {
@@ -52,7 +55,7 @@ void loop()
   float h = czr.humidity();
   uint32_t c = czr.CO2();
 
-  Serial.print("Celcius =\t");    Serial.println(t);
+  Serial.print("Celsius =\t");    Serial.println(t);
   Serial.print("Fahrenheit =\t"); Serial.println(f);
   Serial.print("Humidity =\t");   Serial.println(h);
   Serial.print("CO2 =\t");        Serial.println(c);
@@ -61,4 +64,6 @@ void loop()
   delay(3000);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

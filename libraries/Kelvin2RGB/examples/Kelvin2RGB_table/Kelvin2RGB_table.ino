@@ -1,32 +1,37 @@
 //
 //    FILE: Kelvin2RGB_table.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: generate table of values
 //    DATE: 2020-07-29
 //     URL: https://github.com/RobTillaart/Kelvin2RGB
-//
+
 
 #include "Kelvin2RGB.h"
 
 Kelvin2RGB KRGB;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("KELVIN2RGB_LIB_VERSION: ");
+  Serial.println(KELVIN2RGB_LIB_VERSION);
+  Serial.println();
 
   KRGB.begin();
   test();
 }
 
+
 void loop()
 {
 }
 
+
 void test()
 {
-  float bright = 100.0;  // change to 0.0
+  float bright = 100.0;  //  change to 0.0
   while (bright <= 100.0)
   {
     bright += 5;
@@ -56,4 +61,6 @@ void test()
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

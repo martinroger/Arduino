@@ -1,4 +1,4 @@
-# Syntax Coloring Map For SGP30
+# Syntax Colouring Map For SGP30
 
 
 # Data types (KEYWORD1)
@@ -47,6 +47,7 @@ lastError	KEYWORD2
 
 # Constants (LITERAL1)
 SGP30_LIB_VERSION	LITERAL1
+
 SGP30_OK	LITERAL1
-
-
+SGP30_ERROR_CRC	LITERAL1
+SGP30_ERROR_I2C	LITERAL1

@@ -1,16 +1,14 @@
 //
 //    FILE: AD5144A_test_write.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2021-04-30
 //     URL: https://github.com/RobTillaart/AD5144A
 
 
 #include "AD5144A.h"
 
-// select the right type
-// adjust address
+//  select the right type
+//  adjust address
 AD5144A AD(0x77);
 
 
@@ -26,21 +24,21 @@ void setup()
     return;
   }
 
-  // will generate 20+ lines
-  // decrease step 50 to 1 to test all
-  for (int val = 0; val < 256; val+= 50)
+  //  will generate 20+ lines
+  //  decrease step 50 to 1 to test all
+  for (int value = 0; value < 256; value += 50)
   {
-    for (int p = 0; p < AD.pmCount(); p++)
+    for (int potMeter = 0; potMeter < AD.pmCount(); potMeter++)
     {
-      Serial.print(val);
+      Serial.print(value);
       Serial.print("\t");
-      Serial.print(AD.write(p, val));
+      Serial.print(AD.write(potMeter, value));
       Serial.print("\t");
-      Serial.print(p);
+      Serial.print(potMeter);
       Serial.print("\t");
-      Serial.print(AD.read(p));
+      Serial.print(AD.read(potMeter));
       Serial.print("\t");
-      Serial.print(AD.readBackRDAC(p));
+      Serial.print(AD.readBackRDAC(potMeter));
       Serial.println();
     }
   }
@@ -53,4 +51,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

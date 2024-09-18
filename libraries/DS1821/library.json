@@ -15,8 +15,9 @@
     "type": "git",
     "url": "https://github.com/RobTillaart/DS1821"
   },
-  "version": "0.3.2",
+  "version": "0.3.6",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "DS1821.h"
 }

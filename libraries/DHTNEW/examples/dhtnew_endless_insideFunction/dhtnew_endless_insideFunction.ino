@@ -1,24 +1,17 @@
 //
 //    FILE: dhtnew_endless_insideFunction.ino
 // AUTHORS: Rob Tillaart, Vladislaw Kuzmin
-// VERSION: 0.1.5
 // PURPOSE: Demonstration example of endless DHT values' reporting in a function
 //    DATE: 2021-02-19
 //    (c) : MIT
-//
-// 0.1.0    2020-06-04 initial version
-// 0.1.1    2020-06-15 match 0.3.0 error handling
-// 0.1.2    2020-09-22 fix typo
-// 0.1.3    2020-11-09 wait for read handling
-// 0.1.5    2021-02-19 improved the sketch to read the DHT's value in a function
-//
-// DHT PINs' layout from left to right
-// =================================
-// FRONT : DESCRIPTION
-// pin 1 : VCC
-// pin 2 : DATA
-// pin 3 : Not Connected
-// pin 4 : GND
+
+//  DHT PINs' layout from left to right
+//  =================================
+//  FRONT : DESCRIPTION
+//  pin 1 : VCC
+//  pin 2 : DATA
+//  pin 3 : Not Connected
+//  pin 4 : GND
 
 
 #include <dhtnew.h>
@@ -32,21 +25,29 @@ uint32_t errors[11] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 void setup()
 {
+  while(!Serial);     //  MKR1010 needs this
+
   Serial.begin(115200);
   Serial.println("DHT_endless.ino");
   Serial.print("LIBRARY VERSION: ");
   Serial.println(DHTNEW_LIB_VERSION);
   Serial.println();
+
+  //  MKR1010 needs this
+  //  mySensor.setDisableIRQ(false);
+
 }
+
 
 void DHTt(const uint8_t pin)
 {
-  if (millis() - previousMillis > 2000) {
+  if (millis() - previousMillis > 2000)
+  {
     previousMillis = millis();
     DHTNEW mySensor(pin);
-    
+
     count++;
-    // show counters for OK and errors.
+    //  show counters for OK and errors.
     if (count % 50 == 0)
     {
       Serial.println();
@@ -59,7 +60,7 @@ void DHTt(const uint8_t pin)
       Serial.println();
       Serial.println();
     }
-  
+
     if (count % 10 == 0)
     {
       Serial.println();
@@ -69,11 +70,11 @@ void DHTt(const uint8_t pin)
     Serial.print("\t");
     Serial.print(count);
     Serial.print("\t");
-  
+
     start = micros();
     int chk = mySensor.read();
     stop = micros();
-  
+
     switch (chk)
     {
       case DHTLIB_OK:
@@ -119,7 +120,7 @@ void DHTt(const uint8_t pin)
         errors[9]++;
         break;
     }
-    // DISPLAY DATA
+    //  DISPLAY DATA
     Serial.print(mySensor.getHumidity(), 1);
     Serial.print(",\t");
     Serial.print(mySensor.getTemperature(), 1);
@@ -130,6 +131,13 @@ void DHTt(const uint8_t pin)
   }
 }
 
-void loop() {
+
+void loop()
+{
   DHTt(2);
 }
+
+
+//  -- END OF FILE --
+
+

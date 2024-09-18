@@ -1,16 +1,16 @@
 //
 //    FILE: bitHelpers_demo2.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2020-08-10
 //     URL: https://github.com/RobTillaart/bitHelpers
+
 
 #include "bitHelpers.h"
 #include "printHelpers.h"
 
 uint32_t start, stop, d1, d2;
 uint64_t x = 0;
+
 
 void setup()
 {
@@ -70,8 +70,11 @@ void setup()
   Serial.println();
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

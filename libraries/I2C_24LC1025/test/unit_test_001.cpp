@@ -38,10 +38,18 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "I2C_24LC1025_LIB_VERSION: %s\n", (char *) I2C_24LC1025_LIB_VERSION);
 }
 
 unittest_teardown()
 {
+}
+
+
+unittest(test_constants)
+{
+  assertEqual(131072, I2C_DEVICESIZE_24LC1025);
+  assertEqual(   128, I2C_PAGESIZE_24LC1025);
 }
 
 
@@ -50,6 +58,8 @@ unittest(test_constructor)
   Wire.resetMocks();
 
   I2C_24LC1025 EE(0x50);
+
+  Wire.begin();
   assertTrue(EE.begin());
 
   assertEqual(1, 1);
@@ -58,4 +68,6 @@ unittest(test_constructor)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

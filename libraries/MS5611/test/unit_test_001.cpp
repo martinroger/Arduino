@@ -29,6 +29,7 @@
 // assertNAN(arg);                                 // isnan(a)
 // assertNotNAN(arg);                              // !isnan(a)
 
+
 #include <ArduinoUnitTests.h>
 
 #include "Arduino.h"
@@ -37,7 +38,9 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "MS5611_LIB_VERSION: %s\n", (char *) MS5611_LIB_VERSION );
 }
+
 
 unittest_teardown()
 {
@@ -49,25 +52,34 @@ unittest(test_new_operator)
   assertEqualINF(exp(800));
   assertEqualINF(0.0/0.0);
   assertEqualINF(42);
-  
+
   assertEqualNAN(INFINITY - INFINITY);
   assertEqualNAN(0.0/0.0);
   assertEqualNAN(42);
 }
 */
 
+
+unittest(test_constants)
+{
+  assertEqual(MS5611_READ_OK , 0);
+  assertEqual(MS5611_ERROR_2 , 2); 
+  assertEqual(MS5611_NOT_READ, -999);
+}
+
+
+
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", MS5611_LIB_VERSION );
-
   MS5611 sensor(0x77);
-  assertTrue(sensor.begin());
+
+  Wire.begin();
+  assertFalse(sensor.begin());  // as there is no sensor, and no ROM values.
 
   assertEqualFloat(-9.99, sensor.getTemperature(), 0.01);
-  assertEqualFloat(-9.99, sensor.getPressure(), 0.01);
+  assertEqualFloat(-9.99, sensor.getPressure(),    0.01);
   assertEqual(0, sensor.getLastResult());
   assertEqual(0, sensor.lastRead());
-
 }
 
 
@@ -75,7 +87,8 @@ unittest(test_read_sensor)
 {
   MS5611 sensor(0x77);
 
-  assertTrue(sensor.begin());
+  Wire.begin();
+  assertFalse(sensor.begin());
 
   assureEqual(MS5611_READ_OK, sensor.read());
 
@@ -86,6 +99,32 @@ unittest(test_read_sensor)
   // assertEqual(0, sensor.lastRead());
 }
 
+
+unittest(test_overSampling)
+{
+  MS5611 sensor(0x77);
+
+  Wire.begin();
+  assertFalse(sensor.begin());
+
+  // default
+  assureEqual(OSR_ULTRA_LOW, sensor.getOversampling());
+
+  sensor.setOversampling(OSR_ULTRA_LOW);
+  assureEqual(OSR_ULTRA_LOW, sensor.getOversampling());
+  sensor.setOversampling(OSR_LOW);
+  assureEqual(OSR_LOW, sensor.getOversampling());
+  sensor.setOversampling(OSR_STANDARD);
+  assureEqual(OSR_STANDARD, sensor.getOversampling());
+  sensor.setOversampling(OSR_HIGH);
+  assureEqual(OSR_HIGH, sensor.getOversampling());
+  sensor.setOversampling(OSR_ULTRA_HIGH);
+  assureEqual(OSR_ULTRA_HIGH, sensor.getOversampling());
+}
+
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

@@ -1,6 +1,6 @@
 {
   "name": "weight",
-  "keywords": "weight conversion kilo gram stone lbs ounce pound",
+  "keywords": "weight,conversion,kilo,gram,stone,lbs,ounce,pound",
   "description": "Library of weight conversion functions",
   "authors":
   [
@@ -13,10 +13,11 @@
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/RobTillaart/weight"
+    "url": "https://github.com/RobTillaart/weight.git"
   },
-  "version": "0.1.2",
+  "version": "0.3.1",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "weight.h"
 }

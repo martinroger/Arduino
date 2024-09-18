@@ -1,15 +1,15 @@
 //
 //    FILE: XMLWriterDemo01.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
 // PURPOSE: XML writer demo
 //    DATE: 2016-03-16
 //     URL: https://github.com/RobTillaart/XMLWriter
-//
+
 
 #include <XMLWriter.h>
 
 XMLWriter XML(&Serial);
+
 
 void setup()
 {
@@ -25,6 +25,7 @@ void setup()
   Serial.println();
   Serial.println(stop - start);
 }
+
 
 void shoot(double p, double y, double r)
 {
@@ -94,10 +95,14 @@ void shoot(double p, double y, double r)
   XML.tagClose();
 
   XML.tagClose();  // shoot
+  XML.flush();
 }
+
 
 void loop()
 {
 }
 
+
 // -- END OF FILE --
+

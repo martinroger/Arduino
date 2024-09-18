@@ -1,25 +1,26 @@
 //
 //    FILE: PCA9635_test_multiple.ino
 //  AUTHOR: Rob Tillaart
-//    DATE: 2018-02-18
-// VERSION: 0.2.1
-// PUPROSE: test PCA9635 library
-//
+// PURPOSE: test PCA9635 library
+//     URL: https://github.com/RobTillaart/PCA9635
 
 
 #include "PCA9635.h"
-#include "Wire.h"
 
 
 PCA9635 ledArray(0x20);
 PCA9635 ledArray2(0x21);
 
+
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("PCA9635 LIB version: ");
+  Serial.println(__FILE__);
+  Serial.print("PCA9635_LIB_VERSION: ");
   Serial.println(PCA9635_LIB_VERSION);
   Serial.println();
+
+  Wire.begin();
 
   ledArray.begin();
   ledArray2.begin();
@@ -27,7 +28,7 @@ void setup()
   Serial.print(millis());
   Serial.print("\t");
   Serial.println("Test - write1 - I");
-  for (int channel = 0; channel < 16; channel++)
+  for (int channel = 0; channel < ledArray.channelCount(); channel++)
   {
     for (int pwm = 0; pwm < 256; pwm++)
     {
@@ -40,7 +41,7 @@ void setup()
   Serial.println("Test - write 1 - II");
   for (int pwm = 0; pwm < 256; pwm++)
   {
-    for (int channel = 0; channel < 16; channel++)
+    for (int channel = 0; channel < ledArray.channelCount(); channel++)
     {
       ledArray.write1(channel, pwm);
       ledArray2.write1(channel, pwm);
@@ -50,9 +51,11 @@ void setup()
   Serial.println("done...");
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

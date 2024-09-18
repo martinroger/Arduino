@@ -1,18 +1,8 @@
 //
 //    FILE: hmc6352.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.3.0
+// VERSION: 0.4.0
 // PURPOSE: Arduino library for HMC6352 digital compass sensor
-//
-//  HISTORY:
-//  0.1.00  2011-04-07  initial version
-//  0.1.01  2011-04-09  quite a complete redo
-//  0.1.02  2011-04-12  added timing, fixed a bug
-//  0.1.03  2011-04-13  fixed small things; added getHeading()
-//  0.1.4   2017-09-13  minor refactor
-//  0.2.0   2020-06-12  remove pre1.0 support, main refactor
-//  0.2.1   2020-12-28  arduino-ci + unit test
-//  0.3.0   2021-06-07  add multi-Wire interface + refactor
 
 
 #include "hmc6352.h"
@@ -31,49 +21,35 @@
 #define HMC_READ_EEPROM     0x72
 
 
-// ERROR CODES ALL FUNCTIONS
+//  ERROR CODES ALL FUNCTIONS
 //
-// * twi_writeTo codes (== endTransmission  commands)
-//   HMC6532_I2C_OK                      0 .. OK
-//   HMC6532_I2C_ERROR_BUFFEROVERFLOW   -1 .. length to long for buffer
-//   HMC6532_I2C_ERROR_ADDR_NACK        -2 .. address send, NACK received
-//   HMC6532_I2C_ERROR_DATA_NACK        -3 .. data send, NACK received
-//   HMC6532_I2C_ERROR_OTHER            -4 .. 
-//               other twi error (lost bus arbitration, bus error, ..)
+//  * twi_writeTo codes (== endTransmission  commands)
+//    HMC6532_I2C_OK                      0 .. OK
+//    HMC6532_I2C_ERROR_BUFFEROVERFLOW   -1 .. length to long for buffer
+//    HMC6532_I2C_ERROR_ADDR_NACK        -2 .. address send, NACK received
+//    HMC6532_I2C_ERROR_DATA_NACK        -3 .. data send, NACK received
+//    HMC6532_I2C_ERROR_OTHER            -4 ..
+//                other twi error (lost bus arbitration, bus error, ..)
 //
-// * requestFrom
-//   HMC6352_I2C_ERROR_REQ_FROM        -10 .. not enough values returned
+//  * requestFrom
+//    HMC6352_I2C_ERROR_REQ_FROM        -10 .. not enough values returned
 //
-// * function calls
-//   HMC6532_OK                    0
-//   HMC6352_ERROR_PARAM1        -20
-//   HMC6352_ERROR_PARAM2        -21
+//  * function calls
+//    HMC6532_OK                    0
+//    HMC6352_ERROR_PARAM1        -20
+//    HMC6352_ERROR_PARAM2        -21
 //
 
 
 hmc6352::hmc6352(uint8_t address, TwoWire *wire)
 {
-  _address = constrain(address, 0x10, 0xF6);
+  _address = address;
   _wire    = wire;
 }
 
 
-#if defined (ESP8266) || defined(ESP32)
-bool hmc6352::begin(uint8_t sda, uint8_t scl)
-{
-  _wire->begin(sda, scl);
-  if (! isConnected())
-  {
-    return false;
-  }
-  return true;
-}
-#endif
-
-
 bool hmc6352::begin()
 {
-  _wire->begin();
   if (! isConnected())
   {
     return false;
@@ -101,25 +77,25 @@ int hmc6352::getHeading()
 int hmc6352::askHeading()
 {
   int rv = cmd(HMC_GET_DATA);
-  if (rv != 0) return -rv;   // problem with handshake
+  if (rv != 0) return -rv;   //  problem with handshake
   yield();
-  delay(6); // see datasheet, p8
+  delay(6);                  //  see datasheet, p8
   return rv;
 }
 
 
-// read the last value from the sensor
+//  read the last value from the sensor
 int hmc6352::readHeading()
 {
-  int rv = _wire->requestFrom(_address, (uint8_t)2);  // remove ambiguity
+  int rv = _wire->requestFrom(_address, (uint8_t)2);  //  remove ambiguity
   if (rv != 2) return HMC6352_I2C_ERROR_REQ_FROM;
-  rv = _wire->read() * 256;  // MSB
-  rv += _wire->read();       // LSB
+  rv = _wire->read() * 256;  //  MSB
+  rv += _wire->read();       //  LSB
   return rv;
 }
 
 
-// wake up from energy saving modus
+//  wake up from energy saving modus
 int hmc6352::wakeUp()
 {
   int rv =  cmd(HMC_WAKE);
@@ -129,7 +105,7 @@ int hmc6352::wakeUp()
 }
 
 
-// go into energy saving modus
+//  go into energy saving modus
 int hmc6352::sleep()
 {
   int rv = cmd(HMC_SLEEP);
@@ -139,10 +115,10 @@ int hmc6352::sleep()
 }
 
 
-// values obtained from dump
+//  values obtained from dump
 int hmc6352::factoryReset()
 {
-  writeRAM(0x74, 0x50); // is needed !!
+  writeRAM(0x74, 0x50);  //  is needed !!
   writeCmd(HMC_WRITE_EEPROM, 0, 66);
   writeCmd(HMC_WRITE_EEPROM, 1, 0);
   writeCmd(HMC_WRITE_EEPROM, 2, 0);
@@ -159,15 +135,15 @@ int hmc6352::factoryReset()
 }
 
 
-// HANDLE WITH CARE - RESTART NECESSARY
-// mode          = 0, 1, 2
-// frequemcy     = 1, 5, 10, 20 Hz.
-// periodicReset = 
-// Returns Operational Mode Control Byte
+//  HANDLE WITH CARE - RESTART NECESSARY
+//    mode          = 0, 1, 2
+//    frequency     = 1, 5, 10, 20 Hz.
+//    periodicReset = true/false
+//  Returns Operational Mode Control Byte
 int hmc6352::setOperationalModus(hmcMode mode, uint8_t frequency, bool periodicReset)
 {
-  // Operational Mode Control Byte
-  // bit 2,3,7 are allways 0
+  //  Operational Mode Control Byte
+  //  bit 2,3,7 are always 0
   byte omcb = 0;
   switch(frequency)
   {
@@ -193,29 +169,29 @@ int hmc6352::setOperationalModus(hmcMode mode, uint8_t frequency, bool periodicR
 }
 
 
-// read the Operational Modus as byte from EEPROM
-// TODO: split into 3 items
+//  read the Operational Modus as byte from EEPROM
+//  TODO: split into 3 items
 //
 int hmc6352::getOperationalModus()
 {
-  // datasheet state that at startup the OM is copied from EEPROM
-  // and that after writing to RAM a reboot is needed to enable new settings
-  // my interpretation ==> EEPROM is leading
+  //  datasheet state that at startup the OM is copied from EEPROM
+  //  and that after writing to RAM a reboot is needed to enable new settings
+  //  my interpretation ==> EEPROM is leading
 
   int operationalMode = readCmd(HMC_READ_RAM, 0x74);
-  // int operationalMode = readCmd(HMC_READ_EEPROM, 0x08);
+  //  int operationalMode = readCmd(HMC_READ_EEPROM, 0x08);
   return operationalMode;
 }
 
 
-// Switch between normal heading and raw modes
-// default = 0 ==> normal headings
-// Note: after a reboot the output modus will be 0 again.
-//       as it is only stored in RAM
-//       0 = HEADING
+//  Switch between normal heading and raw modes
+//  default = 0 ==> normal headings
+//  Note: after a reboot the output modus will be 0 again.
+//        as it is only stored in RAM
+//        0 = HEADING
 int hmc6352::setOutputModus(uint8_t outputModus)
 {
-  if (outputModus > 4)    // 4 = MAGY
+  if (outputModus > 4)    //  4 = MAGY
   {
     return HMC6352_ERROR_PARAM1;
   }
@@ -223,14 +199,14 @@ int hmc6352::setOutputModus(uint8_t outputModus)
 }
 
 
-// Read the output modus from RAM
+//  Read the output modus from RAM
 int hmc6352::getOutputModus()
 {
   return readCmd(HMC_READ_RAM, 0x4E);
 }
 
 
-// NOT TESTED
+//  NOT TESTED
 int hmc6352::callibrationOn()
 {
   int rv = cmd(HMC_CALLIBRATE_ON);
@@ -240,7 +216,7 @@ int hmc6352::callibrationOn()
 }
 
 
-// NOT TESTED
+//  NOT TESTED
 int hmc6352::callibrationOff()
 {
   int rv = cmd(HMC_CALLIBRATE_OFF);
@@ -250,7 +226,7 @@ int hmc6352::callibrationOff()
 }
 
 
-// NOT TESTED
+//  NOT TESTED
 int hmc6352::setI2CAddress(uint8_t address)
 {
   if ((address < 0x10) || (address > 0xF6) )
@@ -261,14 +237,14 @@ int hmc6352::setI2CAddress(uint8_t address)
 }
 
 
-// returns I2C address from EEPROM
+//  returns I2C address from EEPROM
 int hmc6352::getI2CAddress()
 {
   return readCmd(HMC_READ_EEPROM, 0);
 }
 
 
-// NOT TESTED
+//  NOT TESTED
 int hmc6352::setTimeDelay(uint8_t milliSeconds)
 {
   return writeCmd(HMC_WRITE_EEPROM, 5, milliSeconds);
@@ -281,8 +257,8 @@ int hmc6352::getTimeDelay()
 }
 
 
-// NOT TESTED
-// nosm = NumberOfSummedMeasurements
+//  NOT TESTED
+//  nosm = NumberOfSummedMeasurements
 int hmc6352::setMeasurementSumming(uint8_t nosm)
 {
   uint8_t _nosm = nosm;
@@ -298,14 +274,14 @@ int hmc6352::getMeasurementSumming()
 }
 
 
-// NOT TESTED
+//  NOT TESTED
 int hmc6352::getSWVersionNumber()
 {
   return readCmd(HMC_READ_EEPROM, 7);
 }
 
 
-// used by setOperationalModus()
+//  used by setOperationalModus()
 int hmc6352::saveOpMode(byte OpMode)
 {
   writeCmd(HMC_WRITE_RAM, 0x74, OpMode);
@@ -316,9 +292,9 @@ int hmc6352::saveOpMode(byte OpMode)
 }
 
 
-// NOT TESTED
-// meaning UpdateOffsets unknown
-// therefore removed from lib for now
+//  NOT TESTED
+//  meaning UpdateOffsets unknown
+//  therefore removed from lib for now
 int hmc6352::updateOffsets()
 {
   int rv = cmd(HMC_UPDATE_OFFSETS);
@@ -328,31 +304,31 @@ int hmc6352::updateOffsets()
 }
 
 
-// idem
-// use at own risk ...
+//  idem
+//  use at own risk ...
 int hmc6352::writeEEPROM(uint8_t address, uint8_t data)
 {
   return writeCmd(HMC_WRITE_EEPROM, address, data);
 }
 
 
-// idem
+//  idem
 int hmc6352::readEEPROM(uint8_t address)
 {
   return readCmd(HMC_READ_EEPROM, address);
 }
 
 
-// idem
-// Most RAM locations have an unknown meaning
-// use at own risk ...
+//  idem
+//  Most RAM locations have an unknown meaning
+//  use at own risk ...
 int hmc6352::writeRAM(uint8_t address, uint8_t data)
 {
   return writeCmd(HMC_WRITE_RAM, address, data);
 }
 
 
-// idem
+//  idem
 int hmc6352::readRAM(uint8_t address)
 {
   return readCmd(HMC_READ_RAM, address);
@@ -361,7 +337,7 @@ int hmc6352::readRAM(uint8_t address)
 
 ///////////////////////////////////////////////////////////
 //
-// PRIVATE FUNCTIONS
+//  PRIVATE FUNCTIONS
 //
 int hmc6352::cmd(uint8_t c)
 {
@@ -404,5 +380,5 @@ int hmc6352::writeCmd(uint8_t c, uint8_t address, uint8_t data)
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
 

@@ -39,29 +39,17 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "IEEE754_LIB_VERSION: %s\n", (char*) IEEE754_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-/*
-unittest(test_new_operator)
-{
-  assertEqualINF(exp(800));
-  assertEqualINF(0.0/0.0);
-  assertEqualINF(42);
-  
-  assertEqualNAN(INFINITY - INFINITY);
-  assertEqualNAN(0.0/0.0);
-  assertEqualNAN(42);
-}
-*/
 
 unittest(test_all)
 {
-  fprintf(stderr, "VERSION: %s\n", IEEE754_VERSION);
-
   fprintf(stderr, "Convert PI to double and back\n");
   uint8_t ar[8];
   float p = PI;
@@ -70,7 +58,7 @@ unittest(test_all)
   assertEqualFloat(p, q, 0.0001);
 
   fprintf(stderr, "IEEE_NAN %f\n", 0.0 / 0.0);
-  // assertTrue(IEEE_NAN(0.0 / 0.0));   // -nan ?
+  // assertTrue(IEEE_NAN(0.0 / 0.0));   //  -nan ?
 
   fprintf(stderr, "IEEE_INF\n");
   assertEqual(1,  IEEE_INF(exp(800)));
@@ -83,7 +71,7 @@ unittest(test_all)
   fprintf(stderr, "IEEE_NegINF\n");
   assertTrue(IEEE_NegINF(-exp(800)));
 
-  // crash - AVR specific
+  //  crash - AVR specific
   // fprintf(stderr, "IEEE_Sign\n");
   // assertTrue(IEEE_Sign(PI));
   // assertTrue(IEEE_Sign(-PI));
@@ -115,6 +103,9 @@ unittest(test_all)
 
 }
 
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE -- 
+

@@ -1,11 +1,9 @@
 //
 //    FILE: ParPrinter_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-05-26
-//    (c) : MIT
-//
+
 
 #include "ParallelPrinter.h"
 
@@ -23,10 +21,11 @@ void setup()
   Serial.println("\ndone...");
 }
 
+
 void loop()
 {
-
 }
+
 
 void test1()
 {
@@ -36,6 +35,7 @@ void test1()
   delay(100);
 }
 
+
 void test2()
 {
   Serial.println(__FUNCTION__);
@@ -44,6 +44,7 @@ void test2()
   for (int i = 0; i < 30; i++) PP.println("Hello World");
   delay(100);
 }
+
 
 void test3()
 {
@@ -56,7 +57,7 @@ void test3()
   for (int i = 0; i < 100; i++) PP.print("Hello World ");
   PP.printLineNumber(false);
   for (int i = 0; i < 100; i++) PP.print("Hello World ");
-  
+
   PP.setTabSize(4);
   PP.printLineNumber(true);
   for (int i = 0; i < 100; i++) PP.print("Hello World ");
@@ -80,3 +81,4 @@ void test3()
 
 
 // -- END OF FILE --
+

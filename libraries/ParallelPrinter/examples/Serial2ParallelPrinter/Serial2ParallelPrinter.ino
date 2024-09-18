@@ -1,11 +1,9 @@
 //
 //    FILE: Serial2ParPrinter.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo
 //    DATE: 2020-05-26
-//    (c) : MIT
-//
+
 
 #include "ParallelPrinter.h"
 
@@ -15,6 +13,7 @@
 
 ParallelPrinter PP;
 
+
 void setup()
 {
   Serial.begin(115200);
@@ -23,6 +22,7 @@ void setup()
   PP.begin();
 }
 
+
 void loop()
 {
   if (Serial.available()) PP.write(Serial.read());
@@ -30,3 +30,4 @@ void loop()
 
 
 // -- END OF FILE --
+

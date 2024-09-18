@@ -1,9 +1,9 @@
 //
 //    FILE: unit_test_001.cpp
 //  AUTHOR: Rob Tillaart
-//    DATE: 2021-01-01
-// PURPOSE: unit tests for the XXXXXX
-//          https://github.com/RobTillaart/
+//    DATE: 2021-01-09
+// PURPOSE: unit tests for the Multiplex
+//          https://github.com/RobTillaart/Multiplex
 //          https://github.com/Arduino-CI/arduino_ci/blob/master/REFERENCE.md
 //
 
@@ -35,9 +35,10 @@
 #include "Arduino.h"
 #include "Multiplex.h"
 
-// A simple implementation of Print that outputs
-// to Serial, prefixing each call to write(buffer, size)
-// with an id.
+
+//  A simple implementation of Print that outputs
+//  to Serial, prefixing each call to write(buffer, size)
+//  with an id.
 class FakeStream : public Print
 {
   public:
@@ -65,9 +66,12 @@ class FakeStream : public Print
   uint8_t _id = 0;
 };
 
+
 unittest_setup()
 {
+  fprintf(stderr, "MULTIPLEX_LIB_VERSION: %s\n", (char *) MULTIPLEX_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
@@ -76,8 +80,6 @@ unittest_teardown()
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", MULTIPLEX_LIB_VERSION);
-
   Multiplex mp;
   assertEqual(0, mp.count());
   assertEqual(4, mp.size());
@@ -95,10 +97,9 @@ unittest(test_constructor)
   assertEqual(4, mp.size());
 }
 
+
 unittest(test_enable)
 {
-  fprintf(stderr, "VERSION: %s\n", MULTIPLEX_LIB_VERSION);
-
   Multiplex mp;
   FakeStream stream1(1);
   FakeStream stream2(2);
@@ -125,6 +126,8 @@ unittest(test_enable)
   assertFalse(mp.isEnabledStream(&stream2));
 }
 
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --

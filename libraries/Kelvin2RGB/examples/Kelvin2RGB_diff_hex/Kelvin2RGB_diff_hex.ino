@@ -1,34 +1,38 @@
 //
 //    FILE: Kelvin2RGB_diff_hex.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
 // PURPOSE: demo - shows difference between 2 convert functions for the 565 16 bit coding
 //    DATE: 2021-06-01
 //     URL: https://github.com/RobTillaart/Kelvin2RGB
 //
-
-// shows difference between the two calculations
 //       best viewed in plotter.
+
 
 #include "Kelvin2RGB.h"
 
 Kelvin2RGB KRGB;
 Kelvin2RGB KRGB2;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("KELVIN2RGB_LIB_VERSION: ");
+  Serial.println(KELVIN2RGB_LIB_VERSION);
+  Serial.println();
 
   KRGB.begin();
   KRGB2.begin();
-  
+
   test_difference();
 }
+
 
 void loop()
 {
 }
+
 
 void test_difference()
 {
@@ -45,4 +49,6 @@ void test_difference()
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

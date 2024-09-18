@@ -1,38 +1,30 @@
 //
 //    FILE: DHT12_test_esp.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.3.0
 // PURPOSE: Demo for DHT12 I2C humidity & temperature sensor
-//
-// HISTORY:
-// 0.1.0    2020-04-11 initial version
-// 0.3.0    2020-12-19  compatible new version
 
 
 #include "DHT12.h"
 
+DHT12 DHT(&Wire1);  //  use second Wire interface
 
-DHT12 DHT(&Wire);
 
 void setup()
 {
-  
-#if defined(ESP8266) || defined(ESP32)
-  DHT.begin(12, 13);  // select your pin numbers here
-#else
-  DHT.begin();
-#endif
-
   Serial.begin(115200);
   Serial.println(__FILE__);
   Serial.print("DHT12 LIBRARY VERSION: ");
   Serial.println(DHT12_LIB_VERSION);
   Serial.println();
 
+  Wire1.begin(12, 13);
+  DHT.begin();
+
   delay(2000);
 
   Serial.println("Type,\tStatus,\tHumidity (%),\tTemperature (C)");
 }
+
 
 void loop()
 {
@@ -64,5 +56,6 @@ void loop()
 
   delay(2000);
 }
+
 
 // -- END OF FILE --

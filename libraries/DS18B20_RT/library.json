@@ -13,10 +13,19 @@
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/RobTillaart/DS18B20"
+    "url": "https://github.com/RobTillaart/DS18B20_RT"
   },
-  "version": "0.1.10",
+  "dependencies":
+  [
+    {
+      "owner": "paulstoffregen",
+      "name": "OneWire",
+      "version": "^2.3.5"
+    }
+  ],
+  "version": "0.2.3",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "DS18B20.h"
 }

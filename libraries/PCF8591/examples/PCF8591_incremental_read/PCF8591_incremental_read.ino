@@ -1,10 +1,10 @@
 //
 //    FILE: PCF8591_incremental_read.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-07-22
 //     URL: https://github.com/RobTillaart/PCF8591
+
 
 #include "PCF8591.h"
 
@@ -12,18 +12,18 @@ PCF8591 dev(0x48);
 
 uint32_t start, stop, dura1, dura2;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PCF8591_LIB_VERSION: ");
+  Serial.println(PCF8591_LIB_VERSION);
 
   Wire.begin();
 
-#if defined (ESP8266) || defined(ESP32)
-  dev.begin(21, 22);  // adjust pins if needed.
-#else
   dev.begin();
-#endif
+
 
   if (! dev.isConnected())
   {
@@ -33,7 +33,7 @@ void setup()
   delay(100);
 
   Serial.print("POR 1st read:\t");
-  Serial.println(dev.analogRead(3));
+  Serial.println(dev.read(3));
   Serial.println();
 
   //////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ void setup()
   Serial.println("Read 4 one by one");
   for (uint8_t i = 0; i < 4; i++)
   {
-    Serial.print(dev.analogRead(i));
+    Serial.print(dev.read(i));
     Serial.print('\t');
   }
   delay(10);
@@ -49,7 +49,7 @@ void setup()
   start = micros();
   for (uint8_t i = 0; i < 4; i++)
   {
-    dev.analogRead(i);
+    dev.read(i);
   }
   stop = micros();
   dura2 = stop - start;
@@ -59,7 +59,7 @@ void setup()
 
   Serial.println("Read 4 with auto increment");
   start = micros();
-  dev.analogRead4();
+  dev.read4();
   stop = micros();
   for (uint8_t i = 0; i < 4; i++)
   {
@@ -76,8 +76,11 @@ void setup()
   Serial.println("\nDone...\n");
 }
 
+
 void loop()
 {
 }
 
+
 // -- END OF FILE --
+

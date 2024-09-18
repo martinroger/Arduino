@@ -1,14 +1,12 @@
 //
 //    FILE: print64.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo print 64 bit integers
-//    DATE: 2020-06-24
-//    (c) : MIT
-//
+//     URL: https://github.com/RobTillaart/printHelpers
 
 
 #include "printHelpers.h"
+
 
 uint64_t llx = 1311768467284833366;
 int64_t  lly = 0xFFFFFFFFFFFFFFFF;
@@ -21,6 +19,10 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PRINTHELPERS_VERSION: ");
+  Serial.println(PRINTHELPERS_VERSION);
+  Serial.println();
+
   delay(100);
 
   Serial.println("BASE\tTIME  base < 10 support depends on internal buffer size");
@@ -56,4 +58,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

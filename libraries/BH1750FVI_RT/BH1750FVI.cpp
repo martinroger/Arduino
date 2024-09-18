@@ -1,52 +1,34 @@
 //
 //    FILE: BH1750FVI.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.7
+// VERSION: 0.3.2
 // PURPOSE: library for BH1750FVI lux sensor Arduino
-//     URL: https://github.com/RobTillaart/BH1750FVI
-//
-//  0.1.0   2020-02-02  initial version
-//  0.1.1   2020-03-28  refactor
-//  0.1.2   2020-03-29  unique name in repo, and new release tag.
-//  0.1.3   2020-06-05  fix library.json file
-//  0.1.4   2020-08-14  cleanup tabs/spaces;
-//  0.2.0   2020-08-18  implement logic for LOW & HIGH2;
-//                      implement correctionfactor;  examples;
-//  0.2.1   2020-08-31  implement angle factor
-//  0.2.2   2020-09-04  implement temperature compensation
-//  0.2.3   2020-09-04  implement wavelength compensation
-//  0.2.4   2020-11-27  fix #10 rename _sensitivityFactor for ESP32
-//  0.2.5   2020-12-12  add Arduino-CI and unit tests
-//  0.2.6   2021-01-16  add reset()
-//  0.2.7   2021-06-08  add unit tests, improved correction factor code.
+//     URL: https://github.com/RobTillaart/BH1750FVI_RT
 
 
 #include "BH1750FVI.h"
 
 
-#if defined(ESP8266) || defined(ESP32)
-BH1750FVI::BH1750FVI(const uint8_t address, const uint8_t dataPin, const uint8_t clockPin)
-{
-  _address            = address;
-  _wire               = &Wire;
-
-  if ((dataPin < 255) && (clockPin < 255))
-  {
-    _wire->begin(dataPin, clockPin);
-  } else {
-    _wire->begin();
-  }
-  begin();
-}
-#endif
+// COMMANDS P5
+#define BH1750FVI_POWER_ON                    0x00
+#define BH1750FVI_POWER_OFF                   0x01
+#define BH1750FVI_RESET                       0x07
+#define BH1750FVI_CONT_HIGH                   0x10
+#define BH1750FVI_CONT_HIGH2                  0x11
+#define BH1750FVI_CONT_LOW                    0x13
+#define BH1750FVI_ONCE_HIGH                   0x20
+#define BH1750FVI_ONCE_HIGH2                  0x21
+#define BH1750FVI_ONCE_LOW                    0x23
 
 
 BH1750FVI::BH1750FVI(const uint8_t address, TwoWire *wire)
 {
   _address            = address;
   _wire               = wire;
-  _wire->begin();
-  begin();
+  _data               = 0;
+  _error              = BH1750FVI_OK;
+  _sensitivityFactor  = BH1750FVI_REFERENCE_TIME;
+  _mode               = BH1750FVI_MODE_HIGH;
 }
 
 
@@ -70,7 +52,7 @@ bool BH1750FVI::isConnected()
 
 bool BH1750FVI::isReady()
 {
-  // max times from datasheet P2 + P11;
+  //  max times from datasheet P2 + P11;
   uint8_t timeout[3] = { 16, 120, 120 };
   if (_mode < 3)
   {
@@ -83,38 +65,38 @@ bool BH1750FVI::isReady()
 
 float BH1750FVI::getRaw(void)
 {
-  return readData() * 0.833333333333f;    // == 1 / 1.2;
+  return readData() * 0.833333333333f;    //  == 1 / 1.2;
 }
 
 
 float BH1750FVI::getLux(void)
 {
-  // lux without mode correction
+  //  lux without mode correction
   float lux = getRaw();
 
-  // sensitivity factor
+  //  sensitivity factor
   if (_sensitivityFactor != BH1750FVI_REFERENCE_TIME)
   {
     lux *= (1.0 * BH1750FVI_REFERENCE_TIME) / _sensitivityFactor;
   }
-  // angle compensation
+  //  angle compensation
   if (_angle != 0)
   {
     lux *= _angleFactor;
   }
-  // temperature compensation.
-  if (_temp != 20)
+  //  temperature compensation. 20 C is default.
+  if (_temperature != 20)
   {
     lux *= _tempFactor;
   }
-  // wavelength compensation.
+  //  wavelength compensation.
   if (_waveLength != 580)
   {
     lux *= _waveLengthFactor;
   }
   if (_mode == BH1750FVI_MODE_HIGH2)
   {
-    lux *= 0.5f;  // P11
+    lux *= 0.5f;  //  P11
   }
   return lux;
 }
@@ -128,9 +110,27 @@ int BH1750FVI::getError()
 }
 
 
+void BH1750FVI::powerOn()
+{
+  command(BH1750FVI_POWER_ON);
+}
+
+
+void BH1750FVI::powerOff()
+{
+  command(BH1750FVI_POWER_OFF);
+}
+
+
+void BH1750FVI::reset()
+{
+  command(BH1750FVI_RESET);
+}
+
+
 ////////////////////////////////////////////
 //
-// operational mode
+//  operational mode
 //
 void BH1750FVI::setContHighRes()
 {
@@ -182,25 +182,25 @@ void BH1750FVI::setOnceLowRes()
 
 ////////////////////////////////////////////
 //
-// measurement timing
+//  measurement timing
 //
-// P11 datasheet
-void BH1750FVI::changeTiming(uint8_t val)
+//  P11 datasheet
+void BH1750FVI::changeTiming(uint8_t time)
 {
-  val = constrain(val, 31, 254);
-  _sensitivityFactor = val;
-  // P5 instruction set table
-  uint8_t Hbits = 0x40 | (val >> 5);
-  uint8_t Lbits = 0x60 | (val & 0x1F);
+  time = constrain(time, 31, 254);
+  _sensitivityFactor = time;
+  //  P5 instruction set table
+  uint8_t Hbits = 0x40 | (time >> 5);
+  uint8_t Lbits = 0x60 | (time & 0x1F);
   command(Hbits);
   command(Lbits);
 }
 
 
-uint8_t BH1750FVI::setCorrectionFactor(float f)
+uint8_t BH1750FVI::setCorrectionFactor(float factor)
 {
-  // 31 .. 254 are range P11 - constrained in changeTIming call
-  uint8_t timingValue = round(BH1750FVI_REFERENCE_TIME * f);
+  //  31 .. 254 are range P11 - constrained in changeTIming call
+  uint8_t timingValue = round(BH1750FVI_REFERENCE_TIME * factor);
   changeTiming(timingValue);
   return _sensitivityFactor;
 }
@@ -215,23 +215,23 @@ float BH1750FVI::getCorrectionFactor()
 
 float BH1750FVI::setTemperature(int temp)
 {
-  _temp = temp;
-  // _tempFactor = 1.0f - (_temp - 20.0f) / 2000.0f;
-  _tempFactor = 1.0f - (_temp - 20.0f) * 0.0005f;
+  _temperature = temp;
+  //  _tempFactor = 1.0f - (_temperature - 20.0f) / 2000.0f;
+  _tempFactor = 1.0f - (_temperature - 20.0f) * 0.0005f;
   return _tempFactor;
 }
 
 
-float BH1750FVI::setAngle(int degrees)
+float BH1750FVI::setAngle(float degrees)
 {
-  _angle = constrain(degrees, -89, 89);
-  // Lamberts Law.
+  _angle = constrain(degrees, -89.9, 89.9);
+  //  Lambert's Law.
   _angleFactor = 1.0f / cos(_angle * (PI / 180.0f));
   return _angleFactor;
 }
 
 
-// interpolation tables uses more RAM (versus progmem)
+//  interpolation tables uses more RAM (versus PROGMEM)
 float BH1750FVI::setWaveLength(int waveLength)
 {
   _waveLength = constrain(waveLength, 400, 715);
@@ -251,14 +251,14 @@ float BH1750FVI::setWaveLength(int waveLength)
 
 ///////////////////////////////////////////////////////////
 //
-// PRIVATE
+//  PRIVATE
 //
 uint16_t BH1750FVI::readData()
 {
   if (_wire->requestFrom(_address, (uint8_t) 2) != 2)
   {
     _error = BH1750FVI_ERROR_WIRE_REQUEST;
-    return _data; // last value
+    return _data;  //  last value
   }
   _data = _wire->read();
   _data <<= 8;
@@ -274,4 +274,6 @@ void BH1750FVI::command(uint8_t value)
   _error = _wire->endTransmission();
 }
 
-// --- END OF FILE ---
+
+//  --- END OF FILE ---
+

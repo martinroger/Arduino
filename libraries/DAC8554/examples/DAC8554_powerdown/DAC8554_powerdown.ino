@@ -2,9 +2,7 @@
 //    FILE: DAC8554_powerdown.ino
 //  AUTHOR: Rob Tillaart
 // PURPOSE: demo DAC8554 library Arduino
-// VERSION: 0.2.0
 //     URL: https://github.com/RobTillaart/Arduino/DAC8554
-//
 
 
 #include "DAC8554.h"
@@ -18,11 +16,16 @@ uint8_t chanB = 1;
 uint8_t chanC = 2;
 uint8_t chanD = 3;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("DAC8554_LIB_VERSION: ");
   Serial.println(DAC8554_LIB_VERSION);
+
+  SPI.begin();
+
   mydac.begin();
 
   mydac.setValue(chanA, 0);
@@ -30,6 +33,7 @@ void setup()
   mydac.setPowerDown(chanC, DAC8554_POWERDOWN_100K);
   mydac.setPowerDown(chanD, DAC8554_POWERDOWN_1K);
 }
+
 
 void loop()
 {
@@ -58,4 +62,6 @@ void loop()
   mydac.setPowerDown(chanA, DAC8554_POWERDOWN_NORMAL);
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

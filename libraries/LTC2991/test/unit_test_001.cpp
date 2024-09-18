@@ -1,9 +1,9 @@
 //
 //    FILE: unit_test_001.cpp
 //  AUTHOR: Rob Tillaart
-//    DATE: 2021-01-07
-// PURPOSE: unit tests for the SET library
-//          https://github.com/RobTillaart/SET
+//    DATE: 2021-05-10
+// PURPOSE: unit tests for the LTC2991 library
+//          https://github.com/RobTillaart/LTC2991
 //          https://github.com/Arduino-CI/arduino_ci/blob/master/REFERENCE.md
 //
 
@@ -29,6 +29,7 @@
 // assertNAN(arg);                                 // isnan(a)
 // assertNotNAN(arg);                              // !isnan(a)
 
+
 #include <ArduinoUnitTests.h>
 
 
@@ -38,7 +39,9 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "LTC2991_LIB_VERSION: %s\n", (char *) LTC2991_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
@@ -47,14 +50,14 @@ unittest_teardown()
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", LTC2991_LIB_VERSION);
+  LTC2991 LTC(0x48);  //  all address lines GND
 
-  LTC2991(0x20);
-
-  fprintf(stderr, "no tests yet");
+  assertEqual(0x48, LTC.getAddress());
 }
 
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

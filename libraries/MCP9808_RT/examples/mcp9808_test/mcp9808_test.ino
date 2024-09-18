@@ -1,26 +1,30 @@
 //
 //    FILE: mcp9808_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo
 //    DATE: 2020-05-03
-//    (c) : MIT
-//
+
 
 #include "mcp9808.h"
 
 MCP9808 ts(24);
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("MCP9808_LIB_VERSION: ");
+  Serial.println(MCP9808_LIB_VERSION);
+
+  Wire.begin();
 
   test_0();
   test_1();
   test_2();
   test_3();
 }
+
 
 void test_0()
 {
@@ -45,10 +49,11 @@ void test_0()
   Serial.println(ts.getDeviceID());
   Serial.print("Revision: ");
   Serial.println(ts.getRevision());
-  Serial.print("RFU: ");
+  Serial.print("RFU:      ");
   Serial.println(ts.getRFU());
   Serial.println();
 }
+
 
 void test_1()
 {
@@ -64,6 +69,7 @@ void test_1()
     Serial.println();
   }
 }
+
 
 void test_2()
 {
@@ -113,6 +119,7 @@ void test_2()
   Serial.println();
 }
 
+
 void test_3()
 {
   Serial.println();
@@ -131,6 +138,9 @@ void test_3()
 }
 
 
-void loop() {}
+void loop()
+{
+}
+
 
 // -- END OF FILE --

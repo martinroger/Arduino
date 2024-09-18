@@ -20,30 +20,31 @@
 // assertNull(actual)
 // assertNotNull(actual)
 
+
 #include <ArduinoUnitTests.h>
 
 
-#include "Arduino.h"
 #include "Complex.h"
 
 
 unittest_setup()
 {
+  fprintf(stderr, "COMPLEX_LIB_VERSION: %s\n", (char *) COMPLEX_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
+
 unittest(test_constructor)
 {
-  fprintf(stderr, COMPLEX_LIB_VERSION);
-
   Complex c1(10.0, -2.0);
   Complex c2(3, 0);
   Complex c3(-10, 4);
   Complex c4(-5,-5);
-  Complex c5;  // (0, 0)
+  Complex c5;        //  (0, 0)
 
   assertEqual(10.0, c1.real());
   assertEqual(-2.0, c1.imag());
@@ -55,22 +56,23 @@ unittest(test_constructor)
   assertEqual(-5.0, c4.imag());
   assertEqual(0.0, c5.real());
   assertEqual(0.0, c5.imag());
-  
-  // one is a default available var.
+
+  //  one is a default available var.
   assertEqual(1.0, one.real());
   assertEqual(0.0, one.imag());
 
-  // polar notation setter.
+  //  polar notation setter.
   c1.polar(5, PI/4);
   assertEqualFloat(5, c1.modulus(), 0.0001);
   assertEqualFloat(PI/4, c1.phase(), 0.0001);
 }
 
+
 unittest(test_basic_math)
 {
   Complex a(10.0, -2.5);
   Complex b(3, 1);
-  
+
   Complex c1 = a + b;
   assertEqual(13, c1.real());
   assertEqual(-1.5, c1.imag());
@@ -86,7 +88,7 @@ unittest(test_basic_math)
   Complex c4 = a / b;
   assertEqual(2.75, c4.real());
   assertEqual(-1.75, c4.imag());
-  
+
   Complex c5 = -a;
   assertEqual(-10, c5.real());
   assertEqual(2.5, c5.imag());
@@ -108,6 +110,7 @@ unittest(test_basic_math)
   assertEqual(-2.5, a.imag());
 }
 
+
 unittest(test_basic_functions)
 {
   Complex a;
@@ -128,7 +131,7 @@ unittest(test_basic_functions)
 
   float ph = a.phase();
   assertEqualFloat(-0.244979, ph, 0.0001);
-  
+
   float mod = a.modulus();
   assertEqualFloat(10.3078, mod, 0.0001);
 
@@ -139,7 +142,7 @@ unittest(test_basic_functions)
   Complex reci = a.reciprocal();
   assertEqualFloat(0.0941176, reci.real(), 0.0001);
   assertEqualFloat(0.0235294, reci.imag(), 0.0001);
-  
+
   reci *= a;
   assertEqualFloat(1.0, reci.real(), 0.0001);
   assertEqualFloat(0, reci.imag(), 0.0001);
@@ -180,6 +183,7 @@ unittest(test_power_functions)
   assertEqual(0, b.imag());
 }
 
+
 unittest(test_gonio_functions_I)
 {
   Complex a(3, 4);
@@ -211,7 +215,8 @@ unittest(test_gonio_functions_I)
 }
 
 
-
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

@@ -1,16 +1,9 @@
 //
 //    FILE: dhtnew_array.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.4
 // PURPOSE: DHTNEW library test sketch for Arduino
 //     URL: https://github.com/RobTillaart/DHTNew
 
-// HISTORY:
-// 0.1.0    2020-04-25 initial version
-// 0.1.1    2020-04-30 replaced humidity and temperature with functions
-// 0.1.2    2020-06-08 improved error handling
-// 0.1.3    2020-06-15 match 0.3.0 error handling
-// 0.1.4    2020-11-09 wait for read handling
 // 
 // DHT PIN layout from left to right
 // =================================
@@ -20,6 +13,7 @@
 // pin 3 : Not Connected
 // pin 4 : GND
 
+
 #include <dhtnew.h>
 
 DHTNEW kitchen(4);
@@ -28,19 +22,26 @@ DHTNEW outside(6);
 
 DHTNEW ar[3] = { kitchen, living, outside };
 
+
 void setup()
 {
+  while(!Serial);        // MKR1010 needs this
+
   Serial.begin(115200);
   Serial.println("dhtnew_array.ino");
   Serial.print("LIBRARY VERSION: ");
   Serial.println(DHTNEW_LIB_VERSION);
   Serial.println();
 
+  // MKR1010 needs this
+  // mySensor.setDisableIRQ(false);
+
   for (int idx = 0; idx < 3; idx++)
   {
     test(idx);
   }
 }
+
 
 void loop()
 {
@@ -51,9 +52,10 @@ void loop()
   Serial.println();
 }
 
+
 void test(int idx)
 {
-  // READ DATA
+  //  READ DATA
   uint32_t start = micros();
   int chk = ar[idx].read();
   uint32_t stop = micros();
@@ -97,7 +99,7 @@ void test(int idx)
       break;
   }
 
-  // DISPLAY DATA
+  //  DISPLAY DATA
   Serial.print(ar[idx].getHumidity(), 1);
   Serial.print(",\t");
   Serial.print(ar[idx].getTemperature(), 1);
@@ -109,4 +111,6 @@ void test(int idx)
   delay(500);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

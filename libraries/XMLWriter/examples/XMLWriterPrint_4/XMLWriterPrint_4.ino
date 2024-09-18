@@ -1,17 +1,17 @@
 //
 //    FILE: XMLWriterPrint_4.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo Print interface - PROGMEM strings
 //    DATE: 2020-07-07
 //     URL: https://github.com/RobTillaart/XMLWriter
-//
+
 
 #include <XMLWriter.h>
 
 XMLWriter XML(&Serial);
 
-#define NUMBERZ   F("1.2.3.4.5")
+#define NUMBERZ           (F("1.2.3.4.5"))
+
 
 void setup()
 {
@@ -32,8 +32,11 @@ void setup()
   XML.flush();
 }
 
+
 void loop()
 {
 }
 
+
 // -- END OF FILE --
+

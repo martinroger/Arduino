@@ -1,26 +1,25 @@
 //
 //    FILE: max44009_test02.ino
 //  AUTHOR: Moritz Ulmer
-// VERSION: 0.3.1
 // PURPOSE: demo of max44009 library
+//    DATE: 2020-01-19
+//     URL: https://github.com/RobTillaart/MAX44009
+//
 //    NOTE: To select the alternative I2C address on the GY-49 breakout board,
 //          the A0 pin has to be set to 3V3. It is soldered to GND by default.
 //          See switch S1 / jp1 in the schematics.
 //          Made for ESP specific; does not work on UNO; 
-//    DATE: 2020-01-19
-//
-// Released to the public domain
-//
 
 
 #include "Wire.h"
 #include "Max44009.h"
 
-// Don't begin I2C interface (Wire). Will be called in setup()
-Max44009 myLuxA(Max44009::Boolean::False);
-Max44009 myLuxB(Max44009::Boolean::False);
-Max44009 myLuxC(Max44009::Boolean::False);
-Max44009 myLuxD(Max44009::Boolean::False);
+
+//  Don't begin I2C interface (Wire). Will be called in setup()
+Max44009 myLuxA(MAX44009_DEFAULT_ADDRESS, &Wire);
+Max44009 myLuxB(MAX44009_ALT_ADDRESS, &Wire);
+Max44009 myLuxC(MAX44009_DEFAULT_ADDRESS, &Wire1);
+Max44009 myLuxD(MAX44009_ALT_ADDRESS, &Wire1);
 
 uint32_t lastDisplay = 0;
 
@@ -28,15 +27,13 @@ uint32_t lastDisplay = 0;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("Start max44009_test02 : ");
+  Serial.println(__FILE__);
+  Serial.print("MAX44009_LIB_VERSION: ");
   Serial.println(MAX44009_LIB_VERSION);
+  Serial.println();
 
   Wire.begin(19, 18);
   Wire1.begin(22, 23);
-  myLuxA.configure(MAX44009_DEFAULT_ADDRESS, &Wire);
-  myLuxB.configure(MAX44009_ALT_ADDRESS, &Wire);
-  myLuxC.configure(MAX44009_DEFAULT_ADDRESS, &Wire1);
-  myLuxD.configure(MAX44009_ALT_ADDRESS, &Wire1);
 }
 
 
@@ -53,4 +50,5 @@ void loop() {
 }
 
 
-// END OF FILE
+//  -- END OF FILE --
+

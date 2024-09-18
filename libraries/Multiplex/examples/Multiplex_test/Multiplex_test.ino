@@ -1,40 +1,43 @@
 //
 //    FILE: Multiplex_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
 // PURPOSE: demo
 //    DATE: 2021-01-09
 
+
 #include "Multiplex.h"
 
+
 Multiplex mp;
+
 
 class FakeStream : public Print
 {
   public:
   FakeStream(uint8_t id) : _id(id) { _id = id; };
-  
-  virtual size_t write(uint8_t c) override 
-  { 
+
+  virtual size_t write(uint8_t c) override
+  {
     return Serial.write(c);
   };
-  
-  virtual size_t write(const uint8_t *buffer, size_t size) 
+
+  virtual size_t write(const uint8_t *buffer, size_t size)
   {
     size_t n = 0;
     n += Serial.print("stream");
     n += Serial.print(_id, DEC);
     n += Serial.print(':');
-        
+
     for (uint8_t i = 0 ; i < size ; i++)
     {
       n += write(buffer[i]);
     }
     return n;
   }
-  private: 
+  private:
   uint8_t _id = 0;
 };
+
 
 void setup()
 {
@@ -96,8 +99,8 @@ void setup()
   }
 
   mp.print("Done...\n");
-
 }
+
 
 void loop()
 {
@@ -105,3 +108,4 @@ void loop()
 
 
 // -- END OF FILE --
+

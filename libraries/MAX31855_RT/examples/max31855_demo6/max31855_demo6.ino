@@ -1,45 +1,52 @@
 //
 //    FILE: max31855_demo6.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: thermocouple lib demo setSeebeckCoefficient()
 //    DATE: 2015-12-06
 //     URL: https://github.com/RobTillaart/MAX31855_RT
 //
 
+
 #include "MAX31855.h"
 
-const int doPin = 7;
-const int csPin = 6;
-const int clPin = 5;
 
-MAX31855 tc(clPin, csPin, doPin);
+const int selectPin = 7;
+const int dataPin   = 6;
+const int clockPin  = 5;
+
+MAX31855 thermoCouple(selectPin, dataPin, clockPin);
+
 
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("Start max31855_demo6: ");
+  Serial.println(__FILE__);
+  Serial.print("MAX31855_VERSION : ");
   Serial.println(MAX31855_VERSION);
   Serial.println();
+  delay(250);
 
-  tc.begin();
-  tc.read();
-  float t1 = tc.getTemperature();
+  SPI.begin();
+
+  thermoCouple.begin();
+
+  thermoCouple.read();
+  float t1 = thermoCouple.getTemperature();
   Serial.print("    temp before:\t");
   Serial.println(t1, 2);
 
-  float tcf = tc.getSeebeckCoefficient();
+  float tcf = thermoCouple.getSeebeckCoefficient();
   Serial.print("SeebeckCoefficient before:\t");
   Serial.println(tcf, 4);
 
   Serial.println("\nChange default K-type to J-type ThermoCouple");
-  tc.setSeebeckCoefficient(J_TC);
-  tcf = tc.getSeebeckCoefficient();
+  thermoCouple.setSeebeckCoefficient(J_TC);
+  tcf = thermoCouple.getSeebeckCoefficient();
   Serial.print(" SeebeckCoefficient after:\t");
   Serial.println(tcf, 4);
 
-  tc.read();
-  float t2 = tc.getTemperature();
+  thermoCouple.read();
+  float t2 = thermoCouple.getTemperature();
   Serial.print("     temp after:\t");
   Serial.println(t2, 2);
 
@@ -49,6 +56,11 @@ void setup()
   Serial.println("\ndone...");
 }
 
+
 void loop()
 {
 }
+
+
+//  -- END OF FILE --
+

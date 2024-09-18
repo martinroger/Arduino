@@ -1,9 +1,8 @@
 //
 //    FILE: AD985X_array.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo multi device
-//    DATE: 2021-06-04
+//     URL: https://github.com/RobTillaart/AD985X
 
 
 /*
@@ -34,8 +33,14 @@
 
 
 // three AD9850 objects in an array
-AD9850   freqGen[3];
-uint8_t  SELECT[3]   = { 2, 3, 4 };
+AD9850   freqGen[3]
+{
+  AD9850(2, 9, 8, 7, 6),
+  AD9850(3, 9, 8, 7, 6),
+  AD9850(4, 9, 8, 7, 6),
+};
+
+
 float    freq[3]     = { 25000, 30000, 40000 };
 uint32_t previous[3] = { 0, 0, 0 };
 uint32_t period[3]   = { 1000, 1100, 1200 };
@@ -52,11 +57,13 @@ void setup()
   Serial.print("AD985X_LIB_VERSION: \t");
   Serial.println(AD985X_LIB_VERSION);
 
-  // initialize three devices
+  // SPI.begin();  //  HW SPI
+
+  //  initialize three devices
   for (int i = 0; i < 3; i++)
   {
-    // select, reset, fq_ud, data, clock
-    freqGen[i].begin(SELECT[i], 9, 8, 7, 6);
+    //  select, reset, fq_ud, data, clock
+    freqGen[i].begin();
     freqGen[i].powerUp();
     freqGen[i].setFrequencyF(freq[i]);
   }
@@ -71,7 +78,7 @@ void loop()
 {
   now = millis();
 
-  // update any of the devices?
+  //  update any of the devices?
   for (int i = 0; i < 3; i++)
   {
     if ( now - previous[i] >= period[i] )
@@ -90,4 +97,4 @@ void loop()
 
 }
 
-// -- END OF FILE --
+//  -- END OF FILE --

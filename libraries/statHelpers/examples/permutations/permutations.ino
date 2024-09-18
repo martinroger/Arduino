@@ -1,7 +1,6 @@
 //
 //    FILE: permutations.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-07-02
 //     URL: https://github.com/RobTillaart/statHelpers
@@ -14,10 +13,15 @@
 uint32_t start, duration1, duration2;
 volatile uint32_t x;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("STATHELPERS_LIB_VERSION: ");
+  Serial.println(STATHELPERS_LIB_VERSION);
+  Serial.println();
+
 
   Serial.println("permutations(n, k)");
   delay(10);
@@ -40,6 +44,7 @@ void setup()
   Serial.println(duration1);
   Serial.println();
 
+
   ///////////////////////////////////////////
 
   Serial.println("permutations64(n, k)");
@@ -61,6 +66,7 @@ void setup()
   duration1 = micros() - start;
   Serial.println(duration1);
   Serial.println();
+
 
   ///////////////////////////////////////////
 
@@ -89,9 +95,11 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

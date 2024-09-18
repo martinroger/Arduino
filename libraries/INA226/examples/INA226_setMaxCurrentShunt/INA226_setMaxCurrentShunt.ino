@@ -1,14 +1,12 @@
 //
 //    FILE: INA226_setMaxCurrentShunt.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2021-06-22
 //     URL: https://github.com/RobTillaart/INA226
 
 
 #include "INA226.h"
-#include "Wire.h"
+
 
 INA226 INA(0x40);
 
@@ -17,6 +15,8 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("INA226_LIB_VERSION: ");
+  Serial.println(INA226_LIB_VERSION);
 
   Wire.begin();
   if (!INA.begin() )
@@ -33,12 +33,14 @@ void setup()
   delay(100);
 
 
-  INA.setMaxCurrentShunt(1, 0.002);
+  int x = INA.setMaxCurrentShunt(1, 0.002);
   Serial.println("normalized = true (default)");
+  Serial.println(x);
   printConfig();
 
-  INA.setMaxCurrentShunt(1, 0.002, false);
+  x = INA.setMaxCurrentShunt(1, 0.002, false);
   Serial.println("normalized = false");
+  Serial.println(x);
   printConfig();
 
 
@@ -54,10 +56,10 @@ void setup()
 
 void loop()
 {
-  INA.setMaxCurrentShunt(1, 0.002);
+  INA.setMaxCurrentShunt(1, 0.100);
   measure(20);
 
-  INA.setMaxCurrentShunt(1, 0.002, false);
+  INA.setMaxCurrentShunt(1, 0.100, false);
   measure(20);
 }
 
@@ -96,5 +98,5 @@ void printConfig()
 }
 
 
+//  -- END OF FILE --
 
-// -- END OF FILE --

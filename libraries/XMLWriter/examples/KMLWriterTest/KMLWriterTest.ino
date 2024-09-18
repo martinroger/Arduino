@@ -1,17 +1,17 @@
 //
 //    FILE: KMLWriterTest.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.3
 // PURPOSE: simple KML writer
 //    DATE: 2015-05-21
 //     URL: https://github.com/RobTillaart/XMLWriter
-//
+
 
 #include <XMLWriter.h>
 
 XMLWriter KML(&Serial);
 
 char buffer[24];
+
 
 void setup()
 {
@@ -24,9 +24,11 @@ void setup()
   Serial.println(stop - start);
 }
 
+
 void loop()
 {
 }
+
 
 void KMLTest()
 {
@@ -62,7 +64,9 @@ void KMLTest()
 
   KML.tagStart("/kml");
   KML.tagEnd(NEWLINE, NOSLASH);
+  KML.flush();
 }
+
 
 /* output
 <!--
@@ -91,3 +95,4 @@ This is a demo of the XMLWriter lib for Arduino
 
 
 // -- END OF FILE --
+

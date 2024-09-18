@@ -1,35 +1,40 @@
 //
 //    FILE: max31855_array.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo of array of thermocouples
 //    DATE: 2020-08-26
 //     URL: https://github.com/RobTillaart/MAX31855_RT
 //
 // kudos to FabioBrondo for the idea.
-//
+
 
 #include "MAX31855.h"
 
-// note: pins are slightly different than other examples!
-const int dataPin  = 7;
-const int clockPin = 6;
 
-MAX31855 sensors[] =
+// note: pins are slightly different than other examples!
+MAX31855 A(7, 6, 5);
+MAX31855 B(8, 6, 5);
+MAX31855 C(9, 6, 5);
+
+MAX31855 sensors[] = 
 {
-  MAX31855(clockPin, 5, dataPin),
-  MAX31855(clockPin, 4, dataPin),
-  MAX31855(clockPin, 3, dataPin)
+  A, B, C
 };
 
+
 const uint8_t sensorCount = sizeof(sensors) / sizeof(MAX31855);
+
 
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("Start max31855_array.ino : ");
+  Serial.println(__FILE__);
+  Serial.print("MAX31855_VERSION : ");
   Serial.println(MAX31855_VERSION);
   Serial.println();
+  delay(250);
+
+  SPI.begin();
 
   Serial.println(sensorCount);
 
@@ -38,6 +43,7 @@ void setup()
     sensors[i].begin();
   }
 }
+
 
 void loop()
 {
@@ -66,4 +72,6 @@ void loop()
   delay(1000);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

@@ -36,72 +36,112 @@
 #include "MAX31855.h"
 
 
-
 unittest_setup()
 {
+  fprintf(stderr, "MAX31855_VERSION: %s\n", (char *) MAX31855_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-/*
-unittest(test_new_operator)
+
+unittest(test_constants)
 {
-  assertEqualINF(exp(800));
-  assertEqualINF(0.0/0.0);
-  assertEqualINF(42);
-  
-  assertEqualNAN(INFINITY - INFINITY);
-  assertEqualNAN(0.0/0.0);
-  assertEqualNAN(42);
+  assertEqual(0x00, STATUS_OK);
+  assertEqual(0x01, STATUS_OPEN_CIRCUIT);
+  assertEqual(0x02, STATUS_SHORT_TO_GND);
+  assertEqual(0x04, STATUS_SHORT_TO_VCC);
+  assertEqual(0x07, STATUS_ERROR);
+  assertEqual(0x80, STATUS_NOREAD);
+  assertEqual(0x81, STATUS_NO_COMMUNICATION);
+
+  assertEqual(-999, MAX31855_NO_TEMPERATURE);
 }
-*/
 
-unittest(test_all)
+
+unittest(test_status)
 {
-  fprintf(stderr, "VERSION: %s\n", MAX31855_VERSION);
-  
-  const int doPin = 7;
-  const int csPin = 6;
-  const int clPin = 5;
+  const int selectPin = 7;
+  const int dataPin   = 6;
+  const int clockPin  = 5;
 
-  MAX31855 tc(clPin, csPin, doPin);
-  tc.begin();
+  MAX31855 thermoCouple(selectPin, dataPin, clockPin);
+  thermoCouple.begin();
 
   fprintf(stderr, "Status...\n");
-  assertEqual(STATUS_NOREAD, (int)tc.getStatus());
-  assertEqual(0, tc.lastRead());
-  assertEqual(0, tc.getRawData());
-  assertFalse(tc.openCircuit());
-  assertFalse(tc.shortToGND());
-  assertFalse(tc.shortToVCC());
-  assertFalse(tc.genericError());
-  assertFalse(tc.noCommunication());
-  assertTrue(tc.noRead());
+  assertEqual(STATUS_NOREAD, (int)thermoCouple.getStatus());
+  assertEqual(0, thermoCouple.lastRead());
+  assertEqual(0, thermoCouple.getRawData());
+  assertFalse(thermoCouple.openCircuit());
+  assertFalse(thermoCouple.shortToGND());
+  assertFalse(thermoCouple.shortToVCC());
+  assertFalse(thermoCouple.genericError());
+  assertFalse(thermoCouple.noCommunication());
+  assertTrue(thermoCouple.noRead());
+}
+
+
+unittest(test_temperature)
+{
+  const int selectPin = 7;
+  const int dataPin   = 6;
+  const int clockPin  = 5;
+
+  MAX31855 thermoCouple(selectPin, dataPin, clockPin);
+  thermoCouple.begin();
 
   fprintf(stderr, "Temperature...\n");
-  assertEqualFloat(MAX31855_NO_TEMPERATURE, tc.getInternal(), 0.001);
-  assertEqualFloat(MAX31855_NO_TEMPERATURE, tc.getTemperature(), 0.001);
+  assertEqualFloat(MAX31855_NO_TEMPERATURE, thermoCouple.getInternal(), 0.001);
+  assertEqualFloat(MAX31855_NO_TEMPERATURE, thermoCouple.getTemperature(), 0.001);
 
-  fprintf(stderr, "Offset...\n");
+  fprintf(stderr, "\nOffset...\n");
   for (int of = 0; of < 10; of++)
   {
-    tc.setOffset(of * 0.1);
+    thermoCouple.setOffset(of * 0.1);
     fprintf(stderr, "%f\t", of * 0.1);
-    assertEqualFloat(of * 0.1, tc.getOffset(), 0.001);
+    assertEqualFloat(of * 0.1, thermoCouple.getOffset(), 0.001);
   }
 
-  fprintf(stderr, "SeebeckCoefficient...\n");
-  for (float sbc = 9; sbc < 100; sbc += 12.345)  // non existant still good for test.
+  fprintf(stderr, "\nSeebeckCoefficient...\n");
+  for (float sbc = 9; sbc < 100; sbc += 12.345)    //  non existent still good for test.
   {
-    tc.setSeebeckCoefficient(sbc);
+    thermoCouple.setSeebeckCoefficient(sbc);
     fprintf(stderr, "%f\t", sbc);
-    assertEqualFloat(sbc, tc.getSeebeckCoefficient(), 0.001);
+    assertEqualFloat(sbc, thermoCouple.getSeebeckCoefficient(), 0.001);
+  }
+}
+
+
+unittest(test_SPIspeed_SWSPIdelay)
+{
+  const int selectPin = 7;
+  const int dataPin   = 6;
+  const int clockPin  = 5;
+
+  MAX31855 thermoCouple(selectPin, dataPin, clockPin);
+  thermoCouple.begin();
+
+  fprintf(stderr, "SPIspeed...\n");
+  for (uint32_t sp = 100000; sp <= 1000000; sp += 100000)
+  {
+    thermoCouple.setSPIspeed(sp);
+    fprintf(stderr, "%ld\t", sp);
+    assertEqual(sp, thermoCouple.getSPIspeed());
   }
 
+  fprintf(stderr, "\nsetSWSPIdelay...\n");
+  for (uint16_t del = 0; del < 11; del++)
+  {
+    thermoCouple.setSWSPIdelay(del);
+    fprintf(stderr, "%d\t", del);
+    assertEqual(del, thermoCouple.getSWSPIdelay());
+  }
 }
+
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --

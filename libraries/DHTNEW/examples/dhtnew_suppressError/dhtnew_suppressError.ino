@@ -1,35 +1,38 @@
 //
 //    FILE: dhtnew_suppressError.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: DHTNEW library test sketch
 //     URL: https://github.com/RobTillaart/DHTNew
-//
-// HISTORY:
-// 0.1.0    2020-07-17 initial version
-//
-// DHT PIN layout from left to right
-// =================================
-// FRONT : DESCRIPTION
-// pin 1 : VCC
-// pin 2 : DATA
-// pin 3 : Not Connected
-// pin 4 : GND
+
+//  DHT PIN layout from left to right
+//  =================================
+//  FRONT : DESCRIPTION
+//  pin 1 : VCC
+//  pin 2 : DATA
+//  pin 3 : Not Connected
+//  pin 4 : GND
 
 
-// run sketch without connected sensor to see effect
+//  run sketch without connected sensor to see effect
+
 
 #include <dhtnew.h>
 
-DHTNEW mySensor(16);
+DHTNEW mySensor(5);   // ESP 16    UNO 5    MKR1010 5
 
 uint32_t count = 0;
 
+
 void setup()
 {
+  while(!Serial);        // MKR1010 needs this
+
   Serial.begin(115200);
   Serial.println(__FILE__);
   Serial.println();
+
+  // MKR1010 needs this
+  // mySensor.setDisableIRQ(false);
 
   // test flag working => prints 010
   Serial.print(mySensor.getSuppressError());
@@ -42,6 +45,7 @@ void setup()
   mySensor.setSuppressError(true);
   Serial.println();
 }
+
 
 void loop()
 {
@@ -59,4 +63,6 @@ void loop()
   }
 }
 
+
 // -- END OF FILE --
+

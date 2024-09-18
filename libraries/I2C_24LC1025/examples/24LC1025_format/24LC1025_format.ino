@@ -11,10 +11,15 @@ I2C_24LC1025 ee(0x50);
 
 uint32_t start, stop;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("I2C_24LC1025_LIB_VERSION: ");
+  Serial.println(I2C_24LC1025_LIB_VERSION);
+
+  Wire.begin();
 
   if (! ee.begin())
   {
@@ -37,8 +42,11 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

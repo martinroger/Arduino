@@ -1,13 +1,13 @@
 //
 //    FILE: ra_300.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 //    DATE: 2021-05-26
-//
-// PUPROSE: demonstrate large (16 bit) buffer
-//
+// PURPOSE: demonstrate large (16 bit) buffer
+//     URL: https://github.com/RobTillaart/RunningAverage
+
 
 #include "RunningAverage.h"
+
 
 RunningAverage myRA(300);
 int samples = 0;
@@ -16,8 +16,9 @@ int samples = 0;
 void setup(void)
 {
   Serial.begin(115200);
-  Serial.println("Demo RunningAverage lib");
-  Serial.print("Version: ");
+  Serial.println();
+  Serial.println(__FILE__);
+  Serial.print("RUNNINGAVERAGE_LIB_VERSION: ");
   Serial.println(RUNNINGAVERAGE_LIB_VERSION);
   
   myRA.clear();
@@ -38,4 +39,6 @@ void loop(void)
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

@@ -1,9 +1,9 @@
 //
 //    FILE: unit_test_001.cpp
 //  AUTHOR: Rob Tillaart
-//    DATE: 2021-01-07
-// PURPOSE: unit tests for the SET library
-//          https://github.com/RobTillaart/SET
+//    DATE: 2021-06-24
+// PURPOSE: unit tests for Arduino library for SGP30 environment sensor.
+//          https://github.com/RobTillaart/SGP30
 //          https://github.com/Arduino-CI/arduino_ci/blob/master/REFERENCE.md
 //
 
@@ -29,6 +29,7 @@
 // assertNAN(arg);                                 // isnan(a)
 // assertNotNAN(arg);                              // !isnan(a)
 
+
 #include <ArduinoUnitTests.h>
 
 
@@ -38,7 +39,9 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "SGP30_LIB_VERSION: %s\n", (char *) SGP30_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
@@ -47,9 +50,9 @@ unittest_teardown()
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", SGP30_LIB_VERSION);
   SGP30 SGP;
-  
+
+  Wire.begin();
   assertTrue(SGP.begin());
   assertTrue(SGP.isConnected());
 
@@ -60,14 +63,17 @@ unittest(test_constructor)
 
 unittest(test_constants)
 {
-  assertEqual(SGP30_OK, 0x00);
+  assertEqual(SGP30_OK,        0x00);
+  assertEqual(SGP30_ERROR_CRC, 0xFF);
+  assertEqual(SGP30_ERROR_I2C, 0xFE);
 }
 
 
 unittest(test_defaults_core)
 {
   SGP30 SGP;
-
+  
+  Wire.begin();
   assertEqual(0x00, SGP.getCO2());
   assertEqual(0x00, SGP.getTVOC());
   assertEqual(0x00, SGP.getH2_raw());
@@ -81,6 +87,7 @@ unittest(test_sref_H2)
 {
   SGP30 SGP;
 
+  Wire.begin();
   assertEqual(13119, SGP.getSrefH2());
 
   SGP.setSrefH2(0);
@@ -88,7 +95,7 @@ unittest(test_sref_H2)
 
   SGP.setSrefH2(10000);
   assertEqual(10000, SGP.getSrefH2());
-  
+
   SGP.setSrefH2();
   assertEqual(13119, SGP.getSrefH2());
 }
@@ -98,6 +105,7 @@ unittest(test_sref_Ethanol)
 {
   SGP30 SGP;
 
+  Wire.begin();
   assertEqual(18472, SGP.getSrefEthanol());
 
   SGP.setSrefEthanol(0);
@@ -105,7 +113,7 @@ unittest(test_sref_Ethanol)
 
   SGP.setSrefEthanol(10000);
   assertEqual(10000, SGP.getSrefEthanol());
-  
+
   SGP.setSrefEthanol();
   assertEqual(18472, SGP.getSrefEthanol());
 }
@@ -114,4 +122,4 @@ unittest(test_sref_Ethanol)
 unittest_main()
 
 
-// --------
+//  -- END OF FILE --

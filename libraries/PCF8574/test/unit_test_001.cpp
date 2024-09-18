@@ -42,18 +42,20 @@ PCF8574 PCF(0x38);
 
 unittest_setup()
 {
+  fprintf(stderr, "PCF8574_LIB_VERSION: %s\n", (char *) PCF8574_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
+
 unittest(test_begin)
 {
-  fprintf(stderr, "VERSION: %s\n", PCF8574_LIB_VERSION);
-
   PCF8574 PCF(0x38);
 
+  Wire.begin();
   PCF.begin();
 
   int readValue = PCF.read8();
@@ -69,6 +71,7 @@ unittest(test_read)
   PCF8574 PCF(0x38);
   int readValue;
 
+  Wire.begin();
   PCF.begin();
   for (int i = 0; i < 8; i++)
   {
@@ -91,7 +94,9 @@ unittest(test_address)
 {
   PCF8574 PCF(0x38);
 
-  // incorrect in test environment.
+  Wire.begin();
+
+  //  incorrect in test environment.
   assertTrue(PCF.begin());
   assertTrue(PCF.isConnected());
   assertEqual(0x38, PCF.getAddress());
@@ -103,4 +108,6 @@ unittest(test_address)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

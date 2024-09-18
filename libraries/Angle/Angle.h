@@ -1,13 +1,13 @@
 #pragma once
 //
 //    FILE: Angle.h
-//  AUTHOR: Rob dot Tillaart at gmail dot com
-// VERSION: 0.1.10
+//  AUTHOR: Rob Tillaart
+// VERSION: 0.2.0
 // PURPOSE: angle library for Arduino
-// HISTORY: See angle.cpp
+//     URL: https://github.com/RobTillaart/Angle
+//          http://forum.arduino.cc/index.php?topic=339402
 //
-// AngleFormat proxy added 03/03/15 by Christoper Andrews.
-//
+// AngleFormat proxy added 03/03/15 by Christopher Andrews.
 
 
 #include "math.h"
@@ -15,17 +15,19 @@
 #include "Printable.h"
 
 
-#define ANGLE_LIB_VERSION 		(F("0.1.10"))
+#define ANGLE_LIB_VERSION               (F("0.2.0"))
 
 
 class Angle;
 
-enum AngleFormatMode{
+enum AngleFormatMode
+{
     D = 1, M, S, T
 };
 
-struct AngleFormat : Printable{
 
+struct AngleFormat : Printable
+{
     AngleFormat( const Angle &ref, AngleFormatMode format );
     size_t printTo(Print& p) const;
 
@@ -33,18 +35,19 @@ struct AngleFormat : Printable{
     AngleFormatMode mode;
 };
 
+
 class Angle: public Printable
 {
 public:
-    Angle(int dd=0, int mm=0, int ss=0, int tt=0);
+    Angle(int dd = 0, int mm = 0, int ss = 0, int tt = 0);
     Angle(double alpha);
-    Angle(char * str);
+    Angle(const char * str);
 
-    int sign()        { return neg ? -1 : 1; };
-    int degree()      { return d; };
-    int minute()      { return m; };
-    int second()      { return s; };
-    int tenthousand() { return t; };
+    int sign()        { return _negative ? -1 : 1; };
+    int degree()      { return _degrees; };
+    int minute()      { return _minutes; };
+    int second()      { return _seconds; };
+    int tenthousand() { return _tenths; };
 
     size_t printTo(Print& p) const { return printTo( p, T ); }
     size_t printTo(Print& p, AngleFormatMode mode) const;
@@ -52,10 +55,10 @@ public:
     AngleFormat format( AngleFormatMode format ) { return AngleFormat( *this, format ); }
 
     double toDouble();
-    double toRadians() { return toDouble() * PI / 180.0; };
-    void fromRadians(double rad) { *this = rad * 180.0/PI; };
+    double toRadians() { return toDouble() * (PI / 180.0); };
+    void fromRadians(double radians) { *this = radians * (180.0 / PI); };
 
-    // EQUALITIES
+    //  EQUALITIES
     bool operator == (const Angle& a) { return compare(*this, a) == 0; };
     bool operator != (const Angle& a) { return compare(*this, a) != 0; };
     bool operator <  (const Angle& a) { return compare(*this, a) <  0; };
@@ -63,7 +66,7 @@ public:
     bool operator >  (const Angle& a) { return compare(*this, a) >  0; };
     bool operator >= (const Angle& a) { return compare(*this, a) >= 0; };
 
-    // NEGATE
+    //  NEGATE
     Angle operator - ();
 
     Angle operator + (const Angle&);
@@ -78,7 +81,7 @@ public:
     Angle operator / (const double);
     Angle& operator /= (const double);
 
-    double operator / (Angle&);   // ratio
+    double operator / (Angle&);   //  ratio
 
 private:
     void normalize();
@@ -87,11 +90,13 @@ private:
     Angle addHelper(const Angle &a);
     Angle subHelper(const Angle &a);
 
-    bool neg; // angle is negative
-    int d; // whole degrees
-    int m; // minutes
-    int s; // seconds
-    int t; // tenhousands
+    bool _negative;  //  angle is negative
+    int  _degrees;
+    int  _minutes;
+    int  _seconds;
+    int  _tenths;      //  ten thousands
 };
 
-// -- END OF FILE
+
+//  -- END OF FILE
+

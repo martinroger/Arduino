@@ -1,25 +1,25 @@
 //
 //    FILE: MAX14661_SHADOW.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo PAIR interface
 //    DATE: 2021-08-30
 //     URL: https://github.com/RobTillaart/MAX14661
-//
 
 
 #include "Wire.h"
 #include "MAX14661.h"
 
-MAX14661 mux(0x4C);  // 0x4C..0x4F
+MAX14661 mux(0x4C);  //  0x4C..0x4F
 
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("MAX14661_LIB_VERSION: ");
   Serial.println(MAX14661_LIB_VERSION);
 
+  Wire.begin();
   if (mux.begin() == false)
   {
     Serial.println("Could not find MAX14661");
@@ -47,6 +47,7 @@ void test1()
   Serial.println(mux.getShadowChannelMaskB());
 }
 
+
 void test2()
 {
   Serial.println();
@@ -60,6 +61,7 @@ void test2()
   Serial.println(mux.getShadowChannelMaskA());
   Serial.println(mux.getShadowChannelMaskB());
 }
+
 
 void test3()
 {
@@ -104,4 +106,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

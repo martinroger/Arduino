@@ -1,18 +1,24 @@
 //
 //    FILE: adt7470_demo.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo ADT7470 library
-//    DATE: 2015-12-02
 
 
-#include <Wire.h>
 #include "ADT7470.h"
 
-ADT7470 ADT(ADT7470_ADDR_FLOAT);
+ADT7470 ADT(ADT7470_ADDR_FLOAT);  //  default Wire
+
 
 void setup()
 {
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println(__FILE__);
+  Serial.println("ADT7470_LIB_VERSION: ");
+  Serial.println(ADT7470_LIB_VERSION);
+  Serial.println();
+
+
   Wire.begin();
 
   Serial.begin(115200);
@@ -34,11 +40,11 @@ void setup()
     testTach();
     testFanSpeed();
 
-
     testStop();
   }
   Serial.println("Done");
 }
+
 
 void testStart()
 {
@@ -67,6 +73,7 @@ void testRevision()
   delay(10);
 }
 
+
 void testTemp()
 {
   Serial.println(F("ADT7470 testTemp 0..9"));
@@ -85,6 +92,7 @@ void testTemp()
   Serial.println();
   delay(10);
 }
+
 
 void testPWM()
 {
@@ -111,6 +119,7 @@ void testPWM()
   delay(10);
 }
 
+
 void testTach()
 {
   uint8_t ppr[4];
@@ -130,7 +139,7 @@ void testTach()
     ADT.setPulsesPerRevolution(i, ppr[i]);
     bool b = (ppr[i] == ADT.getPulsesPerRevolution(i));
     Serial.print("\t");
-    Serial.print(b ? "T" : "F");          // expect TTTT
+    Serial.print(b ? "T" : "F");          //  expect TTTT
   }
   Serial.println();
 
@@ -205,13 +214,14 @@ void testFanSpeed()
   delay(10);
 }
 
+
 void testStop()
 {
   Serial.println(F("ADT7470 testStop"));
   ADT.stopMonitoring();
   ADT.powerDown();
   delay(2000);
-  // TODO how to check if it is down - datasheet.
+  //  TODO how to check if it is down - datasheet.
 }
 
 
@@ -219,4 +229,6 @@ void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

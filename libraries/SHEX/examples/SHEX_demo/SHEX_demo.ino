@@ -1,18 +1,19 @@
 //
 //    FILE: SHEX_demo.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
-// PURPOSE: demo SHEX hexdump class
+// PURPOSE: demo SHEX hex dump class
 //    DATE: 2020-05-24
-//    (c) : MIT
-//
+
 
 #include "SHEX.h"
+
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("SHEX_LIB_VERSION: ");
+  Serial.println(SHEX_LIB_VERSION);
 
   Serial.println("\nNORMAL\n");
   for (int i = 0; i < 64; i++)
@@ -22,21 +23,26 @@ void setup()
     if ((i % 16) == 0) Serial.println();
   }
 
+  Serial.println("\n\nSHEX ASCII TEST");
+  SHEX shex(&Serial, 16);
+  shex.setCountDigits(5);
+  shex.print("abcdefghijklmnopqrstuvwxyz");
+  shex.restartOutput();
+
+  shex.print("abcdefghijklmnopqrstuv");
+  shex.restartOutput();
 
   Serial.println("\n\nSHEX\n");
-  SHEX shex(&Serial, 16);
-
   for (int i = 0; i < 300; i++)
   {
     char c = random(150);
     shex.print(c);
   }
 
-
   Serial.println("\n\nSHEX modified\n");
   shex.setBytesPerLine(60);
   shex.setSeparator('-');
-  shex.setCountFlag(false);
+  shex.setCountDigits(0);
 
   for (int i = 0; i < 600; i++)
   {
@@ -47,8 +53,10 @@ void setup()
   Serial.println("\n Done...\n");
 }
 
+
 void loop()
 {
 }
+
 
 // -- END OF FILE --

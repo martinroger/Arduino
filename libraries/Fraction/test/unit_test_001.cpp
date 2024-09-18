@@ -21,6 +21,7 @@
 // assertNull(actual)
 // assertNotNull(actual)
 
+
 #include <ArduinoUnitTests.h>
 
 
@@ -31,40 +32,36 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "FRACTION_LIB_VERSION: %s\n", (char*) FRACTION_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-/*
-unittest(test_new_operator)
-{
-  assertEqualINF(exp(800));
-  assertEqualINF(0.0/0.0);
-  assertEqualINF(42);
-  
-  assertEqualNAN(INFINITY - INFINITY);
-  assertEqualNAN(0.0/0.0);
-  assertEqualNAN(42);
-}
-*/
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION:\t%s\n", FRACTIONLIBVERSION);
-
   Fraction pi(PI);
-  assertEqual(355, pi.nominator());
-  assertEqual(113, pi.denominator());
+  assertEqualFloat(PI, pi.toFloat(), 0.0001);
+  //  what we wished it would find.
+  //  assertEqual(355, pi.nominator());
+  //  assertEqual(113, pi.denominator());
+  //  (15689, 4994)
   assertFalse(pi.isProper());
-  fprintf(stderr, "PI -> %1.8f\n", pi.toFloat());
-  
+  fprintf(stderr, "PI %1.8f\n", PI);
+  fprintf(stderr, "pi %1.8f\n", pi.toFloat());
+
   Fraction ee(EULER);
-  assertEqual(3985, ee.nominator());
-  assertEqual(1466, ee.denominator());
+  assertEqualFloat(EULER, ee.toFloat(), 0.0001);
+  //  what we wished it would find.
+  //  assertEqual(3985, ee.nominator());
+  //  assertEqual(1466, ee.denominator());
+  //  (2721, 1001)
   assertFalse(ee.isProper());
-  fprintf(stderr, "EULER -> %1.8f\n", ee.toFloat());
+  fprintf(stderr, "EULER %1.8f\n", EULER);
+  fprintf(stderr, "euler %1.8f\n", ee.toFloat());
 
   Fraction fr(49, 14);
   assertEqual(7, fr.nominator());
@@ -94,11 +91,13 @@ unittest(test_math)
 {
   Fraction pi(PI);
   Fraction ee(EULER);
-  // TODO
+  //  TODO
   assertEqual(1, 1);
 }
 
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

@@ -1,33 +1,13 @@
 //
 //    FILE: Cozir.cpp
 //  AUTHOR: DirtGambit & Rob Tillaart
-// VERSION: 0.3.0
+// VERSION: 0.3.8
 // PURPOSE: library for COZIR range of sensors for Arduino
-//          Polling Mode
+//          Polling Mode + stream parser
 //     URL: https://github.com/RobTillaart/Cozir
 //          http://forum.arduino.cc/index.php?topic=91467.0
 //
-// HISTORY:
-//  0.3.0   2021-08-08  Major update - breaks interface (names mainly)
-//                      add isInitialized(),   add getOperatingMode(), 
-//                      add getOutputFields(), add inOutputFields(), 
-//                      add kelvin(),          add EEPROM functions
-//                      class methods camelCase
-//                      extend unit tests
-//  0.2.6   2021-01-31  fix #4 use Mode0 for versions and configuration
-//  0.2.5   2020-12-26  fix software Serial + version number (oops)
-//  0.2.2   2020-12-17  add Arduino-CI + unit tests
-//  0.2.1   2020-06-05  fix library.json
-//  0.2.0   2020-03-30  some refactor and own repo
-//  0.1.06  added support for HardwareSerial for MEGA (Rob T)
-//          removed support for NewSoftSerial ==> stop pre 1.0 support)
-//  0.1.05  fixed bug: uint16_t request() to uint32_t request() in .h file (Rob T)
-//  0.1.04  changed CO2 to support larger values (Rob T)
-//  0.1.03  added setOperatingMode
-//  0.1.02  added support Arduino 1.x
-//  0.1.01  initial version
-//
-// READ DATASHEET BEFORE USE OF THIS LIB !
+//     READ DATASHEET BEFORE USE OF THIS LIB !
 //
 
 
@@ -38,23 +18,24 @@
 #define CZR_REQUEST_TIMEOUT         200
 
 
-// EEPROM ADRESSES
-// P 11-12 manual
+//  EEPROM ADRESSES
+//  P 11-12 manual     WHICH
+//
 //      Name          Address         Default value/ notes
-#define CZR_AHHI        0x00            // reserved
-#define CZR_ANLO        0x01            // reserved
-#define CZR_ANSOURCE    0x02            // reserved
-#define CZR_ACINITHI    0x03            // 87
-#define CZR_ACINITLO    0x04            // 192
-#define CZR_ACHI        0x05            // 94
-#define CZR_ACLO        0x06            // 128
-#define CZR_ACONOFF     0x07            // 0
-#define CZR_ACPPMHI     0x08            // 1
-#define CZR_ACPPMLO     0x09            // 194
-#define CZR_AMBHI       0x0A            // 1
-#define CZR_AMBLO       0x0B            // 194
-#define CZR_BCHI        0x0C            // 0
-#define CZR_BCLO        0x0D            // 8
+#define CZR_AHHI        0x00            //  reserved
+#define CZR_ANLO        0x01            //  reserved
+#define CZR_ANSOURCE    0x02            //  reserved
+#define CZR_ACINITHI    0x03            //  87
+#define CZR_ACINITLO    0x04            //  192
+#define CZR_ACHI        0x05            //  94
+#define CZR_ACLO        0x06            //  128
+#define CZR_ACONOFF     0x07            //  0
+#define CZR_ACPPMHI     0x08            //  1
+#define CZR_ACPPMLO     0x09            //  194
+#define CZR_AMBHI       0x0A            //  1
+#define CZR_AMBLO       0x0B            //  194
+#define CZR_BCHI        0x0C            //  0
+#define CZR_BCLO        0x0D            //  8
 
 
 
@@ -67,10 +48,10 @@ COZIR::COZIR(Stream * str)
 
 void COZIR::init()
 {
-  // override default streaming (takes too much performance)
+  //  override default streaming (takes too much performance)
   setOperatingMode(CZR_POLLING);
   _initTimeStamp = millis();
-  // delay for initialization is kept until next major release.
+  //  delay for initialization is kept until next major release.
   //    timestamp + isInitialized() is prepared.
   //    users can comment next line.
   delay(CZR_INIT_DELAY);
@@ -85,33 +66,35 @@ bool COZIR::isInitialized()
 
 ////////////////////////////////////////////////////////////
 //
-// OPERATING MODE
+//  OPERATING MODE
 //
-// note: use CZR_COMMAND to minimize power consumption
-// CZR_POLLING and CZR_STREAMING use an equally amount
-// of power as both sample continuously...
+//  note: use CZR_COMMAND to minimize power consumption
+//  CZR_POLLING and CZR_STREAMING use an equally amount
+//  of power as both sample continuously...
 //
-void COZIR::setOperatingMode(uint8_t mode)
+bool COZIR::setOperatingMode(uint8_t mode)
 {
+  if (mode > CZR_POLLING) return false;
   _operatingMode = mode;
   sprintf(_buffer, "K %u", mode);
   _command(_buffer);
+  return true;
 }
 
 
 ////////////////////////////////////////////////////////////
 //
-// POLLING MODE
+//  POLLING MODE
 //
-// you need to set the polling mode explicitly before
-// using these functions. SetOperatingMode(CZR_POLLING);
-// this is the default behaviour of this Class but
-// not of the sensor!!
+//  you need to set the polling mode explicitly before
+//  using these functions. SetOperatingMode(CZR_POLLING);
+//  this is the default behaviour of this Class but
+//  not of the sensor!!
 //
 float COZIR::celsius()
 {
   uint16_t rv = _request("T");
-  return 0.1 * (rv - 1000.0);     // P17 negative values
+  return 0.1 * (rv - 1000.0);
 }
 
 
@@ -121,7 +104,7 @@ float COZIR::humidity()
 }
 
 
-// UNITS UNKNOWN lux??
+//  UNITS UNKNOWN lux??
 float COZIR::light()
 {
   return 1.0 * _request("L");
@@ -140,13 +123,13 @@ uint16_t COZIR::getPPMFactor()
   return _ppmFactor;
 }
 
-// CALLIBRATION - USE THESE WITH CARE
-// use these only in polling mode (on the Arduino)
+//  CALLIBRATION - USE THESE WITH CARE
+//  use these only in polling mode (on the Arduino)
 
-// FineTuneZeroPoint()
-// a reading of v1 will be reported as v2
-// sort of mapping
-// check datasheet for detailed description
+//  FineTuneZeroPoint()
+//  a reading of v1 will be reported as v2
+//  sort of mapping / offset
+//  check datasheet for detailed description
 uint16_t COZIR::fineTuneZeroPoint(uint16_t v1, uint16_t v2)
 {
   sprintf(_buffer, "F %u %u", v1, v2);
@@ -154,7 +137,7 @@ uint16_t COZIR::fineTuneZeroPoint(uint16_t v1, uint16_t v2)
 }
 
 
-// mostly the default calibrator
+// f mostly the default calibrator
 uint16_t COZIR::calibrateFreshAir()
 {
   return _request("G");
@@ -207,15 +190,20 @@ uint8_t COZIR::getDigiFilter()
 
 ////////////////////////////////////////////////////////////
 //
-// STREAMING MODE
+//  STREAMING MODE
 //
-// output fields should be OR-ed
+//  output fields should be OR-ed
 // e.g. SetOutputFields(CZR_HUMIDITY | CZR_RAWTEMP | CZR_RAWCO2);
 //
-// you need to set the STREAMING mode explicitly
-// SetOperatingMode(CZR_STREAMING);
+//  you need to set the STREAMING mode explicitly
+//  SetOperatingMode(CZR_STREAMING);
 //
-// in STREAMING mode you must parse the output of serial yourself
+//  in STREAMING mode you must parse the output of serial yourself.
+//  stream looks like [space field space value]*  \n
+//
+//  - find separator ('\n')
+//  - read until next separator ('\n') in a buffer,
+//  - parse buffer [field space value]
 //
 void COZIR::setOutputFields(uint16_t fields)
 {
@@ -231,10 +219,10 @@ bool COZIR::inOutputFields(uint16_t field)
 }
 
 
-// WARNING:
-// After a call to GetRecentFields() you must read the serial port yourself as
-// the internal buffer of this Class cannot handle the possible large output.
-// It can be over 100 bytes long lines!
+//  WARNING:
+//  After a call to GetRecentFields() you must read the serial port yourself as
+//  the internal buffer of this Class cannot handle the possible large output.
+//  It can be over 100 bytes long lines!
 void COZIR::getRecentFields()
 {
   _command("Q");
@@ -242,7 +230,7 @@ void COZIR::getRecentFields()
 
 ////////////////////////////////////////////////////////////
 //
-// EEPROM CALLS - USE WITH CARE
+//  EEPROM CALLS - USE WITH CARE
 //
 void COZIR::setAutoCalibrationPreload(uint16_t value)
 {
@@ -311,7 +299,7 @@ uint16_t COZIR::getBufferClearTime()
 
 
 /*
-// TODO first verify if single functions work.
+//  TODO first verify if single functions work.
 
 void COZIR::setEEPROMFactoryReset()
 {
@@ -328,18 +316,18 @@ void COZIR::setEEPROMFactoryReset()
 
 ////////////////////////////////////////////////////////////
 //
-// COMMAND MODE
+//  COMMAND MODE
 //
-// read serial yourself -
+//  read serial yourself -
 //
-// TODO Page 5:  Mode 0 Command Mode
-// This is primarily intended for use when extracting larger chunks
-// of information from the sensor (for example using the Y and * commands).
-// In this mode, the sensor is stopped waiting for commands.
+//  TODO Page 5:  Mode 0 Command Mode
+//  This is primarily intended for use when extracting larger chunks
+//  of information from the sensor (for example using the Y and * commands).
+//  In this mode, the sensor is stopped waiting for commands.
 //
 void COZIR::getVersionSerial()
 {
-  // override modes to prevent interference in output
+  //  override modes to prevent interference in output
   setOperatingMode(CZR_COMMAND);
   _command("Y");
 }
@@ -347,7 +335,7 @@ void COZIR::getVersionSerial()
 
 void COZIR::getConfiguration()
 {
-  // override modes to prevent interference in output
+  //  override modes to prevent interference in output
   setOperatingMode(CZR_COMMAND);
   _command("*");
 }
@@ -355,7 +343,7 @@ void COZIR::getConfiguration()
 
 /////////////////////////////////////////////////////////
 //
-// PRIVATE
+//  PRIVATE
 //
 void COZIR::_command(const char* str)
 {
@@ -368,28 +356,33 @@ uint32_t COZIR::_request(const char* str)
 {
   _command(str);
 
-  // read the answer from serial.
-  // TODO: PROPER TIMEOUT CODE.
-  // - might be a big delay
-  // - what is longest answer possible?
+  //  read the answer from serial.
+  //  TODO: PROPER TIMEOUT CODE.
+  //  - might be a big delay
+  //  - what is longest answer possible? CZR_REQUEST_TIMEOUT?
   uint8_t idx = 0;
   uint32_t start = millis();
-  // while (millis() - start < CZR_REQUEST_TIMEOUT)
-  delay(CZR_REQUEST_TIMEOUT);
-  while (true)
+  while (millis() - start < CZR_REQUEST_TIMEOUT)
   {
-    // delay(1);
     if (_ser->available())
     {
       char c = _ser->read();
+      if (c == '\n') break;
       _buffer[idx++] = c;
       _buffer[idx] = '\0';
-      if (c == '\n') break;
     }
   }
-  uint32_t rv = atol(&_buffer[2]);
-  if (idx > 2) return rv;
-  return 0;
+  //  Serial.print("buffer: ");
+  //  Serial.println(_buffer);
+  uint32_t rv = 0;
+  //  default for PPM is different.
+  if (str[0] == '.') rv = 1;
+  //  do we got the requested field?
+  if (strchr(_buffer, str[0]) && (idx > 2))
+  {
+    rv = atol(&_buffer[2]);
+  }
+  return rv;
 }
 
 
@@ -428,4 +421,182 @@ uint16_t COZIR::_getEEPROM2(uint8_t address)
 
 
 
-// -- END OF FILE --
+////////////////////////////////////////////////////////////////////////////////
+//
+//  C0ZIRParser
+//
+C0ZIRParser::C0ZIRParser()
+{
+  init();
+}
+
+
+void C0ZIRParser::init()
+{
+  _light              = 0;
+  _humidity           = 0;
+  _LED_FILT           = 0;
+  _LED_RAW            = 0;
+  _LED_MAX            = 0;
+  _zeroPoint          = 0;
+  _temperature_RAW    = 0;
+  _temperature_FILT   = 0;
+  _LED_signal_FILT    = 0;
+  _LED_signal_RAW     = 0;
+  _temperature_Sensor = 0;
+  _CO2_FILT           = 0;
+  _CO2_RAW            = 0;
+  _samples            = 0;
+  _PPM                = 1;  //  Note default one
+  _value              = 0;
+  _field              = 0;
+}
+
+
+uint8_t C0ZIRParser::nextChar(char c)
+{
+  static bool skipLine = false;
+  uint8_t rv = 0;
+
+  //  SKIP * and Y until next return.
+  //  as output of these two commands not handled by this parser
+  if ((c == '*') || (c == 'Y') || (c == '@')) skipLine = true;
+  if (c == '\n') skipLine = false;
+  if (skipLine) return 0;
+
+  //  TODO investigate
+  //  if the last char is more than 2..5 ms ago (9600 baud ~ 1 char/ms)
+  //  it probably needs to sync with the stream again.
+  //  but it depends on how calling process behaves.
+  //  - need for uint32_t _lastChar time stamp?
+
+  switch(c)
+  {
+    case '0' ... '9':
+      _value *= 10;
+      _value += (c - '0');
+      break;
+    //  major responses to catch
+    case 'z':
+    case 'Z':
+    case 'L':
+    case 'T':
+    case 'H':
+    //  all other known responses, starting a new field
+    case 'X':
+    case '.':
+    case '@':     //  skipped
+    case 'Y':     //  skipped
+    case '*':     //  skipped
+    case 'Q':
+    case 'F':
+    case 'G':
+    case 'M':
+    case 'K':    //  mode
+    case 'A':
+    case 'a':
+    case 'P':
+    case 'p':
+    case 'S':
+    case 's':
+    case 'U':
+    case 'u':
+    //  new line triggers store() to have results available faster.
+    //  saves ~500 millis() for the last FIELD
+    case '\n':
+      rv = store();
+      _field = c;
+      _value = 0;
+      break;
+
+    //  drop fields of Y, and * command.
+    //  reset parsing on separators of Y and * commands
+    case ':':
+    case ',':
+      _field = 0;
+      _value = 0;
+      break;
+
+    case ' ':    //  known separator
+    case '\r':   //  known return
+      break;
+    default:     //  catch all unknown characters, including glitches.
+      break;
+  }
+  return rv;
+}
+
+
+float C0ZIRParser::celsius()
+{
+  return  0.1 * (_temperature_FILT - 1000.0);
+}
+
+
+//////////////////////////////////
+//
+//  PRIVATE
+//
+uint8_t C0ZIRParser::store()
+{
+  switch(_field)
+  {
+    //  LIGHT related
+    case 'L':
+      _light = _value;
+      return _field;
+    case 'D':
+      _LED_FILT = _value;
+      return _field;
+    case 'd':
+      _LED_RAW = _value;
+      return _field;
+    case 'l':
+      _LED_MAX = _value;
+      return _field;
+    case 'o':
+      _LED_signal_FILT = _value;
+      return _field;
+    case 'O':
+      _LED_signal_RAW = _value;
+      return _field;
+
+    //  TEMPERATURE & HUMIDITY
+    case 'V':
+      _temperature_RAW = _value;
+      return _field;
+    case 'v':
+      _temperature_Sensor = _value;
+      return _field;
+    case 'T':
+      _temperature_FILT = _value;
+      return _field;
+    case 'H':
+      _humidity = _value;
+      return _field;
+
+    //  CO2 related
+    case 'z':
+      _CO2_RAW = _value;
+      return _field;
+    case 'Z':
+      _CO2_FILT = _value;
+      return _field;
+
+    //  OTHER
+    case 'h':
+      _zeroPoint = _value;
+      return _field;
+    case 'a':
+      _samples = _value;
+      return _field;
+    case '.':
+      _PPM = _value;
+      return _field;
+  }
+  return 0;
+}
+
+
+//  -- END OF FILE --
+

@@ -1,28 +1,29 @@
 //
 //    FILE: PCF8591_demo.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-07-22
 //     URL: https://github.com/RobTillaart/PCF8591
+
 
 #include "PCF8591.h"
 
 PCF8591 dev(0x48);
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PCF8591_LIB_VERSION: ");
+  Serial.println(PCF8591_LIB_VERSION);
 
   Wire.begin();
   Wire.setClock(100000UL);
 
-#if defined (ESP8266) || defined(ESP32)
-  dev.begin(21, 22);
-#endif
   dev.begin();
 }
+
 
 void loop()
 {
@@ -31,7 +32,7 @@ void loop()
   test_ADC_mode(0);
   delay(1000);
 
-  // differential modes, check datasheet
+  //  differential modes, check datasheet
   test_ADC_mode(1);
   delay(1000);
   test_ADC_mode(2);
@@ -50,16 +51,17 @@ void test_DAC()
   {
     uint8_t val = 127 + 127 * sin(i * 0.01);
     Serial.println(val);
-    dev.analogWrite(val);
+    dev.write(val);
     delay(1);              //  just to slow the effect
   }
   dev.disableDAC();
   Serial.println();
 }
 
+
 void test_ADC_mode(uint8_t mode)
 {
-  uint8_t channels[] = {4, 3, 3, 2 }; // channels per mode
+  uint8_t channels[] = {4, 3, 3, 2 };  //  channels per mode
   Serial.println(__FUNCTION__);
   Serial.println("--------------");
   Serial.println("CH0\tCH1\tCH2\tCH3");
@@ -67,7 +69,7 @@ void test_ADC_mode(uint8_t mode)
   {
     for (uint8_t i = 0; i < channels[mode]; i++)
     {
-      Serial.print(dev.analogRead(i, mode));
+      Serial.print(dev.read(i, mode));
       Serial.print('\t');
     }
     Serial.println();
@@ -75,4 +77,5 @@ void test_ADC_mode(uint8_t mode)
   Serial.println();
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

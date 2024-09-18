@@ -1,22 +1,23 @@
 //
 //    FILE: ADS_setWireClock.ino
 //  AUTHOR: Rob.Tillaart
-// VERSION: 0.1.0
 // PURPOSE: read analog inputs - straightforward.
+//     URL: https://github.com/RobTillaart/ADS1X15
+
+//  test
+//  connect 1 potentiometer per port.
+//
+//  GND ---[   x   ]------ 5V
+//             |
+//
+//  measure at x (connect to AIN0).
 //
 
-// test
-// connect 1 potmeter per port.
-//
-// GND ---[   x   ]------ 5V
-//            |
-//
-// measure at x (connect to AIN0).
-//
 
 #include "ADS1X15.h"
 
 ADS1115 ADS(0x48);
+
 
 void setup()
 {
@@ -39,6 +40,7 @@ void setup()
   Serial.println();
 }
 
+
 void loop()
 {
   ADS.setGain(0);
@@ -48,7 +50,7 @@ void loop()
   int16_t val_2 = ADS.readADC(2);
   int16_t val_3 = ADS.readADC(3);
 
-  float f = ADS.toVoltage(1);  // voltage factor
+  float f = ADS.toVoltage(1);  //  voltage factor
 
   Serial.print("\tAnalog0: "); Serial.print(val_0); Serial.print('\t'); Serial.println(val_0 * f, 3);
   Serial.print("\tAnalog1: "); Serial.print(val_1); Serial.print('\t'); Serial.println(val_1 * f, 3);
@@ -59,4 +61,6 @@ void loop()
   delay(1000);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

@@ -1,34 +1,38 @@
 //
 //    FILE: Kelvin2RGB_difference.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo - shows difference between 2 convert functions.
 //    DATE: 2020-07-29
 //     URL: https://github.com/RobTillaart/Kelvin2RGB
 //
-
-// shows difference between the two calculations
 //       best viewed in plotter.
+
 
 #include "Kelvin2RGB.h"
 
 Kelvin2RGB KRGB;
 Kelvin2RGB KRGB2;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("KELVIN2RGB_LIB_VERSION: ");
+  Serial.println(KELVIN2RGB_LIB_VERSION);
+  Serial.println();
 
   KRGB.begin();
   KRGB2.begin();
-  
+
   test_difference();
 }
+
 
 void loop()
 {
 }
+
 
 void test_difference()
 {
@@ -46,4 +50,6 @@ void test_difference()
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

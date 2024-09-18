@@ -2,7 +2,7 @@
 //    FILE: I2C_eeprom_test_performance.ino
 //  AUTHOR: Rob Tillaart
 // PURPOSE: test I2C_EEPROM library
-//
+//     URL: https://github.com/RobTillaart/I2C_EEPROM
 
 
 #include "Wire.h"
@@ -17,10 +17,12 @@ uint32_t start, diff, totals = 0;
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial); // wait for Serial port to connect. Needed for Leonardo only
+  while (!Serial);  //  wait for Serial port to connect. Needed for Leonardo only
   Serial.println(__FILE__);
-  Serial.print("VERSION: ");
+  Serial.print("I2C_EEPROM_VERSION: ");
   Serial.println(I2C_EEPROM_VERSION);
+
+  Wire.begin();
 
   ee.begin();
   if (! ee.isConnected())
@@ -39,6 +41,7 @@ void setup()
     Serial.println(speed);
     delay(10);
     test();
+    dumpEEPROM(0, 100);
   }
   Serial.println("\ndone...");
 }
@@ -53,8 +56,8 @@ void loop()
 
 void test()
 {
-  char data2[] = "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999A"; 
-    
+  char data2[] = "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999A";
+
   totals = 0;
   Serial.print("\nTEST: timing writeByte()\t");
   uint32_t start = micros();
@@ -92,7 +95,7 @@ void test()
   Serial.println(totals);
   totals = 0;
 
-  // same tests but now with a 5 millisec delay in between.
+  //  same tests but now with a 5 milliseconds delay in between.
   delay(5);
 
   Serial.print("\nTEST: timing writeByte()\t");
@@ -145,7 +148,7 @@ void test()
 void dumpEEPROM(uint16_t memoryAddress, uint16_t length)
 {
   const int BLOCK_TO_LENGTH = 10;
-  
+
   Serial.print("\t  ");
   for (int x = 0; x < 10; x++)
   {
@@ -177,4 +180,6 @@ void dumpEEPROM(uint16_t memoryAddress, uint16_t length)
   Serial.println();
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

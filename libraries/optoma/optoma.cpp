@@ -1,22 +1,23 @@
 //
 //    FILE: optoma.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
+// VERSION: 0.1.6
 //    DATE: 2017-11-27
-// PUPROSE: Arduino library to control Optoma W305ST beamer over RS232. 
+// PURPOSE: Arduino library to control Optoma W305ST beamer over RS232.
 //     URL: https://github.com/RobTillaart/optoma
-//
-//  HISTORY
-//  0.1.0   2017-11-27  initial version
-//  0.1.1   2020-07-09  initial release
-//  0.1.2   2020-01-02  arduino-CI 
+
 
 #include "optoma.h"
 
-Optoma::Optoma(HardwareSerial* stream)
+
+Optoma::Optoma(HardwareSerial * stream)
 {
-  _stream = stream;
+  _stream   = stream;
+  _ID       = 0;
+  _on       = false;
+  _baudrate = 9600;
 }
+
 
 void Optoma::init(int ID, uint32_t baudRate)
 {
@@ -27,12 +28,20 @@ void Optoma::init(int ID, uint32_t baudRate)
   _stream->print("\r");
 }
 
+
+uint32_t Optoma::getBaudrate() 
+{
+  return _baudrate;
+};
+
+
 void Optoma::switchOn()
 {
   sendID();
   _stream->print(F("00 1\r"));
   _on = true;
 };
+
 
 void Optoma::switchOff()
 {
@@ -41,11 +50,13 @@ void Optoma::switchOff()
   _on = false;
 };
 
+
 void Optoma::increaseVKS()
 {
   sendID();
   _stream->print(F("140 15\r"));
 };
+
 
 void Optoma::decreaseVKS()
 {
@@ -53,10 +64,12 @@ void Optoma::decreaseVKS()
   _stream->print(F("140 16\r"));
 };
 
+
 bool Optoma::isOn()
 {
   return _on;
 };
+
 
 void Optoma::sendID()
 {
@@ -65,4 +78,6 @@ void Optoma::sendID()
   _stream->print(_ID);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

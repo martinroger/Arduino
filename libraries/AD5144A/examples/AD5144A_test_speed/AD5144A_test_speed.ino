@@ -1,16 +1,14 @@
 //
 //    FILE: AD5144A_test_speed.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2021-04-30
 //     URL: https://github.com/RobTillaart/AD5144A
 
 
 #include "AD5144A.h"
 
-// select the right type
-// adjust address
+//  select the right type
+//  adjust address
 AD5144A AD(0x77);
 
 
@@ -54,17 +52,17 @@ void test_i2C_clock(uint32_t clock)
     return;
   }
 
-  for (int p = 0; p < AD.pmCount(); p++)
+  for (int potMeter = 0; potMeter < AD.pmCount(); potMeter++)
   {
-    for (int val = 0; val < 256; val++)
+    for (int value = 0; value < 256; value++)
     {
-      AD.write(p, val);
-      if (AD.read(p) != val)
+      AD.write(potMeter, value);
+      if (AD.read(potMeter) != value)
       {
         Serial.print("error:\t");
-        Serial.print(p);
+        Serial.print(potMeter);
         Serial.print("\t");
-        Serial.print(val);
+        Serial.print(value);
         Serial.println();
       }
     }
@@ -73,4 +71,4 @@ void test_i2C_clock(uint32_t clock)
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

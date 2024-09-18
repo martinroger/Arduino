@@ -36,21 +36,34 @@
 #include "PCF8591.h"
 
 
-
 unittest_setup()
 {
+  fprintf(stderr, "PCF8591_LIB_VERSION: %s\n", (char *) PCF8591_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
 
+unittest(test_constants)
+{
+  assertEqual(PCF8591_OK           , 0x00);
+  assertEqual(PCF8591_PIN_ERROR    , 0x81);
+  assertEqual(PCF8591_I2C_ERROR    , 0x82);
+  assertEqual(PCF8591_MODE_ERROR   , 0x83);
+  assertEqual(PCF8591_CHANNEL_ERROR, 0x84);
+  assertEqual(PCF8591_ADDRESS_ERROR, 0x85);
+}
+
+
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", PCF8591_LIB_VERSION);
-
   PCF8591 dev(0x48);
+
+  Wire.begin();
+
   assertTrue(dev.begin());
 
   assertTrue(dev.isConnected());
@@ -62,8 +75,10 @@ unittest(test_constructor)
 unittest(test_ADC_INCR)
 {
   PCF8591 dev(0x48);
+
+  Wire.begin();
   assertTrue(dev.begin());
-  
+
   assertFalse(dev.isINCREnabled());
   dev.enableINCR();
   assertTrue(dev.isINCREnabled());
@@ -75,6 +90,8 @@ unittest(test_ADC_INCR)
 unittest(test_DAC)
 {
   PCF8591 dev(0x48);
+
+  Wire.begin();
   assertTrue(dev.begin());
 
   assertFalse(dev.isDACEnabled());
@@ -87,4 +104,6 @@ unittest(test_DAC)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

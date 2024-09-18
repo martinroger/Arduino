@@ -1,12 +1,11 @@
 //
 //    FILE: functionGeneratorDuoPlot.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo function generators
 //    DATE: 2020-06-10
 //     URL: https://github.com/RobTillaart/FunctionGenerator
 //
-// use a Serial plotter to show the data
+//  use a Serial plotter to show the data
 
 
 #include "functionGenerator.h"
@@ -14,10 +13,13 @@
 funcgen gen1;
 funcgen gen2;
 
+
 void setup()
 {
   Serial.begin(115200);
-  // Serial.print("Start functionGeneratorPerformance - LIB VERSION: ");
+  // Serial.println();
+  // Serial.println(__FILE__);
+  // Serial.print("FUNCTIONGENERATOR_LIB_VERSION: ");
   // Serial.println(FUNCTIONGENERATOR_LIB_VERSION);
 
   gen1.setFrequency(13);
@@ -30,6 +32,7 @@ void setup()
   gen2.setPhase(0.25);
   gen2.setYShift(25);
 }
+
 
 void loop()
 {
@@ -44,4 +47,6 @@ void loop()
   Serial.println();
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

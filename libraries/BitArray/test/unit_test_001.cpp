@@ -3,7 +3,7 @@
 //  AUTHOR: Rob Tillaart
 //    DATE: 2020-12-13
 // PURPOSE: unit tests for the BitArray
-//          https://github.com/RobTillaart/
+//          https://github.com/RobTillaart/BitArray
 //          https://github.com/Arduino-CI/arduino_ci/blob/master/REFERENCE.md
 //
 
@@ -19,6 +19,7 @@
 // assertFalse(actual)
 // assertNull(actual)
 
+
 #include <ArduinoUnitTests.h>
 
 #include "BitArray.h"
@@ -26,19 +27,21 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "BITARRAY_LIB_VERSION: %s\n", (char *) BITARRAY_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
   fprintf(stderr, "\n");
 }
 
+
 unittest(test_constructor)
 {
   BitArray ba;
+
   assertEqual(BA_NO_MEMORY_ERR, ba.getError());
-  
-  fprintf(stderr, "\tVERSION:\t %s\n", BITARRAY_LIB_VERSION);
 
   ba.begin(0, 1000);
   assertEqual(BA_ELEMENT_SIZE_ERR, ba.getError());
@@ -53,6 +56,7 @@ unittest(test_constructor)
   fprintf(stderr, "\tSEGMENTS:\t %d\n", ba.segments());
 }
 
+
 unittest(test_set_get_toggle)
 {
   BitArray ba;
@@ -62,11 +66,11 @@ unittest(test_set_get_toggle)
 
   fprintf(stderr, "\t1000x set(i, 0) -> sum += get(i)\n");
   int sum = 0;
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     ba.set(i, 0);
   }
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     sum += ba.get(i);
   }
@@ -74,28 +78,29 @@ unittest(test_set_get_toggle)
 
   fprintf(stderr, "\t1000x set(i, 1) -> sum += get(i)\n");
   sum = 0;
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     ba.set(i, 1);
   }
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     sum += ba.get(i);
   }
   assertEqual(1000, sum);
-  
+
   fprintf(stderr, "\t1000x toggle(i)\n");
   sum = 0;
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     ba.toggle(i);
   }
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     sum += ba.get(i);
   }
   assertEqual(0, sum);
 }
+
 
 unittest(test_clear)
 {
@@ -107,11 +112,11 @@ unittest(test_clear)
 
   fprintf(stderr, "\t1000x set(i, 1) -> clear() -> sum += get(i)\n");
   int sum = 0;
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     ba.set(i, 1);
   }
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     sum += ba.get(i);
   }
@@ -119,13 +124,42 @@ unittest(test_clear)
 
   ba.clear();
   sum = 0;
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < ba.capacity(); i++)
   {
     sum += ba.get(i);
   }
   assertEqual(0, sum);
 }
 
+
+unittest(test_setAll)
+{
+  BitArray ba;
+
+  ba.begin(5, 200);
+  assertEqual(BA_OK, ba.getError());
+
+
+  fprintf(stderr, "\tsetAll(17) -> sum += get(i)\n");
+  ba.setAll(17);
+  uint32_t sum = 0;
+  for (int i = 0; i < ba.capacity(); i++)
+  {
+    sum += ba.get(i);
+  }
+  assertEqual(3400, sum);
+
+  ba.clear();
+  sum = 0;
+  for (int i = 0; i < ba.capacity(); i++)
+  {
+    sum += ba.get(i);
+  }
+  assertEqual(0, sum);
+}
+
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --

@@ -1,7 +1,6 @@
 //
 //    FILE: fastTrig_test1.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
 // PURPOSE: testing the fastTrigonio functions
 //    DATE: 2020-08-30
 //    (c) : MIT
@@ -14,6 +13,7 @@ uint32_t start, d1, d2;
 
 volatile float x;
 int i;
+
 
 void setup()
 {
@@ -47,8 +47,9 @@ bool test_hw_support()        // to be elaborated
   d2 = micros() - start;
   Serial.println(d1);
   Serial.println(d2);
+  Serial.println(y);      //  keep compiler happy
   Serial.println();
-  return (d1 / d2) < 1.5; // just a guess for now.
+  return (d1 / d2) < 1.5; //  just a guess for now.
 }
 
 
@@ -304,5 +305,6 @@ void test_itan_error_1(bool show)
 void loop()
 {
 }
+
 
 // -- END OF FILE --

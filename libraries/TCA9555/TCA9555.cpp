@@ -1,27 +1,23 @@
 //
 //    FILE: TCA9555.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
+// VERSION: 0.3.2
 // PURPOSE: Arduino library for I2C TCA9555 16 channel port expander
 //    DATE: 2021-06-09
 //     URL: https://github.com/RobTillaart/TCA9555
-//
-//  HISTORY:
-//  0.1.0   2021-06-09  initial version
-//  0.1.1   2021-06-10  add 16 bit interface
 
 
 #include "TCA9555.h"
 
 
-// REGISTERS
-#define TCA9555_INPUT_PORT_REGISTER_0     0x00    // read()
+//  REGISTERS
+#define TCA9555_INPUT_PORT_REGISTER_0     0x00    //  read()
 #define TCA9555_INPUT_PORT_REGISTER_1     0x01
-#define TCA9555_OUTPUT_PORT_REGISTER_0    0x02    // write()
+#define TCA9555_OUTPUT_PORT_REGISTER_0    0x02    //  write()
 #define TCA9555_OUTPUT_PORT_REGISTER_1    0x03
-#define TCA9555_POLARITY_REGISTER_0       0x04    // get/setPolarity
+#define TCA9555_POLARITY_REGISTER_0       0x04    //  get/setPolarity()
 #define TCA9555_POLARITY_REGISTER_1       0x05
-#define TCA9555_CONFIGURATION_PORT_0      0x06    // pinMode
+#define TCA9555_CONFIGURATION_PORT_0      0x06    //  pinMode()
 #define TCA9555_CONFIGURATION_PORT_1      0x07
 
 
@@ -30,23 +26,13 @@ TCA9555::TCA9555(uint8_t address, TwoWire *wire)
   _address = address;
   _wire    = wire;
   _error   = TCA9555_OK;
+  _type    = 55;
 }
-
-
-#if defined(ESP8266) || defined(ESP32)
-bool TCA9555::begin(const uint8_t dataPin, const uint8_t clockPin)
-{
-  _wire = &Wire;
-  _wire->begin(dataPin, clockPin);
-  if (! isConnected()) return false;
-  return true;
-}
-#endif
 
 
 bool TCA9555::begin()
 {
-  _wire->begin();
+  if ((_address < 0x20) || (_address > 0x27)) return false;
   if (! isConnected()) return false;
   return true;
 }
@@ -59,11 +45,17 @@ bool TCA9555::isConnected()
 }
 
 
+uint8_t TCA9555::getAddress()
+{
+  return _address;
+}
+
+
 //////////////////////////////////////////////////////////
 //
-// 1 PIN INTERFACE
+//  1 PIN INTERFACE
 //
-bool TCA9555::pinMode(uint8_t pin, uint8_t mode)
+bool TCA9555::pinMode1(uint8_t pin, uint8_t mode)   //  pin = 0..15
 {
   if (pin > 15)
   {
@@ -91,7 +83,7 @@ bool TCA9555::pinMode(uint8_t pin, uint8_t mode)
 }
 
 
-bool TCA9555::digitalWrite(uint8_t pin, uint8_t value)   // pin = 0..15
+bool TCA9555::write1(uint8_t pin, uint8_t value)   //  pin = 0..15
 {
   if (pin > 15)
   {
@@ -114,7 +106,7 @@ bool TCA9555::digitalWrite(uint8_t pin, uint8_t value)   // pin = 0..15
 }
 
 
-uint8_t TCA9555::digitalRead(uint8_t pin)
+uint8_t TCA9555::read1(uint8_t pin)   //  pin = 0..15
 {
   if (pin > 15)
   {
@@ -135,7 +127,7 @@ uint8_t TCA9555::digitalRead(uint8_t pin)
 }
 
 
-bool TCA9555::setPolarity(uint8_t pin, uint8_t value)   // pin = 0..15
+bool TCA9555::setPolarity(uint8_t pin, uint8_t value)   //  pin = 0..15
 {
   if (pin > 15)
   {
@@ -176,7 +168,7 @@ uint8_t TCA9555::getPolarity(uint8_t pin)
 
 //////////////////////////////////////////////////////////
 //
-// 8 PIN INTERFACE
+//  8 PIN INTERFACE
 //
 bool TCA9555::pinMode8(uint8_t port, uint8_t mask)
 {
@@ -192,7 +184,7 @@ bool TCA9555::pinMode8(uint8_t port, uint8_t mask)
 }
 
 
-bool TCA9555::write8(uint8_t port, uint8_t mask)   // port = 0..1
+bool TCA9555::write8(uint8_t port, uint8_t mask)   //  port = 0..1
 {
   if (port > 1)
   {
@@ -239,12 +231,12 @@ uint8_t TCA9555::getPolarity8(uint8_t port)
   if (port > 1)
   {
     _error = TCA9555_PORT_ERROR;
-    return false;
+    return 0;
   }
   _error = TCA9555_OK;
   if (port == 0) return readRegister(TCA9555_POLARITY_REGISTER_0);
   if (port == 1) return readRegister(TCA9555_POLARITY_REGISTER_1);
-  return 0; // keeps compiler happy
+  return 0;  //  keeps compiler happy
 }
 
 
@@ -252,8 +244,6 @@ uint8_t TCA9555::getPolarity8(uint8_t port)
 //
 // 16 PIN INTERFACE
 //
-
-
 bool TCA9555::pinMode16(uint16_t mask)
 {
   bool b = true;
@@ -292,7 +282,7 @@ bool TCA9555::setPolarity16(uint16_t mask)
 
 uint8_t TCA9555::getPolarity16()
 {
-    uint16_t rv = 0;
+  uint16_t rv = 0;
   rv |= (getPolarity8(1) << 8);
   rv |= getPolarity8(0);
   return rv;
@@ -301,17 +291,22 @@ uint8_t TCA9555::getPolarity16()
 
 int TCA9555::lastError()
 {
-  int e = _error;
-  _error = TCA9555_OK;  // reset error after read.
-  return e;
+  int error = _error;
+  _error = TCA9555_OK;  //  reset error after read.
+  return error;
+}
+
+
+uint8_t TCA9555::getType()
+{
+  return _type;
 }
 
 
 ////////////////////////////////////////////////////
 //
-// PRIVATE
-// 
-
+//  PROTECTED
+//
 bool TCA9555::writeRegister(uint8_t reg, uint8_t value)
 {
   _wire->beginTransmission(_address);
@@ -348,11 +343,14 @@ uint8_t TCA9555::readRegister(uint8_t reg)
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// TCA9535
-// 
+//  TCA9535
+//
 TCA9535::TCA9535(uint8_t address, TwoWire *wire)
         :TCA9555(address, wire)
 {
+  _type = 35;
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

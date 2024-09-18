@@ -1,14 +1,13 @@
 //
 //    FILE: semiFactorial.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2021-08-05
 //     URL: https://github.com/RobTillaart/statHelpers
 
 
 #include "statHelpers.h"
-#include "printHelpers.h"  // to print large numbers....
+#include "printHelpers.h"  //  to print large numbers....
 
 
 uint32_t start, duration1, duration2, duration3;
@@ -18,6 +17,9 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("STATHELPERS_LIB_VERSION: ");
+  Serial.println(STATHELPERS_LIB_VERSION);
+  Serial.println();
 
   int m = 60;
   if (sizeof(double) == 8) m = 301;
@@ -40,7 +42,7 @@ void setup()
   delay(100);
   uint8_t n = 25;
   start = micros();
-  double d1 = semiFactorial(n);  // will fail but indicative
+  double d1 = semiFactorial(n);  //  will fail but indicative
   duration1 = micros() - start;
   start = micros();
   double d2 = semiFactorial64(n);
@@ -69,8 +71,11 @@ void setup()
   Serial.println("\n Done...");
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

@@ -29,6 +29,7 @@
 // assertNAN(arg);                                 // isnan(a)
 // assertNotNAN(arg);                              // !isnan(a)
 
+
 #include <ArduinoUnitTests.h>
 
 
@@ -38,23 +39,38 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "MCP9808_LIB_VERSION: %s\n", (char *) MCP9808_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
 
-// TODO more can be tested if there is a Godmode->Wire stub
+unittest(test_constants)
+{
+  assertEqual(MCP9808_THYSTERESIS , 0x0600);
+  assertEqual(MCP9808_SHUTDOWN    , 0x0100);
+  assertEqual(MCP9808_CRIT_LOCK   , 0x0080);
+  assertEqual(MCP9808_WIN_LOCK    , 0x0040);
+  assertEqual(MCP9808_INT_CLEAR   , 0x0020);
+  assertEqual(MCP9808_ALERT_STATUS, 0x0010);
+  assertEqual(MCP9808_ALERT_CTRL  , 0x0008);
+  assertEqual(MCP9808_ALERT_SELECT, 0x0004);
+  assertEqual(MCP9808_ALERT_POLAR , 0x0002);
+  assertEqual(MCP9808_ALERT_MODE  , 0x0001);
+}
 
+
+//  TODO more can be tested if there is a Godmode->Wire stub
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", "-");
-
-  MCP9808 ts(24);
-  assertTrue(ts.setAddress(24, &Wire) );
-  assertTrue(ts.isConnected());
+  MCP9808 ts(24, &Wire);
+  // assertTrue(ts.isConnected());
+  assertEqual(1,1);
 }
+
 
 unittest(test_offset)
 {
@@ -67,6 +83,9 @@ unittest(test_offset)
   }
 }
 
+
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

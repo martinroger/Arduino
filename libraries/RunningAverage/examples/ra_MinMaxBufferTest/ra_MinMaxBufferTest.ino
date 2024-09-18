@@ -1,28 +1,30 @@
 //
 //    FILE: ra_MinMaxBufferTest.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.00
-//    DATE: 2015-SEP-04
-//
-// PUPROSE: demo
-//
+//    DATE: 2015-09-04
+// PURPOSE: demo
+//     URL: https://github.com/RobTillaart/RunningAverage
+
 
 #include "RunningAverage.h"
+
 
 RunningAverage myRA(10);
 int samples = 0;
 
+
 void setup(void)
 {
   Serial.begin(115200);
-  Serial.print("\nDemo ");
+  Serial.println();
   Serial.println(__FILE__);
-  Serial.print("Version: ");
+  Serial.print("RUNNINGAVERAGE_LIB_VERSION: ");
   Serial.println(RUNNINGAVERAGE_LIB_VERSION);
-  myRA.clear(); // explicitly start clean
+  myRA.clear();  //  explicitly start clean
 
   Serial.println("\nCNT\tMIN\tMINBUF\tMAX\tMAXBUF");
 }
+
 
 void loop(void)
 {
@@ -47,3 +49,7 @@ void loop(void)
   }
   delay(10);
 }
+
+
+//  -- END OF FILE --
+

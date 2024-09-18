@@ -1,13 +1,19 @@
 
 [![Arduino CI](https://github.com/RobTillaart/MAX31855_RT/workflows/Arduino%20CI/badge.svg)](https://github.com/marketplace/actions/arduino_ci)
+[![Arduino-lint](https://github.com/RobTillaart/MAX31855_RT/actions/workflows/arduino-lint.yml/badge.svg)](https://github.com/RobTillaart/MAX31855_RT/actions/workflows/arduino-lint.yml)
+[![JSON check](https://github.com/RobTillaart/MAX31855_RT/actions/workflows/jsoncheck.yml/badge.svg)](https://github.com/RobTillaart/MAX31855_RT/actions/workflows/jsoncheck.yml)
+[![GitHub issues](https://img.shields.io/github/issues/RobTillaart/MAX31855_RT.svg)](https://github.com/RobTillaart/MAX31855_RT/issues)
+
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/RobTillaart/MAX31855_RT/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/RobTillaart/MAX31855_RT.svg?maxAge=3600)](https://github.com/RobTillaart/MAX31855_RT/releases)
+[![PlatformIO Registry](https://badges.registry.platformio.org/packages/robtillaart/library/MAX31855.svg)](https://registry.platformio.org/libraries/robtillaart/MAX31855)
+
 
 # MAX31855_RT
 
 Arduino library for MAX31855 chip for K type thermocouple.
 
-The library has experimental support for other types of thermocouples E, J, N, R, S, T
+The library has experimental support for other types of thermocouples E, J, N, R, S, T.
 
 
 ## Description
@@ -21,72 +27,94 @@ For every type of TC there exist an MAX31855 variant, this library is primary
 developed for the K-type sensor. However it has experimental support for all
 other types of TC's. See details below.
 
-Library tested with breakout board
+Library tested with breakout board.
 
 ```
-     +---------+
- Vin | o       |
- 3V3 | o       |
- GND | o     O | Thermocouple
-  D0 | o     O | Thermocouple
-  CS | o       |
- CLK | o       |
-     +---------+
+         +---------+
+     Vin | o       |
+     3V3 | o       |
+     GND | o     O | Thermocouple
+      D0 | o     O | Thermocouple
+      CS | o       |
+     CLK | o       |
+         +---------+
 
 ```
+
+
+#### 0.6.0 Breaking change
+
+Version 0.6.0 introduced a breaking change to improve handling the SPI dependency.
+The user has to call **SPI.begin()** or equivalent before calling **MX.begin()**.
+Optionally the user can provide parameters to the **SPI.begin(...)**
+
+
+#### 0.5.0 Breaking change
+
+The version 0.5.0 has breaking changes in the interface. 
+The essence is removal of ESP32 specific code from the library. 
+This makes it possible to support the ESP32-S3 and other processors in the future. 
+Also it makes the library a bit simpler to maintain.
+
+Note the order of the parameters of the software SPI constructor has changed in 0.5.0.
+
+
+#### Related
+
+- https://github.com/RobTillaart/MAX6675
+- https://github.com/RobTillaart/MAX31850
+- https://github.com/RobTillaart/MAX31855_RT
+
 
 ## Hardware SPI vs software SPI
 
 Default pin connections. ESP32 can overrule with **setGPIOpins()**.
 
- | HW SPI   |  UNO  |  ESP32 VSPI |  ESP32 HSPI | Notes
- |:---------|:-----:|:-------:|:-------:|:----------|
- | CLOCKPIN |   13  |   18    |   14    |
- | MISO     |   12  |   19    |   12    |
- | MOSI     |   11  |   23    |   13    |  *not used...*
- | SELECT   | eg. 4 |    5    |   15    |  *can be others too.*
+ |  HW SPI    |  UNO  |  ESP32 VSPI  |  ESP32 HSPI  |  Notes
+ |:-----------|:-----:|:------------:|:------------:|:----------|
+ |  CLOCKPIN  |   13  |     18       |     14       |
+ |  MISO      |   12  |     19       |     12       |
+ |  MOSI      |   11  |     23       |     13       |  *not used...*
+ |  SELECT    |    4  |      5       |     15       |  *can be others too.*
 
 
 Performance read() function, timing in us.  (ESP32 @240MHz)
 
-| mode   | clock    | timing UNO | timing ESP32 | Notes
-|:-------|---------:|-----------:|-------------:|:----------|
-| HW SPI | 32000000 |     ni     |      ~15     | *less reliable*
-| HW SPI | 16000000 |    ~68     |      ~16     |
-| HW SPI |  4000000 |    ~72     |      ~23     |
-| HW SPI |  1000000 |    ~100    |      ~51     |
-| HW SPI |   500000 |    ~128    |      ~89     |
-| SW SPI | bit bang |    ~500    |      ~17 (!) |
-
+|   mode   |  clock     |  timing UNO  |  timing ESP32  |  Notes
+|:---------|-----------:|-------------:|---------------:|:----------|
+|  HW SPI  |  32000000  |       ni     |      ~15       |  *less reliable*
+|  HW SPI  |  16000000  |      ~68     |      ~16       |
+|  HW SPI  |   4000000  |      ~72     |      ~23       |
+|  HW SPI  |   1000000  |      ~100    |      ~51       |
+|  HW SPI  |    500000  |      ~128    |      ~89       |
+|  SW SPI  |  bit bang  |      ~500    |      ~17 (!)   |
 
 
 ## Interface
 
+```cpp
+#include "MAX31855.h"
+```
 
-### Constructor
+#### Constructor
 
-- **MAX31855(const uint8_t select)** create object and set select pin => hardware SPI
-- **MAX31855(const uint8_t sclk, const uint8_t select, const uint8_t miso)** create object, set clock, select and miso pin => software SPI
+- **MAX31855(uint8_t select, SPIClassRP2040 \* mySPI)** hardware SPI R2040
+- **MAX31855(uint8_t select, SPIClass \* mySPI)** hardware SPI other
+- **MAX31855(uint8_t select, uint8_t miso, uint8_t clock)** software SPI
+- **void begin()** initialize internals
 
 
-### Hardware SPI
+#### Hardware SPI
 
 To be used only if one needs a specific speed.
 
-- **void setSPIspeed(uint32_t speed)** set SPI transfer rate
-- **uint32_t getSPIspeed()** returns SPI transfer rate
+- **void setSPIspeed(uint32_t speed)** set SPI transfer rate.
+- **uint32_t getSPIspeed()** returns SPI transfer rate.
+- **void setSWSPIdelay(uint16_t del = 0)** for tuning SW SPI signal quality. Del is the time in micros added per bit. Even numbers keep the duty cycle of the clock around 50%.
+- **uint16_t getSWSPIdelay()** get set value in micros.
 
 
-### ESP32 specific
-
-- **void selectHSPI()** must be called before **begin()**
-- **void selectVSPI()** must be called before **begin()**
-- **bool usesHSPI()**
-- **bool usesVSPI()**
-- **void setGPIOpins(uint8_t clk, uint8_t miso, uint8_t mosi, uint8_t select)**  to overrule ESP32 default hardware pins
-
-
-### Reading
+#### Reading
 
 To make a temperature reading call **read()**.
 It returns the status of the read which is a value between 0..7
@@ -124,16 +152,19 @@ the value of **getTemperature()** can become incorrect. So it is important to ch
 the return value of **read()**.
 
 
-### Offset
+#### Offset
 
 The library supports a fixed offset to calibrate the thermocouple.
 For this the functions **float getOffset()** and **void setOffset(float offset)** are available.
 This offset is "added" in the **getTemperature()** function.
 
-Note the offset used is a float, so decimals can be used.
+Notes
+- the offset can be positive or negative.
+- the offset used is a float, so decimals can be used.
+A typical usage is to call **setOffset(273.15)** to get ° Kelvin.
 
 
-### Delta analysis
+#### Delta analysis
 
 As the **tc** object holds its last known temperature it is easy to determine the delta 
 with the last known temperature, e.g. for trend analysis.
@@ -150,7 +181,7 @@ with the last known temperature, e.g. for trend analysis.
 ```
 
 
-### Last time read
+#### Last time read
 
 The **tc** object keeps track of the last time **read()** is called in the function **uint32_t lastRead()**.
 The time is tracked in **millis()**. This makes it easy to read the sensor at certain intervals.
@@ -172,7 +203,7 @@ if (millis() - tc.lastRead() >= interval)
 ```
 
 
-### GetRawData 
+#### GetRawData 
 
 The function **uint32_t getRawData()** allows you to get all the 32 bits raw data from the board, 
 after the standard **uint8_t tc.read()** call.
@@ -190,10 +221,10 @@ This allows one to compact the measurement e.g. for storage or sending over a ne
 ## Pull Up Resistor 
 
 To have proper working of the MAX31855 board, you need to add a pull-up resistor 
-(e.g. 4K7 - 1K depending on wirelength) between the MISO pin (from constructor call) and the 
-VCC (5Volt). This improves the signal quality and will allow you to detect if there is
-proper communication with the board. WIthout pull-up one might get random noise that could 
-look like real data.
+(e.g. 4K7 - 1K depending on length of the wires) between the MISO pin (from constructor call) 
+and the VCC (5Volt). 
+This improves the signal quality and will allow you to detect if there is proper communication 
+with the board. Without pull-up one might get random noise that could look like real data.
 
 **Note:** the MISO pin can be different from each board, please refer to your board datasheet.
 
@@ -228,8 +259,6 @@ See examples
 
 
 ## Experimental part (to be tested)
-
-(to be tested)
 
 **NOTE:** 
 The support for other thermocouples is experimental **use at your own risk**.
@@ -272,4 +301,27 @@ One can adjust the values to improve the accuracy of the temperature read.
 The **float getTemperature()** has implemented this algorithm, however as long
 as one does not set the Seebeck Coefficient it will use the K_TC as default.
 
+
+## Future
+
+#### Must
+
+#### Should
+
+- investigate other TC's 
+
+#### Could
+
+- move code to .cpp
+
+#### Wont
+
+
+## Support
+
+If you appreciate my libraries, you can support the development and maintenance.
+Improve the quality of the libraries by providing issues and Pull Requests, or
+donate through PayPal or GitHub sponsors.
+
+Thank you,
 

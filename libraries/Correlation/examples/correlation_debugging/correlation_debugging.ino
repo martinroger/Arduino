@@ -2,15 +2,16 @@
 //    FILE: correlation_debugging.ino
 //  AUTHOR: Rob Tillaart
 //    DATE: 2020-05-17
-// VERSION: 0.1.0
-// PUPROSE: demo of the Correlation Library
-//
+// PURPOSE: demo of the Correlation Library
+//     URL: https://github.com/RobTillaart/Correlation
+
 
 #include "Correlation.h"
 
 #define SIZE  15
 
 Correlation C(SIZE);
+
 
 void setup()
 {
@@ -48,17 +49,17 @@ void setup()
   Serial.print("Esq:\t");
   Serial.println(C.getEsquare(), 3);
   Serial.print("SumXiYi:\t");
-  Serial.println(C.getSumXiYi(), 1);
+  Serial.println(C.getSumXY(), 1);
   Serial.print("SumXi2:\t\t");
-  Serial.println(C.getSumXi2(), 1);
+  Serial.println(C.getSumX2(), 1);
   Serial.print("SumYi2:\t\t");
-  Serial.println(C.getSumYi2(), 1);
+  Serial.println(C.getSumY2(), 1);
   Serial.println();
   Serial.println();
 
   for (int i = 0; i < SIZE; i++)
   {
-    C.setXY(i, 0, 0);  // create flatliner;
+    C.setXY(i, 0, 0);       //  create flatliner;
   }
   Serial.println("cnt\tX\tY");
   for (int i = 0; i < SIZE; i++)
@@ -139,13 +140,13 @@ void setup()
   Serial.println(C.getEsquare(), 3);
   Serial.println();
 
-
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

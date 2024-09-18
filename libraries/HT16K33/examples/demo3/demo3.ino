@@ -1,10 +1,10 @@
 //
 //    FILE: 4x7segmentI2C.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.0.2
 // PURPOSE: demo 3
 //     URL: http://www.adafruit.com/products/1002
 //     URL: https://github.com/RobTillaart/HT16K33
+
 
 #include "HT16K33.h"
 
@@ -15,13 +15,17 @@ uint32_t stop;
 
 uint8_t ar[4];
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("HT16K33_LIB_VERSION: ");
+  Serial.println(HT16K33_LIB_VERSION);
 
-  seg.begin();
+  Wire.begin();
   Wire.setClock(100000);
+  seg.begin();
 
   seg.displayOn();
   seg.suppressLeadingZeroPlaces(0);
@@ -36,7 +40,7 @@ void setup()
 
 void loop()
 {
-  // comment tests you do not want to see
+  //  comment tests you do not want to see
   test_elsa();
   delay(100);
   test_random();
@@ -70,7 +74,7 @@ void test_random()
 void test_VULeft()
 {
   int val = analogRead(A0);
-  val = val / 120;  // 0..8
+  val = val / 120;          //  0..8
   seg.displayVULeft(val);
 }
 
@@ -83,8 +87,8 @@ void test_VURight()
 
 void test_VUStereo()
 {
-  uint8_t left = analogRead(A0) / 240;   // 0..4
-  uint8_t right = analogRead(A1) / 240;  // 0..4
+  uint8_t left = analogRead(A0) / 240;   //  0..4
+  uint8_t right = analogRead(A1) / 240;  //  0..4
   displayVUStereo(left, right);
 }
 
@@ -140,10 +144,10 @@ void displayVUStereo(uint8_t left, uint8_t right)
   }
   seg.displayRaw(ar);
 
-  // sort of heartbeat
+  //  sort of heartbeat
   static bool t = false;
   seg.displayColon(t);
   t = !t;
 }
 
-// -- END OF FILE --
+//  -- END OF FILE --

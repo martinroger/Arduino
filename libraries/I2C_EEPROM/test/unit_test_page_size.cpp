@@ -8,6 +8,7 @@
 //          https://github.com/Arduino-CI/arduino_ci/blob/master/REFERENCE.md
 //
 
+
 #include <ArduinoUnitTests.h>
 #include "Arduino.h"
 
@@ -17,6 +18,7 @@ class I2C_eeprom_wrapper;
 
 #include "I2C_eeprom.h"
 
+
 class I2C_eeprom_wrapper {
     public:
         static uint8_t pageSize(I2C_eeprom &eeprom) { return eeprom._pageSize; }
@@ -24,6 +26,7 @@ class I2C_eeprom_wrapper {
 };
 
 #define I2C_EEPROM_ADDR 0x50
+
 
 unittest_setup()
 {
@@ -33,14 +36,16 @@ unittest_teardown()
 {
 }
 
+
 /**
  * Verify that an instance gets the default page size
  * when the constructor without device size is used.
- * The expected outcome is I2C_EEPROM_PAGESIZE 
+ * The expected outcome is I2C_EEPROM_PAGESIZE
  */
 unittest(i2c_eeprom_default_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR);
 
@@ -49,6 +54,7 @@ unittest(i2c_eeprom_default_page_size)
   // assertEqual(false, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
 
+
 /**
  * Verify that the constructor calculates the correct
  * page size and addressing for a 1K eeprom (e g AT24C01).
@@ -56,12 +62,14 @@ unittest(i2c_eeprom_default_page_size)
 unittest(i2c_eeprom_1k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x80);
 
   assertEqual(8, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(false, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -70,12 +78,14 @@ unittest(i2c_eeprom_1k_page_size)
 unittest(i2c_eeprom_2k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x100);
 
   assertEqual(8, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(false, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -84,12 +94,14 @@ unittest(i2c_eeprom_2k_page_size)
 unittest(i2c_eeprom_4k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x200);
 
   assertEqual(16, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(false, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -98,12 +110,14 @@ unittest(i2c_eeprom_4k_page_size)
 unittest(i2c_eeprom_8k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x400);
 
   assertEqual(16, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(false, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -112,12 +126,14 @@ unittest(i2c_eeprom_8k_page_size)
 unittest(i2c_eeprom_16k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x800);
 
   assertEqual(16, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(false, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -126,12 +142,14 @@ unittest(i2c_eeprom_16k_page_size)
 unittest(i2c_eeprom_32k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x1000);
 
   assertEqual(32, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(true, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -140,12 +158,14 @@ unittest(i2c_eeprom_32k_page_size)
 unittest(i2c_eeprom_64k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x2000);
 
   assertEqual(32, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(true, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -154,12 +174,14 @@ unittest(i2c_eeprom_64k_page_size)
 unittest(i2c_eeprom_128k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x4000);
 
   assertEqual(64, (int) I2C_eeprom_wrapper::pageSize(eeprom));
   assertEqual(true, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
+
 
 /**
  * Verify that the constructor calculates the correct
@@ -168,6 +190,7 @@ unittest(i2c_eeprom_128k_page_size)
 unittest(i2c_eeprom_256k_page_size)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom eeprom(I2C_EEPROM_ADDR, 0x8000);
 
@@ -175,6 +198,9 @@ unittest(i2c_eeprom_256k_page_size)
   assertEqual(true, I2C_eeprom_wrapper::isAddressSizeTwoWords(eeprom));
 }
 
+
 unittest_main()
 
-// ------------------
+
+//  -- END OF FILE --
+

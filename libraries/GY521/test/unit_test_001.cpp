@@ -21,6 +21,7 @@
 // assertNull(actual)
 // assertNotNull(actual)
 
+
 #include <ArduinoUnitTests.h>
 
 
@@ -30,7 +31,9 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "GY521_LIB_VERSION: %s\n", (char *) GY521_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
@@ -40,7 +43,8 @@ unittest_teardown()
 unittest(test_constructor)
 {
   GY521 sensor(0x69);
-  fprintf(stderr, "VERSION: %s\n", GY521_LIB_VERSION);
+
+  Wire.begin();
   sensor.begin();
   assertEqual(GY521_OK, sensor.getError());
 
@@ -51,6 +55,8 @@ unittest(test_constructor)
 unittest(test_get_set_throttle)
 {
   GY521 sensor(0x69);
+
+  Wire.begin();
   sensor.begin();
   assertEqual(GY521_OK, sensor.getError());
 
@@ -73,6 +79,8 @@ unittest(test_get_set_throttle)
 unittest(test_get_set_sensitivity)
 {
   GY521 sensor(0x69);
+
+  Wire.begin();
   sensor.begin();
 
   fprintf(stderr, "setAccelSensitivity() - fails \n");
@@ -95,8 +103,6 @@ unittest(test_get_set_sensitivity)
 
 unittest(test_constants)
 {
-  fprintf(stderr, "VERSION: %s\n", GY521_LIB_VERSION);
-
   assertEqual(GY521_OK,                   0);
   assertEqual(GY521_THROTTLED,            1);
   assertEqual(GY521_ERROR_READ,           -1);
@@ -104,12 +110,18 @@ unittest(test_constants)
   assertEqual(GY521_ERROR_NOT_CONNECTED,  -3);
 
   assertEqual(GY521_THROTTLE_TIME,        10);
+
+  assertEqualFloat(GY521_RAD2DEGREES, 180.0 / PI,    0.001);
+  assertEqualFloat(GY521_RAW2DPS,     1.0 / 131.0,   0.001);
+  assertEqualFloat(GY521_RAW2G,       1.0 / 16384.0, 0.000001);
 }
 
 
 unittest(test_initial_values)
 {
   GY521 sensor(0x69);
+
+  Wire.begin();
 
   assertEqualFloat(0, sensor.getAccelX(), 0.0001);
   assertEqualFloat(0, sensor.getAccelY(), 0.0001);
@@ -138,6 +150,8 @@ unittest(test_initial_calibration_errors)
 {
   GY521 sensor(0x69);
 
+  Wire.begin();
+
   assertEqualFloat(0, sensor.axe, 0.0001);
   assertEqualFloat(0, sensor.aye, 0.0001);
   assertEqualFloat(0, sensor.aze, 0.0001);
@@ -150,4 +164,6 @@ unittest(test_initial_calibration_errors)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

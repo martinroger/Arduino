@@ -1,16 +1,14 @@
 //
 //    FILE: AD5144A_test_isConnected.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: check isConnected()
-//    DATE: 2021-05-04
 //     URL: https://github.com/RobTillaart/AD5144A
 
 
 #include "AD5144A.h"
 
-// select the right type
-// adjust address
+//  select the right type
+//  adjust address if needed
 AD5144A AD(0x77);
 
 
@@ -41,4 +39,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

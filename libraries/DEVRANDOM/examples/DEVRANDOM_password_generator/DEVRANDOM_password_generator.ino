@@ -15,19 +15,20 @@
 #include "DEVRANDOM.h"
 
 
-#define PASSWORD_SIZE 8
+#define MAX_PASSWORD_SIZE 24
 
-
-char pw[PASSWORD_SIZE + 1];
+char pw[MAX_PASSWORD_SIZE + 1];
 
 DEVRANDOM dr;
 
-char c1[] = "QWERTYUIOPLMKJNBHGVCFDXSZA";
-char c2[] = "zaqwertyuioplmnbvcxsdfghjk";
-char c3[] = "1598746230";
-char c4[] = "!@#$%^&*()_+-={}|[]\\:;<>?,./";
+// PROGMEM ?
+const char c1[] = "QWERTYUIOPLMKJNBHGVCFDXSZA";
+const char c2[] = "zaqwertyuioplmnbvcxsdfghjk";
+const char c3[] = "1598746230";
+const char c4[] = "!@#$%^&*()_+-={}|[]\\:;<>?,./";
 
 int mx = 0;
+
 
 void setup()
 {
@@ -35,17 +36,25 @@ void setup()
   Serial.println(__FILE__);
   Serial.println();
 
-  // dr.useDR(5);
-  // dr.useAR(A0);
-  dr.useSW();  // for proof of concept this is OK
+  //  compile time randomization
+  //  comment if you want same seed every time.
+  dr.print(__FILE__);
+  dr.print(__DATE__);
+  dr.print(__TIME__);
+
+  // dr.useDigitalRead(5);
+  // dr.useAnalogRead(A0);
+  // dr.useMarsaglia();     // faster than build in random (UNO).
+  dr.useRandom();  // for proof of concept this is OK
 }
+
 
 void loop()
 {
   Serial.print('\t');
 
   uint32_t start = micros();
-  int cnt = generatePassword();
+  int cnt = generatePassword(12);
   uint32_t stop = micros();
   mx = max(cnt, mx);
 
@@ -59,12 +68,15 @@ void loop()
   delay(5);
 }
 
-int generatePassword()
+
+int generatePassword(int length)
 {
   int idx = 0;
   bool b[4] = { false, false, false, false };
   bool done = false;
   int count = 0;
+
+  if (length > MAX_PASSWORD_SIZE) length = MAX_PASSWORD_SIZE;
 
   while (! done)
   {
@@ -72,7 +84,7 @@ int generatePassword()
     idx = 0;
     b[0] = b[1] = b[2] = b[3] = false;
 
-    while (idx < PASSWORD_SIZE)
+    while (idx < length)
     {
       uint8_t x = dr.read() % 4;
       switch (x)
@@ -99,4 +111,6 @@ int generatePassword()
   return count;
 }
 
+
 // -- END OF FILE --
+

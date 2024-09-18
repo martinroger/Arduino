@@ -1,22 +1,22 @@
 //
 //    FILE: LineFormatter_test_table.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo LineFormatter class
 //     URL: https://github.com/RobTillaart/LineFormatter
-//
-// HISTORY:
-// 0.1.0   2020-05-14 initial version
-//
+
 
 #include "LineFormatter.h"
 
 LineFormatter L;
 
+
 void setup()
 {
   Serial.begin(115200);
+  L.println();
   L.println(__FILE__);
+  L.print("LINEFORMATTER_LIB_VERSION: ");
+  L.println(LINEFORMATTER_LIB_VERSION);
   L.repeat(3, '\n');
 
   test_table_1();
@@ -34,15 +34,17 @@ void setup()
   L.println("Done...");
 }
 
+
 void loop()
 {
 }
+
 
 void test_ruler()
 {
   L.println();
   L.println(__FUNCTION__);
-  L.repeat(strlen(__FUNCTION__), "=", 2); 
+  L.repeat(strlen(__FUNCTION__), "=", 2);
 
   L.clearTabs();
   L.addTab(3);
@@ -62,11 +64,12 @@ void test_ruler()
   L.repeat(3, '\n');
 }
 
+
 void test_table_1()
 {
   L.println();
   L.println(__FUNCTION__);
-  L.repeat(strlen(__FUNCTION__), "=", 2); 
+  L.repeat(strlen(__FUNCTION__), "=", 2);
 
   L.clearTabs();
   L.addTab(3);
@@ -90,7 +93,7 @@ void test_table_1()
     if (i == 10)
     {
       L.println("switch to normal tab behaviour");
-      L.clearTabs();   // just to show diff
+      L.clearTabs();   //  just to show diff
     }
 
     L.tab();
@@ -119,11 +122,12 @@ void test_table_1()
   L.repeat(3, '\n');
 }
 
+
 void test_table_2()
 {
   L.println();
   L.println(__FUNCTION__);
-  L.repeat(strlen(__FUNCTION__), "=", 2); 
+  L.repeat(strlen(__FUNCTION__), "=", 2);
 
   L.clearTabs();
   L.addTab(3);
@@ -135,12 +139,13 @@ void test_table_2()
   L.addRelTab(10);
   L.addRelTab(6);
   L.addRelTab(6);
-  // L.println(L.getTabCount());
+  //  L.println(L.getTabCount());
 
   int measurement = 1;
 
   L.println("\tIdx\tTime\tValue\tA0\tA1\tA2\tA3\tA4\tA5");
   L.repeat(8, "----+----|", 1);
+  //   L.printRuler(80);
 
   L.setAutoNewLine(5);
   for (int i = 0; i < 20; i++)
@@ -178,4 +183,5 @@ void test_table_2()
   L.repeat(3, '\n');
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

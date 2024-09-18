@@ -31,44 +31,81 @@
 // assertNotNAN(arg);                              // !isnan(a)
 
 /*
-  most unit tests will test for fail 
+  most unit tests will test for fail
   as there is no sensor connected
   and there is no mockup.
-  
+
   It appears that Wire.write does not fail without sensor...
 */
+
 
 #include <ArduinoUnitTests.h>
 
 #include "Arduino.h"
 #include "TCA9548.h"
 
-int expect;  // TODO needed as there seems a problem with 8 bit comparisons (char?)
+
+int expect;  //  TODO needed as there seems a problem with 8 bit comparisons (char?)
 
 uint32_t start, stop;
 
+
 unittest_setup()
 {
+  fprintf(stderr, "TCA9548_LIB_VERSION: %s\n", (char *) TCA9548_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
-unittest(test_begin)
+
+unittest(test_constants)
+{
+  assertEqual(0,   TCA9548_OK);
+  assertEqual(-10, TCA9548_ERROR_I2C);
+  assertEqual(-20, TCA9548_ERROR_CHANNEL);
+}
+
+
+unittest(test_constructor)
 {
   TCA9548 tca(0x70);
 
-  bool b = tca.begin();
-  assertEqual(b, true);
+  Wire.begin();
 
+  assertTrue(tca.begin());
   assertTrue(tca.isConnected());
-
+  assertEqual(8, tca.channelCount());
+  
+  PCA9548 pca8(0x71);
+  assertTrue(pca8.begin());
+  assertTrue(pca8.isConnected());
+  assertEqual(8, pca8.channelCount());
+  
+  PCA9546 pca6(0x71);
+  assertTrue(pca6.begin());
+  assertTrue(pca6.isConnected());
+  assertEqual(4, pca6.channelCount());
+  
+  PCA9545 pca5(0x71);
+  assertTrue(pca5.begin());
+  assertTrue(pca5.isConnected());
+  assertEqual(4, pca5.channelCount());
+  
+  PCA9543 pca3(0x71);
+  assertTrue(pca3.begin());
+  assertTrue(pca3.isConnected());
+  assertEqual(2, pca3.channelCount());
 }
+
 
 unittest(test_enable)
 {
   TCA9548 tca(0x70);
+
+  Wire.begin();
 
   bool b = tca.begin();
   assertEqual(b, true);
@@ -89,6 +126,8 @@ unittest(test_select)
 {
   TCA9548 tca(0x70);
 
+  Wire.begin();
+
   bool b = tca.begin();
   assertEqual(b, true);
 
@@ -106,4 +145,6 @@ unittest(test_select)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

@@ -1,7 +1,6 @@
 //
 //    FILE: demo_displayInt.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //     URL: http://www.adafruit.com/products/1002
 //     URL: https://github.com/RobTillaart/HT16K33
@@ -16,13 +15,17 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("HT16K33_LIB_VERSION: ");
+  Serial.println(HT16K33_LIB_VERSION);
 
-  seg.begin();
+  Wire.begin();
   Wire.setClock(100000);
+  seg.begin();
+
   seg.displayOn();
-  seg.brightness(2);
+  seg.setBrightness(2);
   seg.displayClear();
-  seg.blink(0);
+  seg.setBlink(0);
 }
 
 
@@ -78,4 +81,6 @@ void loop()
 
 }
 
+
 // -- END OF FILE --
+

@@ -1,14 +1,9 @@
 //
 //    FILE: PrintSize_total.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo printSize total counter
 //     URL: https://github.com/RobTillaart/PrintSize
 //
-// HISTORY:
-// 0.1.0   2020-04-30 initial version
-//
-
 /*
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mattis eget odio ut
   tempor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin consectetur,
@@ -22,6 +17,8 @@
   nisl, porttitor malesuada erat urna eu neque. Phasellus ultricies ante tortor,
   ac facilisis diam dignissim sit amet. Donec accumsan ac orci a malesuada.
 */
+
+
 #include "PrintSize.h"
 
 char woord[24];
@@ -29,16 +26,19 @@ int idx = 0;
 
 PrintSize ps;
 
+
 void setup()
 {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println();
   Serial.println(__FILE__);
+  Serial.print("PRINTSIZE_VERSION: ");
+  Serial.println(PRINTSIZE_VERSION);
+  Serial.println();
 
   Serial.println("\nType words < 20 chars in the Serial monitor\n");
   ps.reset();
 }
+
 
 void loop()
 {
@@ -59,22 +59,23 @@ void loop()
   }
 }
 
-// split the stream of words in lines of maxlen
-void process(char * w, uint8_t maxlen)
+
+// split the stream of words in lines of maxLength
+void process(char * w, uint8_t maxLength)
 {
   // skip empty words.
   if (strlen(w) == 0) return;
-  
+
   // remember position
   uint8_t prev = ps.total();
 
   // does the word fit on the line
   ps.print(w);
   ps.print(' ');
-  if (ps.total() >= maxlen)
+  if (ps.total() >= maxLength)
   {
     // if not, fill line with -
-    for (; prev < maxlen; prev++) Serial.print('-');
+    for (; prev < maxLength; prev++) Serial.print('-');
     Serial.println();
 
     // start counter for new line.
@@ -86,4 +87,6 @@ void process(char * w, uint8_t maxlen)
   Serial.print(' ');
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

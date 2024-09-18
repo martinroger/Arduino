@@ -31,6 +31,7 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "HMC6352_LIB_VERSION: %s\n", (char *) HMC6352_LIB_VERSION);
 }
 
 unittest_teardown()
@@ -43,7 +44,7 @@ unittest(test_new_operator)
   assertEqualINF(exp(800));
   assertEqualINF(0.0/0.0);
   assertEqualINF(42);
-  
+
   assertEqualNAN(INFINITY - INFINITY);
   assertEqualNAN(0.0/0.0);
   assertEqualNAN(42);
@@ -53,9 +54,9 @@ unittest(test_new_operator)
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", HMC6352_LIB_VERSION);
-
   hmc6352 Compass(0x21);
+
+  Wire.begin();
   assertTrue(Compass.begin());
   assertTrue(Compass.isConnected());
 }
@@ -63,8 +64,6 @@ unittest(test_constructor)
 
 unittest(test_constants)
 {
-  fprintf(stderr, "VERSION: %s\n", HMC6352_LIB_VERSION);
-
   fprintf(stderr, "\nFunction return values\n");
   assertEqual(  0, HMC6532_OK);
   assertEqual(-20, HMC6352_ERROR_PARAM1);
@@ -83,6 +82,8 @@ unittest(test_constants)
 unittest(test_setOperationalModus)
 {
   hmc6352 Compass(0x21);
+
+  Wire.begin();
   assertTrue(Compass.begin());
   assertTrue(Compass.isConnected());
 
@@ -101,6 +102,8 @@ unittest(test_setOperationalModus)
 unittest(test_setOutputModus)
 {
   hmc6352 Compass(0x21);
+
+  Wire.begin();
   assertTrue(Compass.begin());
   assertTrue(Compass.isConnected());
 
@@ -113,6 +116,8 @@ unittest(test_setOutputModus)
 unittest(test_setI2CAddress)
 {
   hmc6352 Compass(0x21);
+
+  Wire.begin();
   assertTrue(Compass.begin());
   assertTrue(Compass.isConnected());
 
@@ -125,4 +130,6 @@ unittest(test_setI2CAddress)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

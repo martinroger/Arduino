@@ -1,12 +1,8 @@
 //
 //    FILE: mcp9808_test_alert.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo alert
 //    DATE: 2020-11-12
-//    (c) : MIT
-//
-
 //
 //  MCP9808 breakout board
 //  +----------+
@@ -21,18 +17,25 @@
 //  +----------+
 //
 
+
 #include "mcp9808.h"
 
 MCP9808 ts(24);
+
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("MCP9808_LIB_VERSION: ");
+  Serial.println(MCP9808_LIB_VERSION);
 
-  // SET TEMPERATURE WINDOW FOR COMPERATOR MODE °C
+  Wire.begin();
+
+  // SET TEMPERATURE WINDOW FOR COMPERATOR MODE ï¿½C
   ts.setTlower(21);
   ts.setTupper(23);
+
   // SET AUTO RESET  (p32 datasheet)
   // same value as Tupper to have auto reset in comparator mode.
   // note no hysteresis set
@@ -54,6 +57,7 @@ void setup()
   cfg |= 0x0008;       // enable alert
   ts.setConfigRegister(cfg);
 }
+
 
 void loop()
 {

@@ -2,12 +2,10 @@
 //    FILE: SGP30_demo_H2_Ethanol.ino
 //  AUTHOR: Rob Tillaart
 // PURPOSE: demo SGP30
-//    DATE: 2021-06-24
 //     URL: https://github.com/RobTillaart/SGP30
 //          https://www.adafruit.com/product/3709
-
-// 20 samples per second RAW data
 //
+// 20 samples per second RAW data
 // calculates the average, which can be used to determine the Sref
 // for the H2 and Ethanol concentration functions.
 
@@ -16,6 +14,7 @@
 
 
 SGP30 SGP;
+
 uint8_t count = 0;
 uint32_t lastTime = 0;
 
@@ -32,9 +31,12 @@ void setup()
     yield();
   };
 
-  Serial.print(__FILE__);
+  Serial.println(__FILE__);
+  Serial.print("SGP30_LIB_VERSION: ");
   Serial.println(SGP30_LIB_VERSION);
   Serial.println();
+
+  Wire.begin();
 
   Serial.print("BEGIN:\t");
   Serial.println(SGP.begin());
@@ -83,4 +85,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

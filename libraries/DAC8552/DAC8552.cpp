@@ -2,44 +2,36 @@
 //    FILE: DAC8552.cpp 
 //  AUTHOR: Rob Tillaart
 // PURPOSE: Arduino library for DAC8552 SPI Digital Analog Convertor
-// VERSION: 0.2.2
+// VERSION: 0.5.1
+//    DATE: 2017-12-14
 //     URL: https://github.com/RobTillaart/DAC8552
-//
-// HISTORY:
-//  0.1.0:  2017-12-14  initial version
-//  0.1.1:  2017-12-19  fix begin() bug
-//  0.1.2   2020-04-06  minor refactor, readme.md
-//  0.1.3   2020-06-07  fix library.json
-//  0.2.0   2020-12-18  add arduino-ci + unit test
-//                      add slave select pin for HW constructor
-//  0.2.1   2021-06-02  compile ESP32 + fix for channel B
-//  0.2.2   2021-08-29  add support for HSPI / VSPI ESP32 ++
 
 
 #include "DAC8552.h"
 
 
-#define MAXVOLTAGE      5.0
-#define MAXVALUE        0xFFFF
-
-DAC8552::DAC8552(uint8_t slaveSelect)
+DAC8552::DAC8552(uint8_t select, __SPI_CLASS__ * spi)
 {
-  _hwSPI = true;
-  _select = slaveSelect;
+  _select  = select;
+  _dataOut = 255;
+  _clock   = 255;
+  _mySPI   = spi;
+  _hwSPI   = true;
 }
 
 
-DAC8552::DAC8552(uint8_t spiData, uint8_t spiClock, uint8_t slaveSelect)
+DAC8552::DAC8552(uint8_t select, uint8_t spiData, uint8_t spiClock)
 {
-  _hwSPI   = false;
+  _select  = select;
   _dataOut = spiData;
   _clock   = spiClock;
-  _select  = slaveSelect;
+  _mySPI   = NULL;
+  _hwSPI   = false;
 }
 
 
-// initializes the SPI
-// and sets internal state
+//  initializes the SPI
+//  and sets internal state
 void DAC8552::begin()
 {
   pinMode(_select, OUTPUT);
@@ -49,27 +41,11 @@ void DAC8552::begin()
 
   if(_hwSPI)
   {
-    #if defined(ESP32)
-    if (_useHSPI)      // HSPI
-    {
-      mySPI = new SPIClass(HSPI);
-      mySPI->end();
-      mySPI->begin(14, 12, 13, _select);   // CLK=14 MISO=12 MOSI=13
-    }
-    else               // VSPI
-    {
-      mySPI = new SPIClass(VSPI);
-      mySPI->end();
-      mySPI->begin(18, 19, 23, _select);   // CLK=18 MISO=19 MOSI=23
-    }
-    #else              // generic hardware SPI
-    mySPI = &SPI;
-    mySPI->end();
-    mySPI->begin();
-    #endif
-    delay(1);
+    //  _mySPI->end();
+    //  _mySPI->begin();
+    //  delay(1);
   }
-  else                 // software SPI
+  else  //  SOFTWARE SPI
   {
     pinMode(_dataOut, OUTPUT);
     pinMode(_clock, OUTPUT);
@@ -80,27 +56,12 @@ void DAC8552::begin()
   _value[0] = 0;
   _value[1] = 0;
   _register[0] = 0x00;
-  _register[1] = 0x40;
+  _register[1] = 0x04;  //  set BUFFER SELECT to 1
 }
 
 
-#if defined(ESP32)
-void DAC8552::setGPIOpins(uint8_t clk, uint8_t miso, uint8_t mosi, uint8_t select)
-{
-  _clock   = clk;
-  _dataOut = mosi;
-  _select  = select;
-  pinMode(_select, OUTPUT);
-  digitalWrite(_select, HIGH);
-
-  mySPI->end();  // disable SPI 
-  mySPI->begin(clk, miso, mosi, select);
-}
-#endif
-
-
-// channel = 0, 1, 2, 3 depending on type
-// value = 0..65535
+//  channel = 0, 1, 2, 3 depending on type
+//  value = 0..65535
 void DAC8552::bufferValue(uint8_t channel, uint16_t value)
 {
   _value[channel] = value;
@@ -108,8 +69,8 @@ void DAC8552::bufferValue(uint8_t channel, uint16_t value)
 }
 
 
-// channel = 0, 1, 2, 3 depending on type
-// value = 0..65535
+//  channel = 0, 1, 2, 3 depending on type
+//  value = 0..65535
 void DAC8552::setValue(uint8_t channel, uint16_t value)
 {
   _value[channel] = value;
@@ -117,8 +78,8 @@ void DAC8552::setValue(uint8_t channel, uint16_t value)
 }
 
 
-// channel = 0, 1, 2, 3 depending on type
-// returns 0..65535
+//  channel = 0, 1, 2, 3 depending on type
+//  returns 0..65535
 uint16_t DAC8552::getValue(uint8_t channel)
 {
   return _value[channel];
@@ -156,12 +117,12 @@ void DAC8552::setSPIspeed(uint32_t speed)
 
 //////////////////////////////////////////////////////////////////
 //
-// PRIVATE
+//  PROTECTED
 //
 
-// channel = 0, 1, 2, 3 depending on type
-// direct = true  ==> write buffers to both channel A and channel B
-// direct = false ==> buffer value
+//  channel = 0, 1, 2, 3 depending on type
+//  direct = true  ==> write buffers to both channel A and channel B
+//  direct = false ==> buffer value
 void DAC8552::updateDevice(uint8_t channel, bool directWrite)
 {
   uint8_t configRegister = _register[channel];
@@ -170,13 +131,13 @@ void DAC8552::updateDevice(uint8_t channel, bool directWrite)
   digitalWrite(_select, LOW);
   if (_hwSPI)
   {
-    mySPI->beginTransaction(_spi_settings);
-    mySPI->transfer(configRegister);
-    mySPI->transfer(_value[channel] >> 8);
-    mySPI->transfer(_value[channel] & 0xFF);
-    mySPI->endTransaction();
+    _mySPI->beginTransaction(_spi_settings);
+    _mySPI->transfer(configRegister);
+    _mySPI->transfer(_value[channel] >> 8);
+    _mySPI->transfer(_value[channel] & 0xFF);
+    _mySPI->endTransaction();
   }
-  else // Software SPI
+  else //  Software SPI
   {
     swSPI_transfer(configRegister);
     swSPI_transfer(_value[channel] >> 8);
@@ -186,7 +147,7 @@ void DAC8552::updateDevice(uint8_t channel, bool directWrite)
 }
 
 
-// simple one mode version
+//  simple one mode version
 void DAC8552::swSPI_transfer(uint8_t value)
 {
   uint8_t clk = _clock;
@@ -199,4 +160,20 @@ void DAC8552::swSPI_transfer(uint8_t value)
   }
 }
 
-// -- END OF FILE --
+
+/////////////////////////////////////////////////////////
+//
+//  DERIVED CLASSES  DAC8532
+//
+DAC8532::DAC8532(uint8_t select, __SPI_CLASS__ * spi) : DAC8552(select, spi)
+{
+}
+
+DAC8532::DAC8532(uint8_t select, uint8_t spiData, uint8_t spiClock)
+                : DAC8552(select, spiData, spiClock)
+{
+}
+
+
+//  -- END OF FILE --
+

@@ -1,12 +1,9 @@
 //
 //    FILE: BH1750FVI_cont_low_res.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo of BH1750FVI lux scanner library
-//    DATE: 2020-02-02
-//
-// Released to the public domain
-//
+//     URL: https://github.com/RobTillaart/BH1750FVI_RT
+
 
 #include "BH1750FVI.h"
 
@@ -28,6 +25,7 @@ void setup()
   myLux.setContLowRes();
 }
 
+
 void loop()
 {
   uint16_t interval = 100;
@@ -37,7 +35,7 @@ void loop()
     float val = myLux.getLux();
     Serial.println(val, 1);
   }
-
 }
 
-// END OF FILE
+
+//  -- END OF FILE --

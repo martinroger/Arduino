@@ -2,9 +2,9 @@
 //    FILE: PCF8574_rotaryEncoder.ino
 //  AUTHOR: Rob Tillaart
 //    DATE: 2021-05-08
+// PURPOSE: demo PCF8574 as rotary encoder reader.
+//     URL: https://github.com/RobTillaart/PCF8574
 //
-// PUPROSE: demo PCF8574 as rotary encoder reader.
-
 //
 //  RotaryEncoder    PCF8574      UNO
 //  --------------------------------------
@@ -16,8 +16,8 @@
 //                    SCL         A5
 //                    INT         2
 //
-// note: a dedicated rotary decoder class is created 
-//       - https://github.com/RobTillaart/rotaryDecoder -
+//  note: a dedicated rotary decoder class is created 
+//        - https://github.com/RobTillaart/rotaryDecoder -
 
 
 #include "PCF8574.h"
@@ -25,17 +25,75 @@
 PCF8574 decoder(0x20);
 
 
-// hold position of 4 RE + last position
+//  hold position of 4 RE + last position
 uint8_t lastpos[4] = {0, 0, 0, 0};
 int32_t encoder[4] = {0, 0, 0, 0};
 volatile bool flag = false;
 
+
+////////////////////////////////////////////////
+//
+//  IRQ routine
+//
 void moved()
 {
   flag = true;
 }
 
 
+////////////////////////////////////////////////
+//
+//  rotary routines
+//
+void initRotaryDecoder()
+{
+  uint8_t val = decoder.read8();
+  for (uint8_t i = 0; i < 4; i++)
+  {
+    lastpos[i] = val & 0x03;
+    val >>= 2;
+  }
+}
+
+
+//  assumes 4 rotary encoders connected to one PCF8574
+void updateRotaryDecoder()
+{
+  uint8_t val = decoder.read8();
+
+  //  check which of 4 has changed
+  for (uint8_t i = 0; i < 4; i++)
+  {
+    uint8_t currentpos = (val & 0x03);
+    if (lastpos[i] != currentpos)     //  moved!
+    {
+      uint8_t change = (lastpos[i] << 2) | currentpos;
+      switch (change)
+      {
+        case 0b0001:  //  fall through..
+        case 0b0111:
+        case 0b1110:
+        case 0b1000:
+          encoder[i]++;
+          break;
+        case 0b0010:
+        case 0b0100:
+        case 0b1101:
+        case 0b1011:
+          encoder[i]--;
+          break;
+      }
+      lastpos[i] = currentpos;
+    }
+    val >>= 2;
+  }
+}
+
+
+////////////////////////////////////////////////
+//
+//  main code
+//
 void setup()
 {
   Serial.begin(115200);
@@ -48,9 +106,11 @@ void setup()
   flag = false;
 
   Wire.begin();
+
   if (decoder.begin() == false)
   {
-    Serial.println("\nERROR: cannot communicate to keypad.\nPlease reboot / adjust address.\n");
+    Serial.println("\nERROR: cannot communicate to PCF8574.");
+    Serial.println("Please reboot / adjust address.\n");
     while (1);
   }
   Wire.setClock(600000);
@@ -83,49 +143,5 @@ void loop()
 }
 
 
-void initRotaryDecoder()
-{
-  uint8_t val = decoder.read8();
-  for (uint8_t i = 0; i < 4; i++)
-  {
-    lastpos[i] = val & 0x03;
-    val >>= 2;
-  }
-}
+//  -- END OF FILE --
 
-
-// assumes 4 rotary encoders connected to one PCF8574
-void updateRotaryDecoder()
-{
-  uint8_t val = decoder.read8();
-
-  // check which of 4 has changed
-  for (uint8_t i = 0; i < 4; i++)
-  {
-    uint8_t currentpos = (val & 0x03);
-    if (lastpos[i] != currentpos) // moved!
-    {
-      uint8_t change = (lastpos[i] << 2) | currentpos;
-      switch (change)
-      {
-        case 0b0001:  // fall through..
-        case 0b0111:
-        case 0b1110:
-        case 0b1000:
-          encoder[i]++;
-          break;
-        case 0b0010:
-        case 0b0100:
-        case 0b1101:
-        case 0b1011:
-          encoder[i]--;
-          break;
-      }
-      lastpos[i] = currentpos;
-      val >>= 2;
-    }
-  }
-}
-
-
-// -- END OF FILE --

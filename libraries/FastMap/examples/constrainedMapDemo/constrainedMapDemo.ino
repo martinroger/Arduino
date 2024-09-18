@@ -1,25 +1,26 @@
 //
 //    FILE: constrainedMap.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo of FastMap class ==> merge map and constrain functions
-//    DATE: 2014-11-02
 //     URL: https://github.com/RobTillaart/FastMap
+
 
 #include "FastMap.h"
 
 FastMap mapper;
 
-void setup() 
+
+void setup()
 {
   Serial.begin(115200);
-  Serial.print("Start constrainedMap demo\nlib version: ");
+  Serial.println(__FILE__);
+  Serial.print("FASTMAP_LIB_VERSION: ");
   Serial.println(FASTMAP_LIB_VERSION);
   Serial.println();
 
   mapper.init(0, 10, 0, 300);
 
-  Serial.println("I\tMAP\tLCM\tUCM\tCM");
+  Serial.println("I\t\tMAP\t\tLCM\t\tUCM\t\tCM");
   for (int i = -5; i < 20; i++)
   {
     float a = map(i, 0, 10, 0, 300);
@@ -27,20 +28,22 @@ void setup()
     float c = mapper.upperConstrainedMap(i);
     float d = mapper.constrainedMap(i);
     Serial.print(i);
-    Serial.print("\t");
+    Serial.print("\t\t");
     Serial.print(a);
-    Serial.print("\t");
+    Serial.print("\t\t");
     Serial.print(b);
-    Serial.print("\t");
+    Serial.print("\t\t");
     Serial.print(c);
-    Serial.print("\t");
+    Serial.print("\t\t");
     Serial.println(d);
   }
   Serial.println("\ndone...");
 }
 
-void loop() 
+
+void loop()
 {
 }
 
 
+//  -- END OF FILE --

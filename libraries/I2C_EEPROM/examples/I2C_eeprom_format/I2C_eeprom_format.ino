@@ -2,7 +2,7 @@
 //    FILE: I2C_eeprom_format.ino
 //  AUTHOR: Rob Tillaart
 // PURPOSE: demo format EEPROM
-//
+//     URL: https://github.com/RobTillaart/I2C_EEPROM
 
 
 #include "Wire.h"
@@ -17,9 +17,12 @@ uint32_t start, diff;
 void setup()
 {
   Serial.begin(115200);
+  while (!Serial);  //  wait for Serial port to connect. Needed for Leonardo only
   Serial.println(__FILE__);
   Serial.print("I2C_EEPROM_VERSION: ");
   Serial.println(I2C_EEPROM_VERSION);
+
+  Wire.begin();
 
   ee.begin();
   if (! ee.isConnected())
@@ -30,7 +33,7 @@ void setup()
 
 
   Serial.println();
-  uint32_t size = ee.determineSize(false);  // debug param
+  uint32_t size = ee.determineSize(false);  //  debug parameter
   if (size == 0)
   {
     Serial.println("SIZE: could not determine size");
@@ -82,4 +85,5 @@ void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

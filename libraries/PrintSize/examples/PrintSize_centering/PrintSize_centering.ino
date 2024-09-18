@@ -1,13 +1,8 @@
 //
 //    FILE: PrintSize_centering.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: demo printSize centering
+// PURPOSE: demo printSize centring
 //     URL: https://github.com/RobTillaart/PrintSize
-//
-// HISTORY:
-// 0.1.0   2020-04-30 initial version
-//
 
 
 #include "PrintSize.h"
@@ -17,12 +12,14 @@ int idx = 0;
 
 PrintSize ps;
 
+
 void setup()
 {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println();
   Serial.println(__FILE__);
+  Serial.print("PRINTSIZE_VERSION: ");
+  Serial.println(PRINTSIZE_VERSION);
+  Serial.println();
 
   Serial.println("Determine length of 10 random numbers and right ");
   Serial.println("align the numbers in a table with their sum.");
@@ -30,13 +27,13 @@ void setup()
   ps.reset();
 }
 
+
 void loop()
 {
   uint32_t sum = 0;
 
-
   Serial.println();
-  Serial.println("  Centering");
+  Serial.println("  Centring");
   for (int i = 0; i < 10; i++)
   {
     // create different order of magnitude random numbers
@@ -75,9 +72,12 @@ void loop()
   delay(1000);
 }
 
+
 void printSpaces(uint8_t n)
 {
   while (n--) Serial.print(' ');
 }
 
+
 // -- END OF FILE --
+

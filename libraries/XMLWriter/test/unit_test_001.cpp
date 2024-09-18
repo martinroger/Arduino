@@ -37,6 +37,7 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "XMLWRITER_VERSION: %s\n", (char *) XMLWRITER_VERSION);
 }
 
 unittest_teardown()
@@ -44,23 +45,41 @@ unittest_teardown()
 }
 
 
+unittest(test_constants)
+{
+  assertFalse(NOMULTILINE);
+  assertTrue(MULTILINE);
+
+  assertTrue(NEWLINE);
+  assertFalse(NONEWLINE);
+  assertFalse(NOINDENT);
+  
+  assertTrue(SLASH);
+  assertFalse(NOSLASH);
+
+  assertEqual( 5, XMLWRITER_MAXLEVEL);
+  assertEqual(15, XMLWRITER_MAXTAGSIZE);
+
+  assertEqual(0x00, XMLWRITER_NONE   );
+  assertEqual(0x01, XMLWRITER_COMMENT);
+  assertEqual(0x02, XMLWRITER_INDENT );
+  assertEqual(0x04, XMLWRITER_NEWLINE);
+}
+
+
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", XMLWRITER_VERSION);
-
   XMLWriter XML(&Serial);
   assertEqual(0, XML.bytesWritten());
   assertEqual(2, XML.getIndentSize());
 
-  // OK it is a debug function but should work
+  //  OK it is a debug function but should work
   assertEqual(0, XML.bufferIndex());
 }
 
 
 unittest(test_header_flush)
 {
-  fprintf(stderr, "VERSION: %s\n", XMLWRITER_VERSION);
-
   XMLWriter XML(&Serial);
 
   XML.header();
@@ -131,10 +150,10 @@ unittest(test_header_comment_version_debug)
 
   XML.flush();
   assertEqual(229, XML.bytesWritten());
-  assertEqual(0, XML.bufferIndex());      // nothing to flush
+  assertEqual(0, XML.bufferIndex());      //  nothing to flush
 }
 
 
 unittest_main()
 
-// --------
+//  -- END OF FILE --

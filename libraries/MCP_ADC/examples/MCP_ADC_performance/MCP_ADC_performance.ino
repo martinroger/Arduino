@@ -1,31 +1,35 @@
 //
 //    FILE: MCP_ADC_performance.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: simple performance measurement.
-//    DATE: 2020-08-14
-
-// Note the deltaRead() does 1 or 2 differential reads depending
-// on positive of negative delta between 2 pins.
-// Therefor timing might differ substantially.
+//     URL: https://github.com/RobTillaart/MCP_ADC
+//
+//  Note the deltaRead() does 1 or 2 differential reads depending
+//  on positive of negative delta between 2 pins.
+//  Therefore timing might differ substantially.
 
 
 #include "MCP_ADC.h"
 
 MCP3002 mcp2;
 MCP3004 mcp4;
-MCP3008 mcp8(11,12,13);  // software spi
-// MCP3008 mcp8;               // hardware spi
+MCP3008 mcp8(11, 12, 13);  //  software SPI
+// MCP3008 mcp8;           //  hardware SPI
 MCP3202 mcp22;
 MCP3204 mcp24;
 MCP3208 mcp28;
 
 uint32_t start, stop;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("MCP_ADC_LIB_VERSION: ");
+  Serial.println(MCP_ADC_LIB_VERSION);
+
+  SPI.begin();
 
   mcp2.begin(8);
   mcp4.begin(9);
@@ -72,7 +76,7 @@ void setup()
   test_2();
   test_3();
 
-  // on UNO there is no difference above 8MHz (half CPU clock)
+  //  on UNO there is no difference above 8MHz (half CPU clock)
   Serial.println("***************************************\n");
   for (int s = 1; s <= 16; s *= 2)
   {
@@ -81,7 +85,25 @@ void setup()
     test_3();
   }
 
-  // on UNO there is no difference above 8MHz (half CPU clock)
+  //  on UNO there is no difference above 8MHz (half CPU clock)
+  Serial.println("***************************************\n");
+  for (int s = 1; s <= 16; s *= 2)
+  {
+    Serial.println(s * 1000000UL);
+    mcp22.setSPIspeed(s * 1000000UL);
+    test_4();
+  }
+
+  //  on UNO there is no difference above 8MHz (half CPU clock)
+  Serial.println("***************************************\n");
+  for (int s = 1; s <= 16; s *= 2)
+  {
+    Serial.println(s * 1000000UL);
+    mcp24.setSPIspeed(s * 1000000UL);
+    test_5();
+  }
+
+  //  on UNO there is no difference above 8MHz (half CPU clock)
   Serial.println("***************************************\n");
   for (int s = 1; s <= 16; s *= 2)
   {
@@ -93,9 +115,11 @@ void setup()
   Serial.println("done...");
 }
 
+
 void loop()
 {
 }
+
 
 void test_1()
 {
@@ -104,10 +128,10 @@ void test_1()
   start = micros();
   for (int channel = 0 ; channel < mcp2.channels(); channel++)
   {
-    val += mcp2.analogRead(channel);
+    val += mcp2.read(channel);
   }
   stop = micros();
-  Serial.print("mcp2.analogRead()\t2x: \t");
+  Serial.print("mcp2.read()\t2x: \t");
   Serial.println(stop - start);
   delay(10);
 
@@ -133,6 +157,7 @@ void test_1()
   delay(10);
 }
 
+
 void test_2()
 {
   uint32_t val = 0;
@@ -140,10 +165,10 @@ void test_2()
   start = micros();
   for (int channel = 0 ; channel < mcp4.channels(); channel++)
   {
-    val += mcp4.analogRead(channel);
+    val += mcp4.read(channel);
   }
   stop = micros();
-  Serial.print("mcp4.analogRead()\t4x: \t");
+  Serial.print("mcp4.read()\t4x: \t");
   Serial.println(stop - start);
   delay(10);
 
@@ -169,6 +194,7 @@ void test_2()
   delay(10);
 }
 
+
 void test_3()
 {
   uint32_t val = 0;
@@ -176,10 +202,10 @@ void test_3()
   start = micros();
   for (int channel = 0; channel < mcp8.channels(); channel++)
   {
-    val += mcp8.analogRead(channel);
+    val += mcp8.read(channel);
   }
   stop = micros();
-  Serial.print("mcp8.analogRead()\t8x: \t");
+  Serial.print("mcp8.read()\t8x: \t");
   Serial.println(stop - start);
   delay(10);
 
@@ -205,6 +231,81 @@ void test_3()
   delay(10);
 }
 
+
+void test_4()
+{
+  uint32_t val = 0;
+
+  start = micros();
+  for (int channel = 0; channel < mcp22.channels(); channel++)
+  {
+    val += mcp22.read(channel);
+  }
+  stop = micros();
+  Serial.print("mcp22.read()\t2x: \t");
+  Serial.println(stop - start);
+  delay(10);
+
+  start = micros();
+  for (int channel = 0; channel < mcp22.channels(); channel++)
+  {
+    val += mcp22.differentialRead(channel);
+  }
+  stop = micros();
+  Serial.print("mcp22.differentialRead() 2x: \t");
+  Serial.println(stop - start);
+  delay(10);
+
+  start = micros();
+  for (int channel = 0; channel < mcp22.channels(); channel++)
+  {
+    val += mcp22.deltaRead(channel);
+  }
+  stop = micros();
+  Serial.print("mcp22.deltaRead()\t2x: \t");
+  Serial.println(stop - start);
+  Serial.println();
+  delay(10);
+}
+
+
+void test_5()
+{
+  uint32_t val = 0;
+
+  start = micros();
+  for (int channel = 0; channel < mcp24.channels(); channel++)
+  {
+    val += mcp24.read(channel);
+  }
+  stop = micros();
+  Serial.print("mcp24.read()\t4x: \t");
+  Serial.println(stop - start);
+  delay(10);
+
+  start = micros();
+  for (int channel = 0; channel < mcp24.channels(); channel++)
+  {
+    val += mcp24.differentialRead(channel);
+  }
+  stop = micros();
+  Serial.print("mcp24.differentialRead() 4x: \t");
+  Serial.println(stop - start);
+  delay(10);
+
+  start = micros();
+  for (int channel = 0; channel < mcp24.channels(); channel++)
+  {
+    val += mcp24.deltaRead(channel);
+  }
+  stop = micros();
+  Serial.print("mcp24.deltaRead()\t4x: \t");
+  Serial.println(stop - start);
+  Serial.println();
+  delay(10);
+}
+
+
 void test_6()
 {
   uint32_t val = 0;
@@ -212,10 +313,10 @@ void test_6()
   start = micros();
   for (int channel = 0; channel < mcp28.channels(); channel++)
   {
-    val += mcp28.analogRead(channel);
+    val += mcp28.read(channel);
   }
   stop = micros();
-  Serial.print("mcp28.analogRead()\t8x: \t");
+  Serial.print("mcp28.read()\t8x: \t");
   Serial.println(stop - start);
   delay(10);
 
@@ -242,4 +343,4 @@ void test_6()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

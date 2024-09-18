@@ -1,15 +1,15 @@
 //
 //    FILE: pcf8575_test2.ino
 //  AUTHOR: Rob Tillaart
-//    DATE: 2021-01-03
-//
-// PUPROSE: demo rotateLeft, -Right and toggleMask
-//
+// PURPOSE: demo rotateLeft, -Right and toggleMask
+//     URL: https://github.com/RobTillaart/PCF8575
+
 
 #include "PCF8575.h"
 
-// adjust addresses if needed
-PCF8575 PCF(0x39);  // add leds to lines      (used as output)
+//  adjust addresses if needed
+PCF8575 PCF(0x21);  //  add LEDs to lines      (used as output)
+
 
 void setup()
 {
@@ -17,6 +17,8 @@ void setup()
   Serial.println(__FILE__);
   Serial.print("PCF8575_LIB_VERSION:\t");
   Serial.println(PCF8575_LIB_VERSION);
+
+  Wire.begin();
 
   PCF.begin();
 
@@ -51,8 +53,8 @@ void setup()
     delay(100);
   }
 
-  // 0010 0111  -> 0x27
-  // 1110 0100
+  //  0010 0111  -> 0x27
+  //  1110 0100
   PCF.write16(0x2755);
   for (int i = 0; i < 255; i++)
   {
@@ -61,8 +63,11 @@ void setup()
   }
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

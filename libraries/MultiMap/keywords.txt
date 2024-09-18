@@ -1,10 +1,12 @@
-# Syntax Coloring Map For multiMap
+# Syntax Colouring Map For multiMap
 
-# Datatypes (KEYWORD1)
+# Data types (KEYWORD1)
 
 
 # Methods and Functions (KEYWORD2)
 multiMap	KEYWORD2
+multiMapCache	KEYWORD2
+multiMapBS	KEYWORD2
 
 
 # Constants (LITERAL1)

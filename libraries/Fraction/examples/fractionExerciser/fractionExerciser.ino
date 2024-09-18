@@ -1,23 +1,23 @@
 //
 //    FILE: fractionExerciser.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo sketch for fraction math
-//    DATE: 2015-03-29
 //     URL: https://github.com/RobTillaart/Fraction
-//
+
 
 #include "fraction.h"
+
 
 void setup()
 {
   pinMode(13, OUTPUT);
   Serial.begin(115200);
   Serial.print("\n\nStart fractionExcerciser: ");
-  // Serial.println(FRACTIONLIBVERSION);
+  // Serial.println(FRACTION_LIB_VERSION);
   Serial.println();
   randomSeed(analogRead(A0) * 256 + analogRead(A1));
 }
+
 
 Fraction readFraction()
 {
@@ -45,12 +45,14 @@ Fraction readFraction()
   return fr;
 }
 
+
 char choice()
 {
   while (Serial.available()) Serial.read();
   while (Serial.available() == 0);
   return Serial.read();
 }
+
 
 void loop()
 {
@@ -75,6 +77,7 @@ void loop()
   Serial.println(count);
 }
 
+
 int add(int n)
 {
   int count = 0;
@@ -83,19 +86,20 @@ int add(int n)
   {
     Fraction a(1 + random(9), 1 + random(9));
     Fraction b(1 + random(9), 1 + random(9));
-    Serial.print(a);
+    Serial.print(a.toString());
     Serial.print(" + ");
-    Serial.print(b);
+    Serial.print(b.toString());
     Serial.print(" = ");
     Fraction c = readFraction();
-    Serial.print(c);
+    Serial.print(c.toString());
     Serial.print("\t\t");
-    Serial.println(a + b);
+    Serial.println((a + b).toString());
 
     if (c == a + b ) count++;
   }
   return count;
 }
+
 
 int sub(int n)
 {
@@ -105,19 +109,20 @@ int sub(int n)
   {
     Fraction a(1 + random(9), 1 + random(9));
     Fraction b(1 + random(9), 1 + random(9));
-    Serial.print(a);
+    Serial.print(a.toString());
     Serial.print(" - ");
-    Serial.print(b);
+    Serial.print(b.toString());
     Serial.print(" = ");
     Fraction c = readFraction();
-    Serial.print(c);
+    Serial.print(c.toString());
     Serial.print("\t\t");
-    Serial.println(a - b);
+    Serial.println((a - b).toString());
 
     if (c == a - b ) count++;
   }
   return count;
 }
+
 
 int mul(int n)
 {
@@ -127,19 +132,20 @@ int mul(int n)
   {
     Fraction a(1 + random(9), 1 + random(9));
     Fraction b(1 + random(9), 1 + random(9));
-    Serial.print(a);
+    Serial.print(a.toString());
     Serial.print(" * ");
-    Serial.print(b);
+    Serial.print(b.toString());
     Serial.print(" = ");
     Fraction c = readFraction();
-    Serial.print(c);
+    Serial.print(c.toString());
     Serial.print("\t\t");
-    Serial.println(a * b);
+    Serial.println((a * b).toString());
 
     if (c == a * b ) count++;
   }
   return count;
 }
+
 
 int div(int n)
 {
@@ -149,19 +155,20 @@ int div(int n)
   {
     Fraction a(1 + random(9), 1 + random(9));
     Fraction b(1 + random(9), 1 + random(9));
-    Serial.print(a);
+    Serial.print(a.toString());
     Serial.print(" / ");
-    Serial.print(b);
+    Serial.print(b.toString());
     Serial.print(" = ");
     Fraction c = readFraction();
-    Serial.print(c);
+    Serial.print(c.toString());
     Serial.print("\t\t");
-    Serial.println(a / b);
+    Serial.println((a / b).toString());
 
     if (c == a / b ) count++;
   }
   return count;
 }
+
 
 int equ(int n)
 {
@@ -171,9 +178,9 @@ int equ(int n)
   {
     Fraction a(1 + random(9), 1 + random(9));
     Fraction b(1 + random(9), 1 + random(9));
-    Serial.print(a);
+    Serial.print(a.toString());
     Serial.print("\t?\t");
-    Serial.print(b);
+    Serial.print(b.toString());
 
     char c = choice();
     Serial.print("\t");
@@ -186,3 +193,5 @@ int equ(int n)
   return count;
 }
 
+
+//  -- END OF FILE --

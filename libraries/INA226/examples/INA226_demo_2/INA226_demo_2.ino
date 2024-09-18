@@ -1,14 +1,12 @@
 //
 //    FILE: INA226_demo_2.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.4
 // PURPOSE: demo
-//    DATE: 2021-06-21
 //     URL: https://github.com/RobTillaart/INA226
 
 
 #include "INA226.h"
-#include "Wire.h"
+
 
 INA226 INA(0x40);
 
@@ -49,7 +47,7 @@ void loop()
   for (int i = 0; i < 20; i++)
   {
     float bv = INA.getBusVoltage();
-    float sv = INA.getShuntVoltage_mV();
+    //  float sv = INA.getShuntVoltage_mV();
     float cu = INA.getCurrent_mA();
     float po = INA.getPower_mW();
 
@@ -68,4 +66,5 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

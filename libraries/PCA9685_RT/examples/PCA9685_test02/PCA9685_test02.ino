@@ -1,10 +1,8 @@
 //
 //    FILE: PCA9685_test02.ino
 //  AUTHOR: Rob Tillaart
-//    DATE: 24-APR-2016
-// VERSION: 0.1.2
-// PUPROSE: test PCA9685 library
-//
+// PURPOSE: test PCA9685 library
+//     URL: https://github.com/RobTillaart/PCA9685_RT
 
 
 #include "PCA9685.h"
@@ -12,23 +10,24 @@
 
 PCA9685 ledArray(0x40);
 
+
 void setup()
 {
-  Wire.begin();
-  ledArray.begin();
-
   Serial.begin(115200);
   Serial.println(__FILE__);
-  Serial.print("PCA9685 LIB version: ");
+  Serial.print("PCA9685_LIB_VERSION: ");
   Serial.println(PCA9685_LIB_VERSION);
   Serial.println();
 
-  testDigitalWrite(HIGH);
+  Wire.begin();
+  ledArray.begin();
+
+  testWrite1(HIGH);
   testPWM(0);
   testPWMMode();
   testFrequency();
   delay(2000);
-  testDigitalWrite(LOW);
+  testWrite1(LOW);
 
   Serial.print(millis());
   Serial.print("\t");
@@ -36,17 +35,18 @@ void setup()
 }
 
 
-void testDigitalWrite(uint8_t mode)
+void testWrite1(uint8_t mode)
 {
   Serial.print(millis());
   Serial.print("\t");
   Serial.println(__FUNCTION__);
-  for (int channel = 0; channel < 16; channel++)
+  for (int channel = 0; channel < ledArray.channelCount(); channel++)
   {
-    ledArray.digitalWrite(channel, mode);
+    ledArray.write1(channel, mode);
     delay(100);
   }
 }
+
 
 void testPWM(uint8_t channel)
 {
@@ -68,14 +68,15 @@ void testPWM(uint8_t channel)
   }
 }
 
+
 void testPWMMode()
 {
   Serial.print(millis());
   Serial.print("\t");
   Serial.println(__FUNCTION__);
-  for (uint16_t channel = 1; channel < 16; channel++)
+  for (uint16_t channel = 1; channel < ledArray.channelCount(); channel++)
   {
-    // every next line ~twice as much time
+    //  every next line ~twice as much time
     ledArray.setPWM(channel, channel * 127, channel * 255);
     uint16_t a = 0, b = 0;
     ledArray.getPWM(channel, &a, &b);
@@ -86,6 +87,7 @@ void testPWMMode()
     }
   }
 }
+
 
 void testFrequency()
 {
@@ -98,7 +100,7 @@ void testFrequency()
   {
     Serial.print(freq);
     ledArray.setFrequency(freq);
-    // if freq is out of range => report
+    //  if freq is out of range => report
     if (ledArray.getFrequency() != freq)
     {
       Serial.print("\tconstrained to : ");
@@ -117,7 +119,9 @@ void testFrequency()
 
 void loop()
 {
-  //testPWM(0);
+  //  testPWM(0);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

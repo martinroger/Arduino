@@ -1,16 +1,15 @@
 //
 //    FILE: demo_continue.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2017-07-16
 //     URL: http://forum.arduino.cc/index.php?topic=356253
 //          https://github.com/RobTillaart/CountDown
-//
+
 
 #include "CountDown.h"
 
 CountDown CD[2];
+
 
 void setup()
 {
@@ -24,6 +23,7 @@ void setup()
     delay(1234);
     CD[1].stop();
 }
+
 
 void loop()
 {
@@ -46,3 +46,7 @@ void loop()
 
     delay(250);
 }
+
+
+//  -- END OF FILE --
+

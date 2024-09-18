@@ -1,10 +1,10 @@
 //
 //    FILE: 4x7segmentI2C.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.0.2
 // PURPOSE: demo 2
 //     URL: http://www.adafruit.com/products/1002
 //     URL: https://github.com/RobTillaart/HT16K33
+
 
 #include "HT16K33.h"
 
@@ -13,17 +13,21 @@ HT16K33 seg(0x70);
 uint32_t start;
 uint32_t stop;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("HT16K33_LIB_VERSION: ");
+  Serial.println(HT16K33_LIB_VERSION);
 
-  seg.begin();
+  Wire.begin();
   Wire.setClock(100000);
+  seg.begin();
 
   seg.displayOn();
   seg.suppressLeadingZeroPlaces(0);
-    
+
   Serial.println("displayTest()");
   seg.displayTest(100);
   seg.displayOff();
@@ -44,15 +48,15 @@ void loop()
   Serial.println("dim()");
   for (int i = 0; i < 16; i++)
   {
-    seg.brightness(i);
+    seg.setBrightness(i);
     delay(500);
   }
   for (int i = 15; i > 0; i--)
   {
-    seg.brightness(i);
+    seg.setBrightness(i);
     delay(500);
   }
-  seg.brightness(2);
+  seg.setBrightness(2);
 
   Serial.println("displayClear()");
   seg.displayClear();
@@ -101,13 +105,13 @@ void loop()
     delay(100);
   }
 
-  Serial.println("blink()");
+  Serial.println("setBlink()");
   for (uint8_t i = 0; i < 3; i++)
   {
-    seg.blink(i);
+    seg.setBlink(i);
     delay(4000);
   }
-  seg.blink(0);
+  seg.setBlink(0);
 
   Serial.print("INT TEST:\t");
   start = millis();
@@ -141,4 +145,4 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

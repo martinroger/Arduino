@@ -2,9 +2,9 @@
 //    FILE: rotaryDecoder_demo_simple.ino
 //  AUTHOR: Rob Tillaart
 //    DATE: 2021-05-08
+// PURPOSE: demo
+//     URL: https://github.com/RobTillaart/rotaryDecoder
 //
-// PUPROSE: demo
-
 // connect up to 4 rotary encoders to 1 PCF8574.
 //
 //  RotaryEncoder    PCF8574      UNO
@@ -17,10 +17,11 @@
 //                    SCL         A5
 //
 
-#include "Wire.h"
+
 #include "rotaryDecoder.h"
 
 rotaryDecoder decoder(0x20);
+
 
 void setup()
 {
@@ -38,7 +39,7 @@ void setup()
 
 void loop()
 {
-  // if one of the counters is updated, print them.
+  //  if one of the counters is updated, print them.
   if (decoder.update())
   {
     for (uint8_t i = 0; i < 4; i++)
@@ -49,8 +50,9 @@ void loop()
     Serial.println();
   }
 
-  // other tasks...
+  //  other tasks...
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

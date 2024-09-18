@@ -1,7 +1,6 @@
 //
 //    FILE: AD5204_demo_HWSPI.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
 // PURPOSE: demo
 //    DATE: 2021-08-19
 //     URL: https://github.com/RobTillaart/AD520X
@@ -12,11 +11,11 @@
 
 uint32_t start, stop;
 
-#define TWOPI    (3.14159265 * 2)
 
-// param: select, reset, shutdown, data, clock
-// AD5204 pot(10, 255, 255, 8, 9);   // SW SPI
-AD5204 pot = AD5204(10, 12, 13);     // HW SPI
+
+//  param: select, reset, shutdown, data, clock
+//  AD5204 pot(10, 255, 255, 8, 9);        // SW SPI
+AD5204 pot = AD5204(10, 12, 13, &SPI);     //  HW SPI
 
 
 void setup()
@@ -26,6 +25,7 @@ void setup()
   Serial.print("AD520X_LIB_VERSION:\t");
   Serial.println(AD520X_LIB_VERSION);
 
+  SPI.begin();
   pot.begin(4);
 
   Serial.print("\tusesHWSPI:\t");
@@ -44,7 +44,7 @@ void setup()
   test_timing();
   pot.setSPIspeed(8000000);
   test_timing();
-  pot.setSPIspeed(16000000);    // no effect on 16 MHz UNO
+  pot.setSPIspeed(16000000);    //  no effect on 16 MHz UNO
   test_timing();
 
   Serial.println("\nDone...");
@@ -56,8 +56,8 @@ void loop()
 }
 
 
-// connect all A GND and B 5V
-// every W will have a different signal (same freq).
+//  connect all A GND and B 5V
+//  every W will have a different signal (same freq).
 void test_sinus()
 {
   Serial.println(__FUNCTION__);
@@ -67,7 +67,7 @@ void test_sinus()
   uint32_t i = 0;
   while (millis() - start < 10000)
   {
-    uint8_t value = 127 * sin(i * TWOPI / 100);
+    uint8_t value = 127 * sin(i * TWO_PI / 100);
     pot.setValue(0, 128 + value);
     pot.setValue(1, 128 + value / 2);
     pot.setValue(2, 64  + value / 2);
@@ -79,7 +79,7 @@ void test_sinus()
 }
 
 
-// straightforward sawtooth.
+//  straightforward sawtooth.
 void test_sawtooth()
 {
   Serial.println(__FUNCTION__);
@@ -89,7 +89,7 @@ void test_sawtooth()
   uint8_t i = 0;
   while (millis() - start < 10000)
   {
-    pot.setValue(0, i++); // autowrap is fast...
+    pot.setValue(0, i++);  //  auto wrap is fast...
   }
 }
 
@@ -102,7 +102,7 @@ void test_timing()
   start = micros();
   for (int i = 0; i < 10000; i++)
   {
-    pot.setValue(0, i++); // autowrap is fast...
+    pot.setValue(0, i++);  //  auto wrap is fast...
   }
   stop = micros();
   Serial.print("10000 x setValue():\t");
@@ -135,4 +135,4 @@ void test_timing()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

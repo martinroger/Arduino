@@ -1,15 +1,14 @@
 //
 //    FILE: MTP40D_PWM_demo.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo of MTP40D PWM interface
 //    DATE: 2021-08-27
 //     URL: https://github.com/RobTillaart/MTP40C
 //
-
+//
 //  TODO TEST WITH MTP40D SENSOR
 //
-// Connect the PWM output to the interrup pin 2 or 3 of the UNO.
+// Connect the PWM output to the interrupt pin 2 or 3 of the UNO.
 // other processors interrupts pins work slightly different
 
 
@@ -54,10 +53,11 @@ void mtp40D_irq()
 // ppm == 0 is a pulselengtm of 2000 micros.
 // every 10 ppm adds 2000 micros
 // 1002000 micros = 5000 ppm
-uint16_t duration2PPM(uint16_t d)
+uint16_t duration2PPM(uint16_t duration)
 {
   return ((duration - 1) >> 1 ) * 10;
 }
 
 
 // -- END OF FILE --
+

@@ -2,7 +2,7 @@
 //    FILE: unit_test_001.cpp
 //  AUTHOR: Rob Tillaart
 //    DATE: 2020-12-11
-// PURPOSE: unit tests for the SHT31 temperature and humidity sensor
+// PURPOSE: unit tests for the Arduino ANSI library
 //          https://github.com/RobTillaart/ANSI
 //          https://github.com/Arduino-CI/arduino_ci/blob/master/REFERENCE.md
 //
@@ -19,6 +19,7 @@
 // assertFalse(actual)
 // assertNull(actual)
 
+
 #include <ArduinoUnitTests.h>
 
 #include "Arduino.h"
@@ -27,18 +28,24 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "ANSI_LIB_VERSION: %s\n", (char *) ANSI_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
 
+
 unittest(test_constructor)
 {
   ANSI ansi(&Serial);
-
   assertEqual(12, ansi.println("1234567890") );
+
+  VT100 vt(&Serial);
+  assertEqual(10, vt.print("1234567890") );
 }
+
 
 unittest(test_gray2color)
 {
@@ -51,6 +58,7 @@ unittest(test_gray2color)
   }
 }
 
+
 unittest_main()
 
-// --------
+//  -- END OF FILE --

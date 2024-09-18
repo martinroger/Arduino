@@ -1,10 +1,8 @@
 //
 //    FILE: print_currency.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
-// PURPOSE: display an int as currency
-//    DATE: 2021-02-28
-//     URL: https://github.com/RobTillaart/printFormatters
+// PURPOSE: display an int as currency test
+//     URL: https://github.com/RobTillaart/currency
 
 
 #include "Arduino.h"
@@ -80,4 +78,6 @@ void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

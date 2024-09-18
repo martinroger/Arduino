@@ -1,14 +1,12 @@
 //
 //    FILE: AD5144A_low_level.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: test low level IO
-//    DATE: 2021-05-04
 //     URL: https://github.com/RobTillaart/AD5144A
 
-
-// THIS IS A LOW LEVEL WRITE TEST FOR AD5144A
-// IT DOES NOT USE THE LIBRARY 
+//  THIS IS A LOW LEVEL WRITE TEST FOR AD5144A
+//  IT DOES NOT USE THE LIBRARY
+//  IT USES Wire I2C bus
 
 
 #include "Arduino.h"
@@ -91,4 +89,4 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

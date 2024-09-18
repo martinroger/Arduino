@@ -1,7 +1,6 @@
 //
 //    FILE: test_float_decimals.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: test decimal point for floats.
 //     URL: http://www.adafruit.com/products/1002
 //     URL: https://github.com/RobTillaart/HT16K33
@@ -16,12 +15,16 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("HT16K33_LIB_VERSION: ");
+  Serial.println(HT16K33_LIB_VERSION);
+
+  Wire.begin();
+  Wire.setClock(100000);
 
   if (! seg.begin())
   {
     Serial.println("not connected");
   }
-  Wire.setClock(100000);
   seg.displayOn();
 
   seg.displayFloat(1.945, 3);
@@ -79,4 +82,6 @@ void test_printfloat()
 
 }
 
+
 // -- END OF FILE --
+

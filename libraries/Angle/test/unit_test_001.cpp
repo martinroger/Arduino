@@ -30,6 +30,7 @@
 // assertNAN(arg);                                 // isnan(a)
 // assertNotNAN(arg);                              // !isnan(a)
 
+
 #include <ArduinoUnitTests.h>
 
 #include "Arduino.h"
@@ -38,11 +39,14 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "ANGLE_LIB_VERSION: %s\n", (char *) ANGLE_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
 }
+
 
 unittest(test_constructors)
 {
@@ -83,6 +87,7 @@ unittest(test_constructors)
   assertEqual(0, s.tenthousand());
 }
 
+
 unittest(test_toDouble)
 {
   Angle a(1, 2, 3, 4);
@@ -103,6 +108,7 @@ unittest(test_toDouble)
   assertMoreOrEqual(6, fd);
   assertMoreOrEqual(38, fs);
 }
+
 
 unittest(test_Radians)
 {
@@ -126,7 +132,7 @@ unittest(test_Radians)
 }
 
 
-// mainly tests if operators still work, not a quality test (yet)
+//  mainly tests if operators still work, not a quality test (yet)
 unittest(test_math)
 {
   Angle a(1, 2, 3, 4);
@@ -177,4 +183,6 @@ unittest(test_compare)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

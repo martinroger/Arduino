@@ -1,7 +1,7 @@
-# Syntax Coloring Map For RunningAverage
+# Syntax Colouring Map For RunningAverage
 
 
-# Datatypes (KEYWORD1)
+# Data types (KEYWORD1)
 RunningAverage	KEYWORD1
 
 
@@ -16,19 +16,28 @@ getAverage	KEYWORD2
 getFastAverage	KEYWORD2
 getStandardDeviation	KEYWORD2
 getStandardError	KEYWORD2
+getCoefficientOfVariation	KEYWORD2
 
 getMin	KEYWORD2
 getMax	KEYWORD2
 getMinInBuffer	KEYWORD2
 getMaxInBuffer	KEYWORD2
+getSum	KEYWORD2
 
-bufferIsFull()	KEYWORD2
+bufferIsFull	KEYWORD2
 getElement	KEYWORD2
 getSize	KEYWORD2
 getCount	KEYWORD2
 
 setPartial	KEYWORD2
 getPartial	KEYWORD2
+
+getAverageLast	KEYWORD2
+getStandardDeviationLast	KEYWORD2
+getMinInBufferLast	KEYWORD2
+getMaxInBufferLast	KEYWORD2
+
+getAverageSubset	KEYWORD2
 
 
 # Instances (KEYWORD2)

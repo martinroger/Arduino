@@ -1,16 +1,12 @@
 //
 //    FILE: max44009_setAutomaticMode.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo of max44009 library
-//    DATE: 2020-01-30
-//
-// Released to the public domain
-//
+//     URL: https://github.com/RobTillaart/MAX44009
 
 
-#include "Wire.h"
 #include "Max44009.h"
+
 
 Max44009 myLux(0x4A);
 
@@ -20,8 +16,10 @@ uint32_t lastDisplay = 0;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("\nStart max44009_setAutomaticMode : ");
+  Serial.println(__FILE__);
+  Serial.print("MAX44009_LIB_VERSION: ");
   Serial.println(MAX44009_LIB_VERSION);
+  Serial.println();
 
   Wire.begin();
 
@@ -36,19 +34,20 @@ void loop()
   {
     lastDisplay += interval;
     float lux = myLux.getLux();
-    int err = myLux.getError();
+    int error = myLux.getError();
 
-    // in automatic mode TIM & CDR are automatic generated
-    // and read only (in manual mode they are set by the user
-    int conf = myLux.getConfiguration();
-    int CDR = (conf & 0x80) >> 3;
-    int TIM = (conf & 0x07);
+    //  In automatic mode TIM and CDR are automatic generated
+    //  and read only.
+    //  In manual mode they are set by the user.
+    int config = myLux.getConfiguration();
+    int CDR = (config & 0x80) >> 3;
+    int TIM = (config & 0x07);
     int integrationTime = myLux.getIntegrationTime();
 
-    if (err != 0)
+    if (error != 0)
     {
       Serial.print("Error:\t");
-      Serial.println(err);
+      Serial.println(error);
     }
     else
     {
@@ -66,4 +65,6 @@ void loop()
   }
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

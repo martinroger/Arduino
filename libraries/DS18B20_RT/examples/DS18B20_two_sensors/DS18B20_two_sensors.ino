@@ -1,18 +1,16 @@
 //
 //    FILE: DS18B20_two_sensors.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.0.1
-// PURPOSE: demo with two sensors (on two pins)
-//
-// HISTORY:
-// 0.0.1 = 2017-07-25 initial version
+// PURPOSE: demo with two sensors on two different pins
+//     URL: https://github.com/RobTillaart/DS18B20_RT
 
-#include <OneWire.h>
-#include <DS18B20.h>
 
-// numbers chosen to match pin numbers..
-#define ONE_WIRE_BUS2   2
-#define ONE_WIRE_BUS3   3
+#include "DS18B20.h"
+
+
+//  numbers chosen to match pin numbers.
+#define ONE_WIRE_BUS2               2
+#define ONE_WIRE_BUS3               3
 
 OneWire oneWire2(ONE_WIRE_BUS2);
 OneWire oneWire3(ONE_WIRE_BUS3);
@@ -25,13 +23,14 @@ void setup(void)
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
-  Serial.print("DS18B20 Library version: ");
+  Serial.print("DS18B20_LIB_VERSION: ");
   Serial.println(DS18B20_LIB_VERSION);
+  Serial.println();
 
   inside.begin();
   outside.begin();
 
-  // different resolution shows nicely the async behavior
+  //  different resolution shows nicely the async behavior
   inside.setResolution(12);
   outside.setResolution(10);
 
@@ -42,7 +41,7 @@ void setup(void)
 
 void loop(void)
 {
-  // print the temperature when available and request a new reading
+  //  print the temperature when available and request a new reading
   if (inside.isConversionComplete())
   {
     Serial.print("inside:\t");
@@ -56,3 +55,7 @@ void loop(void)
     outside.requestTemperatures();
   }
 }
+
+
+//  -- END OF FILE --
+

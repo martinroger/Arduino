@@ -2,37 +2,36 @@
 //    FILE: DAC8550.cpp
 //  AUTHOR: Rob Tillaart
 // PURPOSE: Arduino library for DAC8550 SPI Digital Analog Convertor
-// VERSION: 0.1.1
+// VERSION: 0.3.1
+//    DATE: 2021-02-04
 //     URL: https://github.com/RobTillaart/DAC8550
-//
-//  HISTORY:
-//  0.1.0  2021-02-04 initial version (based upon DAC8551)
-//  0.1.1  2021-08-29 add support for HSPI/VSPI ESP32
-//                    some performance improvements.
-
 
 
 #include "DAC8550.h"
 
 
-DAC8550::DAC8550(uint8_t slaveSelect)
+DAC8550::DAC8550(uint8_t select, __SPI_CLASS__ * spi)
 {
-  _hwSPI  = true;
-  _select = slaveSelect;
+  _select  = select;
+  _dataOut = 255;
+  _clock   = 255;
+  _mySPI   = spi;
+  _hwSPI   = true;
 }
 
 
-DAC8550::DAC8550(uint8_t spiData, uint8_t spiClock, uint8_t slaveSelect)
+DAC8550::DAC8550(uint8_t select, uint8_t spiData, uint8_t spiClock)
 {
-  _hwSPI   = false;
+  _select  = select;
   _dataOut = spiData;
   _clock   = spiClock;
-  _select  = slaveSelect;
+  _mySPI   = NULL;
+  _hwSPI   = false;
 }
 
 
-// initializes the SPI
-// and sets internal state
+//  initializes the SPI
+//  and sets internal state
 void DAC8550::begin()
 {
   pinMode(_select, OUTPUT);
@@ -42,27 +41,11 @@ void DAC8550::begin()
 
   if(_hwSPI)
   {
-    #if defined(ESP32)
-    if (_useHSPI)      // HSPI
-    {
-      mySPI = new SPIClass(HSPI);
-      mySPI->end();
-      mySPI->begin(14, 12, 13, _select);   // CLK=14 MISO=12 MOSI=13
-    }
-    else               // VSPI
-    {
-      mySPI = new SPIClass(VSPI);
-      mySPI->end();
-      mySPI->begin(18, 19, 23, _select);   // CLK=18 MISO=19 MOSI=23
-    }
-    #else              // generic hardware SPI
-    mySPI = &SPI;
-    mySPI->end();
-    mySPI->begin();
-    #endif
-    delay(1);
+    //  _mySPI->end();
+    //  _mySPI->begin();
+    //  delay(1);
   }
-  else                 // software SPI
+  else  //  SOFTWARE SPI
   {
     pinMode(_dataOut, OUTPUT);
     pinMode(_clock, OUTPUT);
@@ -75,22 +58,7 @@ void DAC8550::begin()
 }
 
 
-#if defined(ESP32)
-void DAC8550::setGPIOpins(uint8_t clk, uint8_t miso, uint8_t mosi, uint8_t select)
-{
-  _clock   = clk;
-  _dataOut = mosi;
-  _select  = select;
-  pinMode(_select, OUTPUT);
-  digitalWrite(_select, HIGH);
-
-  mySPI->end();  // disable SPI 
-  mySPI->begin(clk, miso, mosi, select);
-}
-#endif
-
-
-// value = 0..65535
+//  value = 0..65535
 void DAC8550::setValue(uint16_t value)
 {
   _value = value;
@@ -98,7 +66,7 @@ void DAC8550::setValue(uint16_t value)
 }
 
 
-// returns 0..65535
+//  returns 0..65535
 uint16_t DAC8550::getValue()
 {
   return _value;
@@ -110,6 +78,7 @@ void DAC8550::setPowerDown(uint8_t powerDownMode)
   _register = powerDownMode;
   updateDevice();
 }
+
 
 uint8_t DAC8550::getPowerDownMode()
 {
@@ -126,7 +95,7 @@ void DAC8550::setSPIspeed(uint32_t speed)
 
 //////////////////////////////////////////////////////////////////
 //
-// PRIVATE
+//  PROTECTED
 //
 void DAC8550::updateDevice()
 {
@@ -135,13 +104,13 @@ void DAC8550::updateDevice()
   digitalWrite(_select, LOW);
   if (_hwSPI)
   {
-    mySPI->beginTransaction(_spi_settings);
-    mySPI->transfer(configRegister);
-    mySPI->transfer(_value >> 8);
-    mySPI->transfer(_value & 0xFF);
-    mySPI->endTransaction();
+    _mySPI->beginTransaction(_spi_settings);
+    _mySPI->transfer(configRegister);
+    _mySPI->transfer(_value >> 8);
+    _mySPI->transfer(_value & 0xFF);
+    _mySPI->endTransaction();
   }
-  else // Software SPI 
+  else // Software SPI
   {
     swSPI_transfer(configRegister);
     swSPI_transfer(_value >> 8);
@@ -151,7 +120,7 @@ void DAC8550::updateDevice()
 }
 
 
-// simple one mode version
+//  simple one mode version
 void DAC8550::swSPI_transfer(uint8_t value)
 {
   uint8_t clk = _clock;
@@ -164,4 +133,6 @@ void DAC8550::swSPI_transfer(uint8_t value)
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

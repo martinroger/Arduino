@@ -2,19 +2,9 @@
 //    FILE: DAC8554.cpp
 //  AUTHOR: Rob Tillaart
 // PURPOSE: Arduino library for DAC8554 SPI Digital Analog Convertor
-// VERSION: 0.2.3
+// VERSION: 0.4.1
+//    DATE: 2017-12-19
 //     URL: https://github.com/RobTillaart/DAC8554
-//
-//  HISTORY:
-//  0.1.0:  2017-12-19  initial version
-//  0.1.2   2020-04-06  minor refactor, readme.md
-//  0.1.3   2020-06-07  fix library.json
-//  0.1.4   2020-07-20  fix URL's in demo's; MIT license; minor edits
-//  0.2.0   2020-12-18  add arduino-ci + unit test
-//  0.2.1   2021-01-10  fix slave select hardware SPI + getValue() + getPowerDownMode().
-//                      fix unit test.
-//  0.2.2   2021-06-02  compile ESP32
-//  0.2.3   2021-08-29  add support for HSPI / VSPI ESP32 ++
 
 
 #include "DAC8554.h"
@@ -26,27 +16,30 @@
 #define DAC8554_BROADCAST             0x30
 
 
-DAC8554::DAC8554(uint8_t slaveSelect, uint8_t address)
+DAC8554::DAC8554(uint8_t select, __SPI_CLASS__ * spi, uint8_t address)
 {
-  _hwSPI = true;
-  _select = slaveSelect;
+  _select  = select;
+  _dataOut = 255;
+  _clock   = 255;
+  _mySPI   = spi;
+  _hwSPI   = true;
   _address = (address & 0x03) << 6;
 }
 
 
-// 0,1,2,4 resp 8550 8551 8552 8554
-DAC8554::DAC8554(uint8_t spiData, uint8_t spiClock, uint8_t slaveSelect, uint8_t address)
+DAC8554::DAC8554(uint8_t select, uint8_t spiData, uint8_t spiClock, uint8_t address)
 {
-  _hwSPI   = false;
+  _select  = select;
   _dataOut = spiData;
   _clock   = spiClock;
-  _select  = slaveSelect;
+  _mySPI   = NULL;
+  _hwSPI   = false;
   _address = (address & 0x03) << 6;
 }
 
 
-// initializes the SPI
-// and sets internal state
+//  initializes the SPI
+//  and sets internal state
 void DAC8554::begin()
 {
   pinMode(_select, OUTPUT);
@@ -56,27 +49,11 @@ void DAC8554::begin()
 
   if(_hwSPI)
   {
-    #if defined(ESP32)
-    if (_useHSPI)      // HSPI
-    {
-      mySPI = new SPIClass(HSPI);
-      mySPI->end();
-      mySPI->begin(14, 12, 13, _select);   // CLK=14 MISO=12 MOSI=13
-    }
-    else               // VSPI
-    {
-      mySPI = new SPIClass(VSPI);
-      mySPI->end();
-      mySPI->begin(18, 19, 23, _select);   // CLK=18 MISO=19 MOSI=23
-    }
-    #else              // generic hardware SPI
-    mySPI = &SPI;
-    mySPI->end();
-    mySPI->begin();
-    #endif
-    delay(1);
+    //  _mySPI->end();
+    //  _mySPI->begin();
+    //  delay(1);
   }
-  else                 // software SPI
+  else  //  SOFTWARE SPI
   {
     pinMode(_dataOut, OUTPUT);
     pinMode(_clock, OUTPUT);
@@ -92,28 +69,12 @@ void DAC8554::begin()
 }
 
 
-#if defined(ESP32)
-void DAC8554::setGPIOpins(uint8_t clk, uint8_t miso, uint8_t mosi, uint8_t select)
-{
-  _clock   = clk;
-  _dataOut = mosi;
-  _select  = select;
-  pinMode(_select, OUTPUT);
-  digitalWrite(_select, HIGH);
-
-  mySPI->end();  // disable SPI 
-  mySPI->begin(clk, miso, mosi, select);
-}
-#endif
-
-
-
 //////////////////////////////////////////////////////////////////////
 //
-// SETVALUE
+//  SETVALUE
 //
-// channel = 0,1,2,3
-// value = 0..65535
+//  channel = 0, 1, 2, 3
+//  value   = 0..65535
 void DAC8554::bufferValue(uint8_t channel, uint16_t value)
 {
   uint8_t configRegister = _address;
@@ -133,8 +94,8 @@ void DAC8554::setValue(uint8_t channel, uint16_t value)
 }
 
 
-// channel = 0, 1, 2, 3 depending on type
-// returns 0..65535
+//  channel = 0, 1, 2, 3 depending on type
+//  returns   0..65535
 uint16_t DAC8554::getValue(uint8_t channel)
 {
   return _value[channel];
@@ -153,18 +114,19 @@ void DAC8554::setSingleValue(uint8_t channel, uint16_t value)
 
 //////////////////////////////////////////////////////////////////////
 //
-// POWERDOWN
+//  POWERDOWN
 //
-// channel = 0,1,2,3
-// powerDownMode =
-// DAC8554_POWERDOWN_NORMAL   0x00
-// DAC8554_POWERDOWN_1K       0x40
-// DAC8554_POWERDOWN_100K     0x80
-// DAC8554_POWERDOWN_HIGH_IMP 0xC0
+//  channel       = 0, 1, 2, 3
+//  powerDownMode =
+//    DAC8554_POWERDOWN_NORMAL       0x00
+//    DAC8554_POWERDOWN_1K           0x40
+//    DAC8554_POWERDOWN_100K         0x80
+//    DAC8554_POWERDOWN_HIGH_IMP     0xC0
+//
 void DAC8554::bufferPowerDown(uint8_t channel, uint8_t powerDownMode)
 {
   _register[channel] = powerDownMode;
-  
+
   uint8_t configRegister = _address;
   configRegister |= DAC8554_BUFFER_WRITE;
   configRegister |= (channel << 1);
@@ -188,7 +150,7 @@ void DAC8554::setPowerDown(uint8_t channel, uint8_t powerDownMode)
 void DAC8554::setSinglePowerDown(uint8_t channel, uint8_t powerDownMode)
 {
   _register[channel] = powerDownMode;
-  
+
   uint8_t configRegister = _address;
   configRegister |= DAC8554_SINGLE_WRITE;
   configRegister |= (channel << 1);
@@ -199,13 +161,13 @@ void DAC8554::setSinglePowerDown(uint8_t channel, uint8_t powerDownMode)
 
 uint8_t DAC8554::getPowerDownMode(uint8_t channel)
 {
-  return _register[channel]; // slightly different than DAC8552 rrrrrr
+  return _register[channel]; //  slightly different than DAC8552 rrrrrr
 }
 
 
 //////////////////////////////////////////////////////////////////////
 //
-// BROADCAST (addresses all 8554 on "SPI-bus")
+//  BROADCAST (addresses all 8554 on "SPI-bus")
 //
 void DAC8554::broadcastBuffer()
 {
@@ -241,7 +203,7 @@ void DAC8554::setSPIspeed(uint32_t speed)
 
 //////////////////////////////////////////////////////////////////
 //
-// PRIVATE
+//  PROTECTED
 //
 
 void DAC8554::writeDevice(uint8_t configRegister, uint16_t value)
@@ -249,11 +211,11 @@ void DAC8554::writeDevice(uint8_t configRegister, uint16_t value)
   digitalWrite(_select, LOW);
   if (_hwSPI)
   {
-    mySPI->beginTransaction(_spi_settings);
-    mySPI->transfer(configRegister);
-    mySPI->transfer(value >> 8);
-    mySPI->transfer(value & 0xFF);
-    mySPI->endTransaction();;
+    _mySPI->beginTransaction(_spi_settings);
+    _mySPI->transfer(configRegister);
+    _mySPI->transfer(value >> 8);
+    _mySPI->transfer(value & 0xFF);
+    _mySPI->endTransaction();;
   }
   else // Software SPI
   {
@@ -265,7 +227,7 @@ void DAC8554::writeDevice(uint8_t configRegister, uint16_t value)
 }
 
 
-// simple one mode version
+//  simple one mode version
 void DAC8554::swSPI_transfer(uint8_t value)
 {
   uint8_t clk = _clock;
@@ -278,4 +240,20 @@ void DAC8554::swSPI_transfer(uint8_t value)
   }
 }
 
-// -- END OF FILE --
+
+/////////////////////////////////////////////////////////
+//
+//  DERIVED CLASSES  DAC8534
+//
+DAC8534::DAC8534(uint8_t select, __SPI_CLASS__ * spi, uint8_t address) : DAC8554(select, spi, address)
+{
+}
+
+DAC8534::DAC8534(uint8_t select, uint8_t spiData, uint8_t spiClock, uint8_t address)
+                : DAC8554(select, spiData, spiClock, address)
+{
+}
+
+
+//  -- END OF FILE --
+

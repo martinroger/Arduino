@@ -1,16 +1,12 @@
 //
 //    FILE: ParallelPrinter.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.2
+// VERSION: 0.2.6
 // PURPOSE: parallel printer class that implements the Print interface
 //    DATE: 2013-09-30
 //     URL: https://github.com/RobTillaart/ParallelPrinter
-//
-//  HISTORY
-//  0.1.0   2013-09-30  initial release
-//  0.2.0   2020-05-26  refactor, examples
-//  0.2.1   2021-01-04  arduino-CI + unit test
-//  0.2.2   2021-01-14  update readme, add linefeed(), add keywords.txt
+
+
 
 #include "ParallelPrinter.h"
 
@@ -24,15 +20,15 @@ ParallelPrinter::ParallelPrinter()
 
 ParallelPrinter::ParallelPrinter(uint8_t STROBE, uint8_t BUSY, uint8_t OOP, uint8_t * p )
 {
-  // CONTROL LINES
+  //  CONTROL LINES
   _strobePin = STROBE;
   _busyPin = BUSY;
   _oopPin = OOP;
   pinMode(_oopPin, INPUT);
   pinMode(_busyPin, INPUT);
   pinMode(_strobePin, OUTPUT);
-  
-  // DATA LINES
+
+  //  DATA LINES
   for (uint8_t i = 0; i < 8; i++)
   {
     _pin[i] = p[i];
@@ -64,16 +60,16 @@ void ParallelPrinter::reset()
 }
 
 
-// write() implements the virtual write of the Print class
+//  write() implements the virtual write of the Print class
 size_t ParallelPrinter::write(uint8_t c)
 {
-  if (c == '\t')  // TAB
+  if (c == '\t')  //  TAB
   {
     uint8_t spaces = _tabSize - _pos % _tabSize;
     for (uint8_t i = 0; i < spaces; i++) processSingleChar(' ');
     return spaces;
   }
-  if (c == '\n')  // LINEFEED
+  if (c == '\n')  //  LINEFEED
   {
     for (uint8_t i = 0; i < _lineFeed; i++)
     {
@@ -93,7 +89,7 @@ void ParallelPrinter::processSingleChar(uint8_t c)
   _pos++;
   if ((_pos == 1) && _printLineNumber)
   {
-    // not nice - implicit recursion...
+    //  not nice - implicit recursion...
     print(_lineNr);
     print('\t');
   }
@@ -110,7 +106,7 @@ void ParallelPrinter::processSingleChar(uint8_t c)
     sendByte(c);
   }
 
-  // HANDLE FULL LINE
+  //  HANDLE FULL LINE
   if (_pos > _lineLength)
   {
     _pos = 0;
@@ -120,7 +116,7 @@ void ParallelPrinter::processSingleChar(uint8_t c)
       _lineNr++;
     }
   }
-  // HANDLE FULL PAGE
+  //  HANDLE FULL PAGE
   if (_lineNr > _pageLength)
   {
     sendByte(FORMFEED);
@@ -134,18 +130,18 @@ void ParallelPrinter::processSingleChar(uint8_t c)
 }
 
 
-// lowest level communication
+//  lowest level communication
 void ParallelPrinter::sendByte(uint8_t c)
 {
-  // BLOCK WHEN OUT OF PAPER    TODO
-  // while (digitalRead(_oopPin) == LOW) yield();
-  // indication in hardware?
-  
-  Serial.write(c);  // debugging
+  //  BLOCK WHEN OUT OF PAPER    TODO
+  //  while (digitalRead(_oopPin) == LOW) yield();
+  //  indication in hardware?
+
+  Serial.write(c);  //  debugging
   return;
 
 
-  // wait until printer is ready.
+  //  wait until printer is ready.
   while (digitalRead(_busyPin) == HIGH) yield();
 
   uint8_t mask = 0x80;
@@ -155,13 +151,14 @@ void ParallelPrinter::sendByte(uint8_t c)
     mask >>= 1;
   }
   digitalWrite(_strobePin, LOW);
-  // time consuming part
+  //  time consuming part
   if (_strobeDelay) delayMicroseconds(_strobeDelay);
   digitalWrite(_strobePin, HIGH);
 
-  // wait till data is read by printer.
+  //  wait till data is read by printer.
   while (digitalRead(_busyPin) == LOW) yield();
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --
+

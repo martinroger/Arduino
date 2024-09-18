@@ -1,7 +1,6 @@
 //
 //    FILE: bigCombinations.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2021-08-06
 //     URL: https://github.com/RobTillaart/statHelpers
@@ -14,10 +13,14 @@
 uint32_t start, duration1;
 volatile uint32_t x;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("STATHELPERS_LIB_VERSION: ");
+  Serial.println(STATHELPERS_LIB_VERSION);
+  Serial.println();
 
   Serial.println("dcombinations(n, k); ");
   delay(10);
@@ -63,7 +66,7 @@ void setup()
       Serial.print(expo);
       Serial.println();
     }
-    //Serial.println();
+    // Serial.println();
   }
   duration1 = micros() - start;
   Serial.println(duration1);
@@ -72,8 +75,11 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

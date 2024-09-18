@@ -1,7 +1,7 @@
 //
 //    FILE: PinOutGroup.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.3
+// VERSION: 0.1.8
 //    DATE: 2017-04-26
 // PURPOSE: PinOutGroup library for Arduino
 //          goal is to easily change a group of pins that logically
@@ -9,15 +9,6 @@
 //          these pins can be in any order.
 //     URL: https://github.com/RobTillaart/PinOutGroup
 //          http://forum.arduino.cc/index.php?topic=469599.0
-// 
-//  HISTORY
-//
-//  0.1.0   20-08-2017  initial version (based upon experimental pinGroup)
-//  0.1.1   2020-05-19  main refactor;
-//          added tests; added clear(); added write(idx, value)
-//          renamed set to write() to be in line with digitalWrite()
-//  0.1.2   2020-06-19  fix library.json
-//  0.1.3   2021-01-05  add Arduino-CI + unit test
 
 
 #include "PinOutGroup.h"
@@ -31,18 +22,18 @@ PinOutGroup::PinOutGroup()
 
 void PinOutGroup::clear()
 {
-  // safety: set all to LOW before cleaning up.
+  //  safety: set all to LOW before cleaning up.
   allLOW();
   _size = 0;
 }
 
 
-uint8_t PinOutGroup::add(uint8_t sz, uint8_t* ar, uint8_t value)
+uint8_t PinOutGroup::add(uint8_t size, uint8_t* pinArray, uint8_t value)
 {
   int n = 0;
-  for (uint8_t i = 0; i < sz; i++)
+  for (uint8_t i = 0; i < size; i++)
   {
-    n += add(ar[i], value);
+    n += add(pinArray[i], value);
   }
   return n;
 }
@@ -54,7 +45,7 @@ uint8_t PinOutGroup::add(uint8_t pin, uint8_t value)
 
   _pins[_size] = pin;
   pinMode(pin, OUTPUT);
-  write(_size, value);   // takes care of _lastValue
+  write(_size, value);   //  takes care of _lastValue
   _size++;
   return 1;
 }
@@ -73,7 +64,7 @@ uint8_t PinOutGroup::isInGroup(uint8_t pin)
 
 uint8_t PinOutGroup::write(uint16_t value)
 {
-  uint16_t changed = _lastValue ^ value;    // detect pins that changed
+  uint16_t changed = _lastValue ^ value;    //  detect pins that changed
   if (changed == 0) return 0;
 
   uint16_t bitMask = 1;
@@ -92,16 +83,16 @@ uint8_t PinOutGroup::write(uint16_t value)
 }
 
 
-uint8_t PinOutGroup::write(uint8_t idx, uint8_t value)
+uint8_t PinOutGroup::write(uint8_t index, uint8_t value)
 {
-  if (idx >= _size) return 0;
+  if (index >= _size) return 0;
 
-  uint16_t mask = (1 << idx);
-  uint16_t lv = _lastValue & mask;
+  uint16_t mask = (1 << index);
+  uint16_t lastValue = _lastValue & mask;
 
-  if ((value > 0) == (lv > 0)) return 0;  // no change
+  if ((value > 0) == (lastValue > 0)) return 0;  //  no change
 
-  digitalWrite(_pins[idx], value);
+  digitalWrite(_pins[index], value);
   if (value == LOW) _lastValue &= ~mask;
   else _lastValue |= mask;
 
@@ -125,20 +116,20 @@ void PinOutGroup::allHIGH()
   for (uint8_t i = 0; i < _size; i++)
   {
     digitalWrite(_pins[i], HIGH);
-    value = (1 << i);  // set flags.
+    value |= (1 << i);    //  set flags.
   }
   _lastValue = value;
 }
 
 
-uint8_t PinOutGroup::getPin(uint8_t idx)
+uint8_t PinOutGroup::getPin(uint8_t index)
 {
-  if (idx >= _size) return 0xFF;
-  return _pins[idx];
+  if (index >= _size) return 0xFF;
+  return _pins[index];
 }
 
 
-uint8_t PinOutGroup::getIdx(uint8_t pin)
+uint8_t PinOutGroup::getIndex(uint8_t pin)
 {
   for (uint8_t i = 0; i < _size; i++)
   {
@@ -148,5 +139,5 @@ uint8_t PinOutGroup::getIdx(uint8_t pin)
 }
 
 
+//  -- END OF FILE --
 
-// --- END OF FILE ---

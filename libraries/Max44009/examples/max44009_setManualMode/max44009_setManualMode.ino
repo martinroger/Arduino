@@ -1,16 +1,12 @@
 //
 //    FILE: max44009_setManualMode.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo of max44009 library
-//    DATE: 2020-01-30
-//
-// Released to the public domain
-//
+//     URL: https://github.com/RobTillaart/MAX44009
 
 
-#include "Wire.h"
 #include "Max44009.h"
+
 
 Max44009 myLux(0x4A);
 
@@ -24,8 +20,10 @@ uint8_t TIM = 0;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("\nStart max44009_setManualMode : ");
+  Serial.println(__FILE__);
+  Serial.print("MAX44009_LIB_VERSION: ");
   Serial.println(MAX44009_LIB_VERSION);
+  Serial.println();
 
   Wire.begin();
 
@@ -53,9 +51,9 @@ void loop()
     }
   }
 
-  // Change CDR and TIM every 5 seconds
-  // Note that the value of getLux() is affected
-  // for up to about a second.
+  //  Change CDR and TIM every 5 seconds
+  //  Note that the value of getLux() is affected
+  //  for up to about a second.
   if (millis() - lastChangeCDRTIM >= 5000)
   {
     lastChangeCDRTIM += 5000;
@@ -74,4 +72,5 @@ void loop()
 }
 
 
-// END OF FILE
+//  -- END OF FILE --
+

@@ -1,14 +1,9 @@
 //
 //    FILE: printCharArray4.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.3.0
 // PURPOSE: demo it takes less time to send data out.
 //     URL: https://github.com/RobTillaart/PrintCharArray
-//
-//  HISTORY:
-//  0.1.0  2017-12-09  initial version
-//  0.1.1  2020-04-30  minor refactor
-//  0.3.0  2021-01-06  free() -> available()
+
 
 #include "PrintCharArray.h"
 
@@ -16,22 +11,30 @@ PrintCharArray ps(200);
 
 uint32_t start, stop;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PRINTCHARARRAY_VERSION: ");
+  Serial.println(PRINTCHARARRAY_VERSION);
+  Serial.println();
 
   Serial.println("Using direct print");
+  delay(100);
   start = micros();
   for (int i = 0; i < 10; i++)
   {
     Serial.println(1000 + i);
   }
   stop = micros();
+  Serial.println();
   Serial.println(stop - start);
   Serial.println();
 
   Serial.println("Using printCharArray");
+  delay(100);
+
   start = micros();
   ps.clear();
   for (int i = 0; i < 10; i++)
@@ -43,7 +46,9 @@ void setup()
   Serial.println(stop - start);
   Serial.println();
 
-  Serial.println("print PrintCharArray again");
+  Serial.println("print PrintCharArray buffer again");
+  delay(100);
+
   start = micros();
   Serial.println(ps.getBuffer());
   stop = micros();
@@ -54,9 +59,10 @@ void setup()
   Serial.println(ps.available());
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

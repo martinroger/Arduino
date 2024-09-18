@@ -1,7 +1,6 @@
 //
 //    FILE: fastTrig_playground.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: playground to play with tables.
 //    DATE: 2020-09-08
 
@@ -31,7 +30,8 @@
 
 // tables generated with other sketch.
 
-uint32_t isinTable24[] = {
+
+uint32_t sinTable24[] = {
   0,
   292803, 585516, 878052, 1170319, 1462231, 1753697, 2044628, 2334937, 2624535, 2913333,
   3201244, 3488179, 3774052, 4058776, 4342263, 4624427, 4905183, 5184445, 5462127, 5738146,
@@ -44,7 +44,8 @@ uint32_t isinTable24[] = {
   16570660, 16613940, 16652160, 16685308, 16713372, 16736348, 16754222, 16766994, 16774660, 16777215,
 };
 
-uint32_t isinTable20[] = {
+
+uint32_t sinTable20[] = {
   0,
   18300, 36595, 54878, 73145, 91389, 109606, 127789, 145933, 164033, 182083,
   200078, 218011, 235878, 253673, 271391, 289026, 306574, 324028, 341383, 358634,
@@ -57,7 +58,8 @@ uint32_t isinTable20[] = {
   1035665, 1038370, 1040759, 1042831, 1044585, 1046021, 1047138, 1047936, 1048415, 1048575,
 };
 
-uint16_t isinTable16[] = {
+
+uint16_t sinTable16[] = {
   0,
   1144, 2287, 3430, 4571, 5712, 6850, 7987, 9121, 10252, 11380,
   12505, 13625, 14742, 15854, 16962, 18064, 19161, 20251, 21336, 22414,
@@ -91,9 +93,9 @@ void test_accuracy()
   for (int i = 0; i <= 90; i++)
   {
     float a = sin(i * (PI / 180));
-    float b = (1.0 * isinTable16[i]) / 65535;
-    float c = (1.0 * isinTable20[i]) / 1048575;
-    // float c = (1.0 * isinTable24[i]) / 16777215;
+    float b = (1.0 * sinTable16[i]) / 65535;
+    float c = (1.0 * sinTable20[i]) / 1048575;
+    // float c = (1.0 * sinTable24[i]) / 16777215;
     Serial.print(a, 8);
     Serial.print('\t');
     Serial.print(abs(a - b), 8);
@@ -132,7 +134,7 @@ void test_performance()
   start = micros();
   for (int i = 0; i <= 90; i++)
   {
-    sum += isinTable16[i] * (1 / 65535.0);
+    sum += sinTable16[i] * (1 / 65535.0);
   }
   Serial.println(micros() - start);
   Serial.println(sum, 8);
@@ -142,7 +144,7 @@ void test_performance()
   start = micros();
   for (int i = 0; i <= 90; i++)
   {
-    sum += isinTable20[i] * (1 / 1048575.0);
+    sum += sinTable20[i] * (1 / 1048575.0);
   }
   Serial.println(micros() - start);
   Serial.println(sum, 8);
@@ -152,7 +154,7 @@ void test_performance()
   start = micros();
   for (int i = 0; i <= 90; i++)
   {
-    sum += isinTable24[i] * (1 / 16777215.0);
+    sum += sinTable24[i] * (1 / 16777215.0);
   }
   Serial.println(micros() - start);
   Serial.println(sum, 8);
@@ -160,10 +162,11 @@ void test_performance()
   sum = 0;
 }
 
+
 void loop()
 {
-
 }
 
 
 // -- END OF FILE --
+

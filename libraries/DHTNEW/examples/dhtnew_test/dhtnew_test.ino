@@ -1,38 +1,35 @@
 //
 //    FILE: dhtnew_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.6
 // PURPOSE: DHTNEW library test sketch for Arduino
 //     URL: https://github.com/RobTillaart/DHTNew
-//
-// HISTORY:
-// 0.1.0    2017-07-24 initial version
-// 0.1.1    2017-07-29 added begin();
-// 0.1.2    2018-01-08 removed begin();
-// 0.1.3    2020-04-30 replaced humidity and temperature with functions
-// 0.1.4    2020-06-08 improved error handling
-// 0.1.5    2020-06-15 match 0.3.0 error handling
-// 0.1.6    2020-11-09 wait for read handling
-//
-// DHT PIN layout from left to right
-// =================================
-// FRONT : DESCRIPTION
-// pin 1 : VCC
-// pin 2 : DATA
-// pin 3 : Not Connected
-// pin 4 : GND
+
+//  DHT PIN layout from left to right
+//  =================================
+//  FRONT : DESCRIPTION
+//  pin 1 : VCC
+//  pin 2 : DATA
+//  pin 3 : Not Connected
+//  pin 4 : GND
+
 
 #include <dhtnew.h>
 
-DHTNEW mySensor(16);
+DHTNEW mySensor(5);   //  ESP 16    UNO 5    MKR1010 5
+
 
 void setup()
 {
+  while(!Serial);     //  MKR1010 needs this
+
   Serial.begin(115200);
   Serial.println("dhtnew_test.ino");
   Serial.print("LIBRARY VERSION: ");
   Serial.println(DHTNEW_LIB_VERSION);
   Serial.println();
+
+  //  MKR1010
+  //  mySensor.setDisableIRQ(false);
 
   Serial.println("\n1. Type detection test, first run might take longer to determine type");
   Serial.println("STAT\tHUMI\tTEMP\tTIME\tTYPE");
@@ -81,14 +78,15 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
-
 }
+
 
 void test()
 {
-  // READ DATA
+  //  READ DATA
   uint32_t start = micros();
   int chk = mySensor.read();
   uint32_t stop = micros();
@@ -129,7 +127,7 @@ void test()
       break;
   }
 
-  // DISPLAY DATA
+  //  DISPLAY DATA
   Serial.print(mySensor.getHumidity(), 1);
   Serial.print(",\t");
   Serial.print(mySensor.getTemperature(), 1);
@@ -142,4 +140,5 @@ void test()
 }
 
 
-// END OF FILE
+//  -- END OF FILE --
+

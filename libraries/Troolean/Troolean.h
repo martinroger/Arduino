@@ -2,8 +2,8 @@
 //
 //    FILE: Troolean.h
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.4
-// PURPOSE: Arduino Library for a three state logic datatype supporting {true false unknown}
+// VERSION: 0.1.8
+// PURPOSE: Arduino Library for a three state logic data type supporting {true false unknown}
 //     URL: https://github.com/RobTillaart/Troolean
 //          https://en.wikipedia.org/wiki/Three-valued_logic
 //          Kleene and Priest logics
@@ -13,22 +13,26 @@
 #include "Printable.h"
 
 
-#define TROOLEAN_LIB_VERSION      (F("0.1.4"))
+#define TROOLEAN_LIB_VERSION            (F("0.1.8"))
 
-
-// 0 = false, -1 = unknown anything else = true
-#define unknown                   -1
+//  VALUE     MEANING
+//      0  =  false
+//     -1  =  unknown
+//  other  =  true
+#define unknown                         -1
 
 
 class Troolean: public Printable
 {
 public:
   Troolean();
-  Troolean(const int8_t);    // 0 = false, -1 = unknown anything else = true
+  Troolean(const int8_t);       //  0 = false, -1 = unknown anything else = true
   Troolean(const Troolean&);
 
+  //  PRINTING
   size_t printTo(Print&) const;
 
+  //  EQUALITIES
   bool operator == (const Troolean&);
   bool operator == (const bool&);
   bool operator == (const int&);
@@ -38,28 +42,25 @@ public:
 
   operator bool() const;
 
-  Troolean operator ! ();   // negation
+  //  NEGATE
+  Troolean operator ! ();  //  not, negate
 
+  //  LOGICAL OPERATORS
   Troolean operator && (const Troolean&);
   Troolean operator && (const bool&);
   Troolean operator || (const Troolean&);
   Troolean operator || (const bool&);
 
-  // faster than ==
-  inline bool isTrue()    { return _value == 1; };
-  inline bool isFalse()   { return _value == 0; };
-  inline bool isUnknown() { return _value == -1; };
+  bool isTrue();
+  bool isFalse();
+  bool isUnknown();
 
-  // ideas
-  // Troolean operator &&=
-  // Troolean operator ||=
-  //
-  // bool toBool(); // returns random true/false if unknown....
-  // extend with dontcare ?  ==> four state logic ?  Foolean?
 
 private:
   int8_t _value;
 
 };
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

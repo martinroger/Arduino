@@ -1,27 +1,27 @@
 //
-//    FILE: XMLWriterSDcard.ino.ino
+//    FILE: XMLWriterSDcard.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: XML writing to SD card
 //    DATE: 2020-04-24
 //     URL: https://github.com/RobTillaart/XMLWriter
 //
 // Note: this application will write to the SD card immediately 
 // and it will append to the data.xml file every time started.
-//
+
 
 #include <SPI.h>
 #include <SD.h>
-// SPI 		PINS
-// MOSI		11
-// MISO		12
-// CLOCK	13
-// CS		10
-#define CS		10			// adjust this ChipSelect line if needed !
+// SPI       PINS
+// MOSI       11
+// MISO       12
+// CLOCK      13
+// CS         10
+#define CS                  10      // adjust this ChipSelect line if needed !
 
 #include <XMLWriter.h>
 
 char buffer[24];
+
 
 void setup()
 {
@@ -80,6 +80,7 @@ void AnalogPorts(XMLWriter* xw, const char* name)
   xw->tagClose();
 }
 
+
 void DigitalPorts(XMLWriter* xw)
 {
   xw->comment("The digital ports are not multiplexed");
@@ -89,8 +90,11 @@ void DigitalPorts(XMLWriter* xw)
   xw->tagClose();
 }
 
+
 void loop()
 {
 }
 
+
 // -- END OF FILE --
+

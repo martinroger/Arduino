@@ -2,19 +2,18 @@
 //    FILE: MAX14661.cpp
 //  AUTHOR: Rob Tillaart
 //    DATE: 2021-01-29
-// VERSION: 0.1.1
+// VERSION: 0.2.0
 // PURPOSE: Arduino library for MAX14661 16 channel I2C multiplexer
 //     URL: https://github.com/RobTillaart/MAX14661
-//
-//  HISTORY:
-//   0.1.0  2021-01-29  initial version
-//   0.1.1  2021-08-30  add shadow interface - experimental
+
 
 
 #include "MAX14661.h"
 
 
-// registers
+//
+//  REGISTERS
+//
 #define MAX14661_DIR0       0x00
 #define MAX14661_DIR1       0x01
 #define MAX14661_DIR2       0x02
@@ -27,51 +26,39 @@
 #define MAX14661_CMD_B      0x15
 
 
-
 MAX14661::MAX14661(const uint8_t deviceAddress, TwoWire *wire)
 {
   _address = deviceAddress;
   _wire    = wire;
+  _error   = MAX14661_OK;
 }
-
-
-#if defined (ESP8266) || defined(ESP32)
-bool MAX14661::begin(uint8_t dataPin, uint8_t clockPin)
-{
-  _wire = &Wire;
-  if ((dataPin < 255) && (clockPin < 255))
-  {
-    _wire->begin(dataPin, clockPin);
-  } else {
-    _wire->begin();
-  }
-  _error = 0;
-  if (! isConnected()) return false;
-  return true;
-}
-#endif
 
 
 bool MAX14661::begin()
 {
-  _wire->begin();
-  _error = 0;
-
-  if (! isConnected()) return false;
-  return true;
+  _error = MAX14661_OK;
+  return isConnected();
 }
 
 
 bool MAX14661::isConnected()
 {
   _wire->beginTransmission(_address);
-  return ( _wire->endTransmission() == 0);
+  _error = _wire->endTransmission();
+  //  set MAX14661_ERR_I2C
+  return ( _error == 0);
+}
+
+
+uint8_t MAX14661::getAddress()
+{
+  return _address;
 }
 
 
 /////////////////////////////////////////////////////////
 //
-// PAIR INTERFACE
+//  PAIR INTERFACE
 //
 bool MAX14661::openChannel(uint8_t channel)
 {
@@ -115,7 +102,7 @@ bool MAX14661::closeChannel(uint8_t channel)
 }
 
 
-// assumption both A and B are in same state
+//  assumption both A and B are in same state
 bool MAX14661::isOpenChannel(uint8_t channel)
 {
   if (channel > 15) return false;
@@ -142,6 +129,7 @@ void MAX14661::closeAllChannels()
   setChannels(0);
 }
 
+
 void MAX14661::setChannels(uint16_t mask)
 {
   writeRegister(MAX14661_DIR0, mask & 0x00FF);
@@ -151,7 +139,7 @@ void MAX14661::setChannels(uint16_t mask)
 }
 
 
-// assumption both A and B are in same state
+//  assumption both A and B are in same state
 uint16_t MAX14661::getChannels()
 {
   uint16_t channels = readRegister(MAX14661_DIR1) << 8;
@@ -162,7 +150,7 @@ uint16_t MAX14661::getChannels()
 
 /////////////////////////////////////////////////////////
 //
-// SHADOW INTERFACE
+//  SHADOW INTERFACE
 //
 void MAX14661::shadowClear()
 {
@@ -177,7 +165,9 @@ void MAX14661::activateShadow()
   writeRegister(MAX14661_CMD_B, 0x11);
 }
 
+
 ////////////////////////////////////////////////////////////
+
 
 void MAX14661::setShadowChannelMaskA(uint16_t mask)
 {
@@ -208,7 +198,9 @@ uint16_t MAX14661::getShadowChannelMaskB()
   return mask;
 }
 
+
 ////////////////////////////////////////////////////////////
+
 
 bool MAX14661::openShadowChannelA(uint8_t channel)
 {
@@ -311,7 +303,7 @@ bool MAX14661::isOpenShadowChannelB(uint8_t channel)
 
 /////////////////////////////////////////////////////////
 //
-// MUX INTERFACE
+//  MUX INTERFACE
 //
 void MAX14661::MUXA(uint8_t channel)
 {
@@ -347,7 +339,7 @@ uint8_t MAX14661::getMUXB()
 
 /////////////////////////////////////////////////////////
 //
-// FULL CONTROL
+//  FULL CONTROL
 //
 bool MAX14661::openA(uint8_t channel)
 {
@@ -419,14 +411,18 @@ bool MAX14661::closeB(uint8_t channel)
 
 /////////////////////////////////////////////////////////
 //
-// LOW LEVEL CONTROL
+//  LOW LEVEL CONTROL
 //
 uint8_t MAX14661::readRegister(uint8_t reg)
 {
   _wire->beginTransmission(_address);
   _wire->write(reg);
   _error = _wire->endTransmission();
-  if (_error != 0) return 0;
+  if (_error != 0)
+  {
+    //  set MAX14661_ERR_I2C
+    return 0;
+  }
   if (_wire->requestFrom(_address, (uint8_t)1) != 1)
   {
     _error = -1;
@@ -442,6 +438,7 @@ int MAX14661::writeRegister(uint8_t reg, uint8_t value)
   _wire->write(reg);
   _wire->write(value);
   _error = _wire->endTransmission();
+  //  set MAX14661_ERR_I2C
   return _error;
 }
 
@@ -449,11 +446,10 @@ int MAX14661::writeRegister(uint8_t reg, uint8_t value)
 int MAX14661::lastError()
 {
   int e = _error;
-  _error = 0;
+  _error = MAX14661_OK;
   return e;
 }
 
 
+//  -- END OF FILE --
 
-
-// -- END OF FILE --

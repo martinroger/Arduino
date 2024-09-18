@@ -9,12 +9,12 @@
 // Note: The implementation of the I2C_eeprom_cyclic_store should have been
 // made injactable so that a mock or fake for I2C_eeprom could have been used
 // instead of having to rely on a test implementation of the Wire singleton.
-// 
+//
 // This could have been done by changing the class to take two template
 // parameters, the first being one for I2C_eeprom or it's mock and the second
 // being the data type to store. For simplicity an alias could have been
 // introduced so that users wouldn't have to specify I2C_eeprom but that made
-// the editor lose track of the intellisense comments. :-/ 
+// the editor lose track of the intellisense comments. :-/
 //
 // Thus this remains until someone comes up with a brighter idea.
 
@@ -40,12 +40,13 @@ unittest_teardown()
 }
 
 /**
- * Verify that I2C_eeprom_cyclic_store fails to 
+ * Verify that I2C_eeprom_cyclic_store fails to
  * initialize when unable to read from eeprom.
  */
 unittest(cyclic_store_fails_begin)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -57,18 +58,19 @@ unittest(cyclic_store_fails_begin)
 }
 
 /**
- * Verify that I2C_eeprom_cyclic_store successfully 
+ * Verify that I2C_eeprom_cyclic_store successfully
  * initializes on empty eeprom.
  */
 unittest(cyclic_store_empty_begin)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
   I2C_eeprom EE(I2C_EEPROM_ADDR, I2C_EEPROM_SIZE);
   EE.begin();
-  
+
   auto miso = Wire.getMiso(I2C_EEPROM_ADDR);
   miso->push_back(0xff);
   miso->push_back(0xff);
@@ -87,6 +89,7 @@ unittest(cyclic_store_empty_begin)
 unittest(cyclic_store_double_page_buffer)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -100,13 +103,12 @@ unittest(cyclic_store_double_page_buffer)
   miso->push_back(0xff);
 
   I2C_eeprom_cyclic_store<uint8_t[40]> CS;
-  assertEqual(true, CS.begin(EE, 32, 4));
+  assertTrue(CS.begin(EE, 32, 4));
 
   uint16_t slots;
   uint32_t writes;
 
-  CS.getMetrics(slots, writes);
-
+  assertTrue(CS.getMetrics(slots, writes));
   assertEqual(2, slots);
   assertEqual(0, writes);
 }
@@ -118,6 +120,7 @@ unittest(cyclic_store_double_page_buffer)
 unittest(cyclic_store_finds_single_stored_version)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -156,6 +159,7 @@ unittest(cyclic_store_finds_single_stored_version)
 unittest(cyclic_store_finds_last_half_filled_eeprom)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -206,6 +210,7 @@ unittest(cyclic_store_finds_last_half_filled_eeprom)
 unittest(cyclic_store_finds_version_if_last_slot)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -257,6 +262,7 @@ unittest(cyclic_store_finds_version_if_last_slot)
 unittest(cyclic_store_finds_last_wrapped_eeprom)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -305,12 +311,13 @@ unittest(cyclic_store_finds_last_wrapped_eeprom)
  * Verify that I2C_eeprom_cyclic_store successfully finds the last
  * entry after writes have wrapped around the end of the eeprom
  * when using a buffer that spans two pages. And that it does so
- * even if the number of pages is not evenly divisable by the 
+ * even if the number of pages is not evenly divisable by the
  * number of pages the buffer span.
  */
 unittest(cyclic_store_finds_last_wrapped_eeprom_double_page_buffer)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -362,6 +369,7 @@ unittest(cyclic_store_finds_last_wrapped_eeprom_double_page_buffer)
 unittest(cyclic_store_fails_init_on_too_large_buffer)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom EE(I2C_EEPROM_ADDR, I2C_EEPROM_SIZE);
   EE.begin();
@@ -377,6 +385,7 @@ unittest(cyclic_store_fails_init_on_too_large_buffer)
 unittest(cyclic_store_empty_metrics)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -408,6 +417,7 @@ unittest(cyclic_store_empty_metrics)
 unittest(cyclic_store_fails_metrics_when_failed_initialize)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom EE(I2C_EEPROM_ADDR, I2C_EEPROM_SIZE);
   EE.begin();
@@ -428,6 +438,7 @@ unittest(cyclic_store_fails_metrics_when_failed_initialize)
 unittest(cyclic_store_fails_metrics_when_not_initialized)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   I2C_eeprom EE(I2C_EEPROM_ADDR, I2C_EEPROM_SIZE);
   EE.begin();
@@ -441,13 +452,14 @@ unittest(cyclic_store_fails_metrics_when_not_initialized)
 }
 
 /**
- * Verify that I2C_eeprom_cyclic_store correctly 
+ * Verify that I2C_eeprom_cyclic_store correctly
  * increments the number of writes when saving
  * new versions.
  */
 unittest(cyclic_store_increments_write_counter)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -490,6 +502,7 @@ unittest(cyclic_store_increments_write_counter)
 unittest(cyclic_store_format_single_page)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -523,6 +536,7 @@ unittest(cyclic_store_format_single_page)
 unittest(cyclic_store_format_double_page)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -557,6 +571,7 @@ unittest(cyclic_store_format_double_page)
 unittest(cyclic_store_format_double_page_odd_space)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
@@ -591,12 +606,13 @@ unittest(cyclic_store_format_double_page_odd_space)
 unittest(cyclic_store_wrapping_single_page)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
   I2C_eeprom EE(I2C_EEPROM_ADDR, I2C_EEPROM_SIZE);
   EE.begin();
-  
+
   auto miso = Wire.getMiso(I2C_EEPROM_ADDR);
   miso->push_back(0xff);
   miso->push_back(0xff);
@@ -636,12 +652,13 @@ unittest(cyclic_store_wrapping_single_page)
 unittest(cyclic_store_wrapping_double_page)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
   I2C_eeprom EE(I2C_EEPROM_ADDR, I2C_EEPROM_SIZE);
   EE.begin();
-  
+
   auto miso = Wire.getMiso(I2C_EEPROM_ADDR);
   miso->push_back(0xff);
   miso->push_back(0xff);
@@ -678,12 +695,13 @@ unittest(cyclic_store_wrapping_double_page)
 unittest(cyclic_store_wrapping_double_page_odd_space)
 {
   Wire.resetMocks();
+  Wire.begin();
 
   auto mosi = Wire.getMosi(I2C_EEPROM_ADDR);
 
   I2C_eeprom EE(I2C_EEPROM_ADDR, I2C_EEPROM_SIZE);
   EE.begin();
-  
+
   auto miso = Wire.getMiso(I2C_EEPROM_ADDR);
   miso->push_back(0xff);
   miso->push_back(0xff);
@@ -714,4 +732,6 @@ unittest(cyclic_store_wrapping_double_page_odd_space)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

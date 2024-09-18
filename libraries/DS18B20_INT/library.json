@@ -15,8 +15,17 @@
     "type": "git",
     "url": "https://github.com/RobTillaart/DS18B20_INT.git"
   },
-  "version": "0.1.5",
+  "dependencies":
+  [
+    {
+      "owner": "paulstoffregen",
+      "name": "OneWire",
+      "version": "^2.3.5"
+    }
+  ],
+  "version": "0.3.3",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "DS18B20_INT.h"
 }

@@ -1,7 +1,6 @@
 //
 //    FILE: demo1.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //     URL: http://www.adafruit.com/products/1002
 //     URL: https://github.com/RobTillaart/HT16K33
@@ -18,9 +17,12 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("HT16K33_LIB_VERSION: ");
+  Serial.println(HT16K33_LIB_VERSION);
 
-  seg.begin();
+  Wire.begin();
   Wire.setClock(100000);
+  seg.begin();
 
   seg.displayOn();
   Serial.println("displayTest()");
@@ -45,17 +47,17 @@ void loop()
   for (int i = 0; i < 16; i++)
   {
     seg.displayHex(0xABC0 + i);
-    seg.brightness(i);
+    seg.setBrightness(i);
     delay(500);
   }
   for (int i = 15; i >= 0; i--)
   {
     seg.displayHex(0xABC0 + i);
-    seg.brightness(i);
+    seg.setBrightness(i);
     delay(500);
   }
   delay(1000);
-  seg.brightness(2);
+  seg.setBrightness(2);
 
   Serial.println("displayClear()");
   seg.displayClear();
@@ -124,14 +126,14 @@ void loop()
     delay(100);
   }
 
-  Serial.println("blink()");
+  Serial.println("setBlink()");
   for (uint8_t i = 0; i < 3; i++)
   {
     seg.displayHex(0xABC0 + i);
-    seg.blink(i);
+    seg.setBlink(i);
     delay(4000);
   }
-  seg.blink(0);
+  seg.setBlink(0);
 
   Serial.print("INT TEST:\t");
   start = millis();
@@ -174,4 +176,6 @@ void loop()
 
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

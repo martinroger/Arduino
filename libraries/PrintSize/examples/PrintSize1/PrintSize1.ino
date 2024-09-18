@@ -1,28 +1,28 @@
 //
 //    FILE: PrintSize1.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo printSize
 //     URL: https://github.com/RobTillaart/PrintSize
-//
-// HISTORY:
-// 0.1.0   2017-12-09 initial version
-// 0.1.1   2020-02-19 refactored, simpler printSpaces()
-//
+
 
 #include "PrintSize.h"
 
 PrintSize ps;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PRINTSIZE_VERSION: ");
+  Serial.println(PRINTSIZE_VERSION);
+  Serial.println();
 
   Serial.println("Determine length of 10 random numbers and right ");
   Serial.println("align the numbers in a table with their sum.");
   Serial.println();
 }
+
 
 void loop()
 {
@@ -42,11 +42,15 @@ void loop()
   printSpaces(15 - length);
   Serial.println(sum);
   Serial.println();
+
+  delay(1000);
 }
+
 
 void printSpaces(uint8_t n)
 {
   while (n--) Serial.print(' ');
 }
 
-// -- END OF FILE -- 
+
+//  -- END OF FILE --

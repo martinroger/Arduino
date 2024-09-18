@@ -1,45 +1,46 @@
 //
 //    FILE: LineFormatter.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.2
-// PURPOSE: Simpe positioning wrapper class for Serial
+// VERSION: 0.3.0
+// PURPOSE: Simple positioning wrapper class for Serial
 //    DATE: 2020-05-14
 //     URL: https://github.com/RobTillaart/LineFormatter
-//
-//  HISTORY:
-//  0.1.0   2020-05-14  initial version
-//  0.1.1   2020-06-19  fix library.json
-//  0.1.2   2020-12-30  Arduino-ci + unit tests
 
 
 #include "LineFormatter.h"
 
+
 LineFormatter::LineFormatter(Print* stream)
 {
   _stream      = stream;
-  // reset
+  reset();
+};
+
+
+void LineFormatter::reset()
+{
   _pos         = 0;
   _maxPos      = 0;
   _lineCount   = 0;
   _anl         = 0;
   _autoNewLine = 0;
   _tabCount    = 0;
-};
+}
 
 
 ///////////////////////////////////////////
 //
-// WRITE - the core
+//  WRITE - the core
 //
-size_t LineFormatter::write(uint8_t c)
+size_t LineFormatter::write(uint8_t ch)
 {
-  // handle tabs.
-  if (_tabCount && c == '\t')
+  //  handle tabs.
+  if (_tabCount && (ch == '\t'))
   {
     write(' ');
     for (int i = 0; i < _tabCount; i++)
     {
-      if (_tabStop[i] > _pos + 1)   // assume sorted
+      if (_tabStop[i] > _pos + 1)   //  assume sorted
       {
         gotoPos(_tabStop[i] - 1);
         break;
@@ -48,42 +49,63 @@ size_t LineFormatter::write(uint8_t c)
   }
   else
   {
-    _stream->write(c);
+    _stream->write(ch);
     _pos++;
   }
 
-  // handle return
-  if (c == '\n')
+  //  handle return
+  if (ch == '\n')
   {
     _pos = 0;
     _lineCount++;
     _anl++;
   }
 
-  // handle maxpos
-  if (_maxPos && _pos == _maxPos)
+  //  handle _maxPos if enabled (_maxPos > 0)
+  if ((_maxPos > 0) && (_pos == _maxPos))
   {
-    write('\n');
+    write('\n');  //  recursive call!
   }
 
-  // handle autoNewLine
+  //  handle autoNewLine
   if (_autoNewLine && (_anl == _autoNewLine))
   {
-    write('\n');
+    write('\n');  //  recursive call!
     _anl = 0;
   }
   return 1;
 }
 
+
+void LineFormatter::setMaxLength(uint8_t maxPos)
+{
+  _maxPos = maxPos;
+}
+
+
+uint8_t LineFormatter::getMaxLength()
+{
+  return _maxPos;
+}
+
+
+uint8_t LineFormatter::gotoPos(uint8_t position)
+{
+  while (_pos < position) write(' ');
+  return _pos;
+}
+
+
 ///////////////////////////////////////////
 //
-// REPEAT
+//  REPEAT
 //
-void LineFormatter::repeat(uint8_t n, char c, uint8_t newLine)
+void LineFormatter::repeat(uint8_t n, char ch, uint8_t newLine)
 {
-  while (n--) print(c);
+  while (n--) print(ch);
   while (newLine--) write('\n');
 }
+
 
 void LineFormatter::repeat(uint8_t n, const char* str, uint8_t newLine)
 {
@@ -91,9 +113,10 @@ void LineFormatter::repeat(uint8_t n, const char* str, uint8_t newLine)
   while (newLine--) write('\n');
 }
 
+
 ///////////////////////////////////////////
 //
-// AUTONEWLINE
+//  AUTONEWLINE
 //
 void LineFormatter::setAutoNewLine(uint8_t n)
 {
@@ -101,26 +124,53 @@ void LineFormatter::setAutoNewLine(uint8_t n)
   _anl = 0;
 };
 
+
+uint8_t LineFormatter::getAutoNewLine()
+{
+  return _autoNewLine;
+}
+
+
 ///////////////////////////////////////////
 //
-// TAB
+//  TAB
 //
-void LineFormatter::clearTabs()
+bool LineFormatter::setTabs(uint8_t * positions, uint8_t size)
 {
-  _tabCount = 0;
+  if (size >= MAX_TAB_STOPS) return false;
   for (uint8_t i = 0; i < MAX_TAB_STOPS; i++)
   {
-    _tabStop[i] = 0;
+    if (i >= size) _tabStop[i] = 0;
+    else _tabStop[i] = positions[i];
   }
-};
+  _tabCount = size;
+  return true;
+}
 
-bool LineFormatter::addTab(uint8_t n)
+
+uint8_t LineFormatter::getTabs(uint8_t * positions)
 {
+  for (uint8_t i = 0; i < _tabCount; i++)
+  {
+    positions[i] = _tabStop[i];
+  }
+  return _tabCount;
+}
+
+
+bool LineFormatter::addTab(uint8_t position)
+{
+  if (position == 0) return false;
+  //  full ?
   if (_tabCount >= MAX_TAB_STOPS) return false;
-  _tabStop[_tabCount] = n;
+  //  prevent doubles.
+  if (existTab(position)) return false;
+
+  _tabStop[_tabCount] = position;
   _tabCount++;
   return true;
 }
+
 
 bool LineFormatter::addRelTab(uint8_t n)
 {
@@ -131,29 +181,107 @@ bool LineFormatter::addRelTab(uint8_t n)
   return true;
 }
 
+
+void LineFormatter::clearTabs()
+{
+  _tabCount = 0;
+  for (uint8_t i = 0; i < MAX_TAB_STOPS; i++)
+  {
+    _tabStop[i] = 0;
+  }
+};
+
+
+bool LineFormatter::removeTab(uint8_t position)
+{
+  for (uint8_t i = 0; i < _tabCount; i++)
+  {
+    if (_tabStop[i] == position)
+    {
+      _tabCount--;
+      while(i < _tabCount)
+      {
+        _tabStop[i] = _tabStop[i + 1];
+        i++;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+
+bool LineFormatter::existTab(uint8_t position)
+{
+  for (uint8_t i = 0; i < _tabCount; i++)
+  {
+    if (_tabStop[i] == position) return true;
+  }
+  return false;
+}
+
+
+void LineFormatter::tab(uint8_t n)
+{
+  while (n--) write('\t');
+}
+
+
 ///////////////////////////////////////////
 //
-// DEBUGGING
+//  MISCELLANEOUS
 //
-void LineFormatter::printRuler(uint8_t n)
+uint8_t LineFormatter::getPos()
 {
-  // for (int i = 0; i < _tabCount; i++) _stream->println(_tabStop[i]);
-  // return;
+  return _pos;
+}
+
+
+void LineFormatter::resetLineCount()
+{
+  _lineCount = 0;
+}
+
+
+uint32_t LineFormatter::getLineCount()
+{
+  return _lineCount;
+}
+
+
+uint8_t LineFormatter::getTabCount()
+{
+  return _tabCount;
+}
+
+
+uint8_t LineFormatter::getTabStop(uint8_t n)
+{
+  return _tabStop[n];
+}
+
+
+void LineFormatter::printRuler(uint8_t length)
+{
+  //  DEBUG
+  //  for (uint8_t i = 0; i < _tabCount; i++) _stream->println(_tabStop[i]);
 
   uint8_t t = 0;
-  for (int i = 1; i <= n; i++)
+  for (uint8_t i = 1; i <= length; i++)
   {
-    char c = '.';
-    if (i && i % 5 == 0) c = '5';
-    if (i && i % 10 == 0) c = '0';
-    if (_tabCount && (t < _tabCount) && (i == _tabStop[t]))
+    char ch = '.';
+    if (i == _tabStop[t])
     {
-      c = '#';
+      ch = '#';
       t++;
     }
-    write(c);
+    else if ((i % 10) == 0) ch = '0';
+    else if ((i % 5) == 0)  ch = '5';
+    write(ch);
   }
   write('\n');
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

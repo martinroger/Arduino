@@ -19,6 +19,7 @@
 // assertFalse(actual)
 // assertNull(actual)
 
+
 #include <ArduinoUnitTests.h>
 
 #include "Arduino.h"
@@ -27,10 +28,22 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "\tVERSION:\t %s\n", (char *) BOOLARRAY_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
+}
+
+
+unittest(test_constants)
+{
+  assertEqual(10000, BOOLARRAY_MAXSIZE   );
+  assertEqual(0x00,  BOOLARRAY_OK        );
+  assertEqual(0xFF,  BOOLARRAY_ERROR     );
+  assertEqual(0xFE,  BOOLARRAY_SIZE_ERROR);
+  assertEqual(0xFD,  BOOLARRAY_INIT_ERROR);
 }
 
 
@@ -40,8 +53,10 @@ unittest(test_constructor)
   assertEqual(0, ba.size());
   ba.begin(1000);
   assertEqual(1000, ba.size());
-
-  fprintf(stderr, "\tVERSION:\t %s\n", BOOLARRAY_LIB_VERSION);
+  assertEqual(125, ba.memory());
+  ba.begin(100);
+  assertEqual(100, ba.size());
+  assertEqual(13, ba.memory());
 }
 
 
@@ -97,7 +112,6 @@ unittest(test_clear)
   ba.begin(1000);
   assertEqual(1000, ba.size());
 
-
   fprintf(stderr, "\t1000x setAll(1) -> clear() -> sum += get(i)\n");
   int sum = 0;
   ba.setAll(1);
@@ -119,4 +133,6 @@ unittest(test_clear)
 
 unittest_main()
 
-// --------
+
+//  -- END OF FILE --
+

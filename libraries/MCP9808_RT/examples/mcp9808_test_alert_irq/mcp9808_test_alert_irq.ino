@@ -1,12 +1,8 @@
 //
 //    FILE: mcp9808_test_alert_irq.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo alert to interrupt 0 = PIN2 of Arduino UNO.
 //    DATE: 2020-11-16
-//    (c) : MIT
-//
-
 //
 //  MCP9808 breakout board
 //  +----------+
@@ -21,6 +17,7 @@
 //  +----------+
 //
 
+
 #include "mcp9808.h"
 
 MCP9808 ts(24);
@@ -28,17 +25,24 @@ MCP9808 ts(24);
 const uint8_t ALERTPIN = 2;     // ADJUST IF NEEDED
 volatile bool flag = false;
 
+
+// interrupt routine
 void detectAlert()
 {
   flag = true;
 }
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("MCP9808_LIB_VERSION: ");
+  Serial.println(MCP9808_LIB_VERSION);
 
-  // SET TEMPERATURE WINDOW FOR COMPERATOR MODE °C
+  Wire.begin();
+
+  // SET TEMPERATURE WINDOW FOR COMPERATOR MODE ï¿½C
   // small window for 'fast' effect
   ts.setTlower(22);
   ts.setTupper(23);
@@ -57,6 +61,7 @@ void setup()
   pinMode(ALERTPIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ALERTPIN), detectAlert, RISING);  // CHANGE
 
+
   // SET ALERT PARAMETERS
   uint16_t cfg = ts.getConfigRegister();
   cfg &= ~0x0001;      // set comparator mode
@@ -66,6 +71,7 @@ void setup()
   cfg |= 0x0008;       // enable alert
   ts.setConfigRegister(cfg);
 }
+
 
 void loop()
 {

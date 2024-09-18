@@ -1,15 +1,13 @@
 //
 //    FILE: GY521_performance.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: minimal demo
-//    DATE: 2021-06-13
-
+//     URL: https://github.com/RobTillaart/GY521
 
 #include "GY521.h"
 
 
-GY521 sensor(0x69);
+GY521 sensor(0x68);
 
 uint32_t counter = 0;
 
@@ -17,7 +15,10 @@ uint32_t counter = 0;
 void setup()
 {
   Serial.begin(115200);
+  Serial.println();
   Serial.println(__FILE__);
+  Serial.print("GY521_LIB_VERSION: ");
+  Serial.println(GY521_LIB_VERSION);
 
   Wire.begin();
 
@@ -25,7 +26,7 @@ void setup()
   while (sensor.wakeup() == false)
   {
     Serial.print(millis());
-    Serial.println("\tCould not connect to GY521");
+    Serial.println("\tCould not connect to GY521: please check the GY521 address (0x68/0x69)");
     delay(1000);
   }
 }
@@ -44,4 +45,6 @@ void loop()
   delay(1000);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

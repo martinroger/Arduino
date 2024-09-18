@@ -1,16 +1,11 @@
 //
 //    FILE: max44009_interrupt.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo of max44009 library
-//    DATE: 2020-01-30
-//
-// Released to the public domain
-//
+//     URL: https://github.com/RobTillaart/MAX44009
 
-
-#include "Wire.h"
 #include "Max44009.h"
+
 
 Max44009 myLux(0x4A);
 
@@ -20,10 +15,13 @@ uint32_t lastDisplay = 0;
 void setup()
 {
   Serial.begin(115200);
-  Serial.print("\nStart max44009_interrupt : ");
+  Serial.println(__FILE__);
+  Serial.print("MAX44009_LIB_VERSION: ");
   Serial.println(MAX44009_LIB_VERSION);
+  Serial.println();
 
   Wire.begin();
+
   myLux.setContinuousMode();
 
   myLux.setHighThreshold(30);
@@ -47,22 +45,29 @@ void loop()
   {
     lastDisplay += interval;
     float lux = myLux.getLux();
-    int err = myLux.getError();
-    int st = myLux.getInterruptStatus();
-    if (err != 0)
+    int error = myLux.getError();
+    int status = myLux.getInterruptStatus();
+    if (error != 0)
     {
       Serial.print("Error:\t");
-      Serial.println(err);
+      Serial.println(error);
     }
     else
     {
       Serial.print("lux:\t");
       Serial.print(lux);
-      if (st == 1) Serial.println("\tIRQ occurred");
-      else Serial.println();
+      if (status == 1) 
+      {
+        Serial.println("\tIRQ occurred");
+      }
+      else 
+      {
+        Serial.println();
+      }
     }
   }
 }
 
 
-// END OF FILE
+//  -- END OF FILE --
+

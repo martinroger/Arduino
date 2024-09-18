@@ -15,8 +15,9 @@
     "type": "git",
     "url": "https://github.com/RobTillaart/FastMap"
   },
-  "version": "0.3.2",
+  "version": "0.4.2",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "FastMap.h"
 }

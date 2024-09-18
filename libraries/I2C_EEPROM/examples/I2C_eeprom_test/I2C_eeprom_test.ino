@@ -2,22 +2,24 @@
 //    FILE: I2C_eeprom_test.ino
 //  AUTHOR: Rob Tillaart
 // PURPOSE: show/test I2C_EEPROM library
+//     URL: https://github.com/RobTillaart/I2C_EEPROM
 //
+//  uses a 24LC256 (32KB) EEPROM
+//  might need adaptions for other EEPROMS (page size etc)
 
-// uses a 24LC256 (32KB) EEPROM
-// might need adaptions for other EEPROMS (page size etc)
 
 #include "Wire.h"
 #include "I2C_eeprom.h"
 
 
-// UNO
+//  UNO
 #define SERIAL_OUT Serial
-// Due
+//  Due
 // #define SERIAL_OUT SerialUSB
 
 
-I2C_eeprom ee(0x50, I2C_DEVICESIZE_24LC256);
+I2C_eeprom ee(0x50);
+//  I2C_eeprom ee(0x50, I2C_DEVICESIZE_24LC256);
 
 uint32_t start, diff, totals = 0;
 
@@ -25,8 +27,12 @@ uint32_t start, diff, totals = 0;
 void setup()
 {
   SERIAL_OUT.begin(115200);
-  while (!SERIAL_OUT); // wait for SERIAL_OUT port to connect. Needed for Leonardo only
+  while (!SERIAL_OUT);  //  wait for SERIAL_OUT port to connect. Needed for Leonardo only
   SERIAL_OUT.println(__FILE__);
+  SERIAL_OUT.print("I2C_EEPROM_VERSION: ");
+  SERIAL_OUT.println(I2C_EEPROM_VERSION);
+
+  Wire.begin();
 
   ee.begin();
   if (! ee.isConnected())
@@ -34,14 +40,12 @@ void setup()
     SERIAL_OUT.println("ERROR: Can't find eeprom\nstopped...");
     while (1);
   }
-
-  SERIAL_OUT.print("I2C eeprom library: ");
-  SERIAL_OUT.print(I2C_EEPROM_VERSION);
-  SERIAL_OUT.println("\n");
+  SERIAL_OUT.print("isConnected:\t");
+  SERIAL_OUT.println(ee.isConnected());
 
   SERIAL_OUT.println("\nTEST: determine size");
   start = micros();
-  uint32_t size = ee.determineSize();
+  uint32_t size = ee.determineSize(true);
   diff = micros() - start;
   SERIAL_OUT.print("TIME: ");
   SERIAL_OUT.println(diff);
@@ -63,7 +67,9 @@ void setup()
   SERIAL_OUT.println("\nTEST: 64 byte page boundary writeBlock");
   ee.setBlock(0, 0, 128);
   dumpEEPROM(0, 128);
-  char data[] = "11111111111111111111";
+  Serial.println("---");
+  // char data[] = "11111111111111111111";
+  char data[] = "33333333333333333333";
   ee.writeBlock(60, (uint8_t*) data, 10);
   dumpEEPROM(0, 128);
 
@@ -209,7 +215,7 @@ void loop()
 void dumpEEPROM(uint16_t memoryAddress, uint16_t length)
 {
   const int BLOCK_TO_LENGTH = 10;
-  
+
   SERIAL_OUT.print("\t  ");
   for (int x = 0; x < 10; x++)
   {
@@ -241,4 +247,6 @@ void dumpEEPROM(uint16_t memoryAddress, uint16_t length)
   SERIAL_OUT.println();
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

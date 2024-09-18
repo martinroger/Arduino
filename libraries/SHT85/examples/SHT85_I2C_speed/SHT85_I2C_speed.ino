@@ -1,12 +1,10 @@
 //
 //    FILE: SHT85_I2C_speed.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
 // PURPOSE: demo
 //     URL: https://github.com/RobTillaart/SHT85
-
-
-// TOPVIEW
+//
+// TOPVIEW SHT85  (check datasheet)
 //            +-------+
 // +-----\    | SDA 4 -----
 // | +-+  ----+ GND 3 -----
@@ -22,7 +20,7 @@
 uint32_t start;
 uint32_t stop;
 
-SHT85 sht;
+SHT85 sht(SHT85_ADDRESS);
 
 
 void setup()
@@ -33,12 +31,13 @@ void setup()
   Serial.println(SHT_LIB_VERSION);
 
   Wire.begin();
-  sht.begin(SHT85_ADDRESS);
-  for (uint32_t clk = 100000; clk < 550000; clk += 50000)
+  Wire.setClock(100000);
+  sht.begin();
+  for (uint32_t clk = 50000; clk < 550000; clk += 50000)
   {
     Wire.setClock(clk);
     start = micros();
-    sht.read();         // default = true/fast       slow = false
+    sht.read();         //  default = true/fast       slow = false
     stop = micros();
     Serial.print(clk);
     Serial.print("\t");
@@ -54,4 +53,4 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

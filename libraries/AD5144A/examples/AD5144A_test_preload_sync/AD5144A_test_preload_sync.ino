@@ -1,20 +1,18 @@
 //
 //    FILE: AD5144A_test_preload_sync.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2021-05-04
 //     URL: https://github.com/RobTillaart/AD5144A
 
 
-// connect the AD5144A to a multichannel scope
-// to verify the potmeters change at the same time 
+//  connect the AD5144A to a multichannel scope
+//  to verify the potentiometers change at the same time 
 
 
 #include "AD5144A.h"
 
-// select the right type
-// adjust address
+//  select the right type
+//  adjust address
 AD5144A AD(0x77);
 
 
@@ -48,11 +46,12 @@ void test_preload()
   Serial.println();
   Serial.println(__FUNCTION__);
 
-  for (int val = 0; val < 256; val += 17)
+  for (int value = 0; value < 256; value += 17)
   {
-    for (uint8_t ch = 0; ch < AD.pmCount(); ch++) // all channels
+    //  loop over all channels / potmeters
+    for (uint8_t potMeter = 0; potMeter < AD.pmCount(); potMeter++)  
     {
-      AD.preload(ch, val);
+      AD.preload(potMeter, value);
     }
     AD.sync(0x0F);
     delay(100);
@@ -66,9 +65,9 @@ void test_preloadAll()
   Serial.println();
   Serial.println(__FUNCTION__);
 
-  for (int val = 0; val < 256; val += 17)
+  for (int value = 0; value < 256; value += 17)
   {
-    AD.preloadAll(val);
+    AD.preloadAll(value);
     AD.sync(0x0F);
     delay(100);
   }
@@ -76,4 +75,4 @@ void test_preloadAll()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

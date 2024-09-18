@@ -41,7 +41,9 @@ char buffer[100];
 
 unittest_setup()
 {
+  fprintf(stderr, "PRINTSTRING_VERSION: %s\n", (char *) PRINTSTRING_VERSION);
 }
+
 
 unittest_teardown()
 {
@@ -50,13 +52,11 @@ unittest_teardown()
 
 unittest(test_constructor)
 {
-  fprintf(stderr, "VERSION: %s\n", PRINTSTRING_VERSION);
-
   PrintString ps;
 
   assertEqual(0,   ps.size());
 
-  // not so nice but best I could do on short term
+  //  not so nice but best I could do on short term
   ps.print("Hello World");
   ps.getString().toCharArray(buffer, 100);
   fprintf(stderr, "%s\n", buffer);
@@ -68,9 +68,11 @@ unittest(test_constructor)
   assertEqual(20, ps.size());
 
   ps.clear();
-  assertEqual(0,   ps.size());
+  assertEqual(0, ps.size());
 }
 
+
 unittest_main()
+
 
 // --------

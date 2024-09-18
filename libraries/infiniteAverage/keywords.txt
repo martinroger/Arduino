@@ -1,20 +1,24 @@
-# Syntax Coloring Map For infinteAverage
+# Syntax Colouring Map For infinteAverage
 
-# Datatypes (KEYWORD1)
+# Data types (KEYWORD1)
 infinteAverage	KEYWORD1
 IAVG	KEYWORD1
 
-# Methods and Functions (KEYWORD2)
 
-IAVG	KEYWORD2
+# Methods and Functions (KEYWORD2)
 reset	KEYWORD2
 add	KEYWORD2
 average	KEYWORD2
+
 decimals	KEYWORD2
 whole	KEYWORD2
 count	KEYWORD2
 maximum	KEYWORD2
 minimum	KEYWORD2
+
+setDivideThreshold	KEYWORD2
+getDivideThreshold	KEYWORD2
+
 
 # Instances (KEYWORD2)
 

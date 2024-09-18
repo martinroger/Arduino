@@ -1,7 +1,6 @@
 //
 //    FILE: test_out_of_range.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: test decimal point for floats.
 //     URL: http://www.adafruit.com/products/1002
 //     URL: https://github.com/RobTillaart/HT16K33
@@ -17,9 +16,12 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("HT16K33_LIB_VERSION: ");
+  Serial.println(HT16K33_LIB_VERSION);
 
-  seg.begin();
+  Wire.begin();
   Wire.setClock(100000);
+  seg.begin();
 
   seg.displayOn();
 
@@ -132,4 +134,6 @@ void test_out_of_range()
   delay(1000);
 }
 
+
 // -- END OF FILE --
+

@@ -15,8 +15,9 @@
     "type": "git",
     "url": "https://github.com/RobTillaart/AnalogPin"
   },
-  "version": "0.2.4",
+  "version": "0.2.9",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "AnalogPin.h"
 }

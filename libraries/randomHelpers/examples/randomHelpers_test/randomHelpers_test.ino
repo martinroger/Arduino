@@ -1,11 +1,10 @@
 //
 //    FILE: randomHelpers_test.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2020=07-01
+//    DATE: 2020-07-01
 //     URL: https://github.com/RobTillaart/randomHelpers
-//
+
 
 #include "randomHelpers.h"
 
@@ -13,11 +12,15 @@ uint32_t start, stop, duration1, duration2;
 
 volatile uint32_t x;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
-
+  Serial.print("RANDOM_HELPERS_VERSION: ");
+  Serial.println(RANDOM_HELPERS_VERSION);
+  Serial.println();
+  
   test_getRandom1();
   test_getRandom6();
   test_getRandom8();
@@ -27,10 +30,11 @@ void setup()
   test_throwDice();
 }
 
+
 void loop()
 {
-
 }
+
 
 void test_getRandom1()
 {
@@ -61,6 +65,7 @@ void test_getRandom1()
   delay(10);
 }
 
+
 void test_getRandom6()
 {
   start = micros();
@@ -89,6 +94,7 @@ void test_getRandom6()
   Serial.println();
   delay(10);
 }
+
 
 void test_getRandom8()
 {
@@ -119,6 +125,7 @@ void test_getRandom8()
   delay(10);
 }
 
+
 void test_getRandom16()
 {
   start = micros();
@@ -147,6 +154,7 @@ void test_getRandom16()
   Serial.println();
   delay(10);
 }
+
 
 void test_getRandom24()
 {
@@ -177,6 +185,7 @@ void test_getRandom24()
   delay(10);
 }
 
+
 void test_getRandom32()
 {
   start = micros();
@@ -205,6 +214,8 @@ void test_getRandom32()
   Serial.println();
   delay(10);
 }
+
+
 void test_throwDice()
 {
   start = micros();
@@ -234,4 +245,5 @@ void test_throwDice()
   delay(10);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

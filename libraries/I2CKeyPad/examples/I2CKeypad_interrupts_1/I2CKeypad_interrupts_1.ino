@@ -1,24 +1,19 @@
 //
 //    FILE: I2CKeypad_interrupts_1.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo interrupt checking keyPressed
 //     URL: https://github.com/RobTillaart/I2CKeyPad
 //
-//  HISTORY:
-//  2021-05-08  0.1.0 initial version
-
 //  interrupts are supported since version 0.2.1
 //  this sketch show usage and some comparison with polling.
-
-
+//
 //   KEYPAD   PCF8574     UNO
 //   rows     p0-p3
 //   columns  p4-p7
 //            IRQ         pin 2
 //            SDA         A4
 //            SCL         A5
-// 4x4 or smaller keypad.
+//  4x4 or smaller keypad.
 
 
 //  notes
@@ -32,16 +27,16 @@
 //  polling at e.g 10Hz (to stay reactive) adds up both in CPU time used
 //  and also in occupation of the I2C bus.
 //
-//  The PCF8574 will generate an irq both on press and release.
+//  The PCF8574 will generate an interrupt both on press and release.
 //  So this code reads the keypad on both signals!
 //
 //  Note: depending on keypad used some bouncing may occur
 //        (saw it only during release)
-//  can be solved by tracking lastinterrupt in the ISR routine
-//  however it is more efficient to reset the flag only after the 
+//  can be solved by tracking the last interrupt in the ISR routine
+//  however it is more efficient to reset the flag only after the
 //  keypress is handled.
 //
-// Note: multiple keypresses are not queued.
+//  Note: multiple keypresses are not queued.
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -54,7 +49,7 @@
 
 const uint8_t KEYPAD_ADDRESS = 0x20;
 I2CKeyPad keyPad(KEYPAD_ADDRESS);
-char keys[] = "123A456B789C*0#DNF";  // N = Nokey, F = Fail (eg >1 keys pressed)
+char keys[] = "123A456B789C*0#DNF";  //  N = NoKey, F = Fail (e.g. > 1 keys pressed)
 
 // volatile for IRQ var
 volatile bool keyChange = false;
@@ -72,13 +67,13 @@ void setup()
   Serial.println(__FILE__);
 
 
-  // NOTE: PCF8574 will generate an interrupt on key press and release.
+  //  NOTE: PCF8574 will generate an interrupt on key press and release.
   pinMode(3, INPUT_PULLUP);
   attachInterrupt(1, keyChanged, FALLING);
   keyChange = false;
 
-
   Wire.begin();
+  Wire.setClock(100000);
   if (keyPad.begin() == false)
   {
     Serial.println("\nERROR: cannot communicate to keypad.\nPlease reboot.\n");
@@ -86,8 +81,6 @@ void setup()
   }
 
   measurePolling();
-
-  Wire.setClock(100000);
 }
 
 
@@ -95,13 +88,13 @@ void loop()
 {
   if (keyChange)
   {
-    uint8_t idx = keyPad.getKey();
-    // only after keychange is handled it is time reset the flag
+    uint8_t index = keyPad.getKey();
+    //  only after keyChange is handled it is time reset the flag
     keyChange = false;
-    if (idx != 16)
+    if (index != 16)
     {
       Serial.print("press: ");
-      Serial.println(keys[idx]);
+      Serial.println(keys[index]);
     }
     else
     {
@@ -114,7 +107,7 @@ void loop()
 
 void measurePolling()
 {
-  // measure time to check isPressed() by polling.
+  //  measure time to check isPressed() by polling.
 
   //  CLOCK      TIME (us)
   //  ---------------------
@@ -131,16 +124,16 @@ void measurePolling()
     Wire.setClock(clock);
     for (int i = 0; i < 1; i++)
     {
-      // reference time for keyPressed check UNO ~
+      //  reference time for keyPressed check UNO ~
       uint32_t start = micros();
-      uint8_t idx = keyPad.isPressed();
+      uint8_t index = keyPad.isPressed();
       uint32_t stop = micros();
 
       Serial.print(clock);
       Serial.print("\t");
-      Serial.print(idx);
+      Serial.print(index);
       Serial.print("\t");
-      Serial.print(keys[idx]);
+      Serial.print(keys[index]);
       Serial.print("\t");
       Serial.println(stop - start);
       delay(10);
@@ -148,4 +141,6 @@ void measurePolling()
   }
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

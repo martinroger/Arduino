@@ -1,12 +1,9 @@
 //
 //    FILE: ansi_clearline.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
-//    DATE: 2020-07-08
 //     URL: https://github.com/RobTillaart/ANSI
-//    (c) : MIT
-//
+
 
 #include "ansi.h"
 
@@ -27,15 +24,15 @@ void setup()
 
   for (int i = 0; i < 8; i++)
   {
-    ansi.gotoXY(i, 4 + 2 * i);
+    ansi.gotoXY(4 + 2 * i, i);
     ansi.clearLine(ansi.toEnd);
     delay(100);
   }
   delay(1000);
-  
+
   for (int i = 12; i < 20; i++)
   {
-    ansi.gotoXY(i, 4 + 2 * i);
+    ansi.gotoXY(4 + 2 * i, i);
     ansi.clearLine(ansi.toStart);
     delay(100);
   }
@@ -43,17 +40,18 @@ void setup()
 
   for (int i = 9; i < 11; i++)
   {
-    ansi.gotoXY(i, 4 + 2 * i);
+    ansi.gotoXY(4 + 2 * i, i);
     ansi.clearLine(ansi.entireLine);
     delay(100);
   }
   delay(1000);
-
-  
 }
+
 
 void loop()
 {
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

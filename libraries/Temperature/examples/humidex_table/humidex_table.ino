@@ -1,7 +1,6 @@
 //
 //    FILE: humidex_table.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //    DATE: 2020-04-05
 
@@ -13,7 +12,8 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
-
+  Serial.print("TEMPERATURE_LIB_VERSION: ");
+  Serial.println(TEMPERATURE_LIB_VERSION);
   Serial.println();
 
   for (int cel = 20; cel < 45; cel++)
@@ -42,9 +42,11 @@ void setup()
   Serial.print("Done...");
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

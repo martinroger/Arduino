@@ -1,12 +1,11 @@
 //
 //    FILE: demo_temperature_humidity.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
 // PURPOSE: demo
 //     URL: http://www.adafruit.com/products/1002
 //     URL: https://github.com/RobTillaart/HT16K33
 
-// This example uses th DHTNew library and a DHT22 sensor
+// This example uses the DHTNew library and a DHT22 sensor
 //  https://github.com/RobTillaart/DHTNew
 
 
@@ -24,9 +23,13 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("HT16K33_LIB_VERSION: ");
+  Serial.println(HT16K33_LIB_VERSION);
 
+  Wire.begin();
   Wire.setClock(100000);
   seg.begin();
+  
   seg.displayOn();
 }
 
@@ -54,3 +57,4 @@ void loop()
 
 
 // -- END OF FILE --
+

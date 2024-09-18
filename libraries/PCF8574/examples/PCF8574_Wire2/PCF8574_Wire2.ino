@@ -1,15 +1,43 @@
-//
+ //
 //    FILE: PCF8574_Wire2.ino
 //  AUTHOR: Rob Tillaart
 //    DATE: 2016-04-30
-//
-// PUPROSE: demo 
-//
+// PURPOSE: demo
+//     URL: https://github.com/RobTillaart/PCF8574
+
 
 #include "PCF8574.h"
 
-// adjust addresses if needed
-PCF8574 PCF(0x39, &Wire2);
+//  adjust addresses if needed
+PCF8574 PCF(0x39, &Wire2);  //  Wire2 ==> Teensy 
+
+
+void doHigh()
+{
+  PCF.write(4, HIGH);
+  int x = PCF.read8();
+  Serial.print("Read ");
+  Serial.println(x, HEX);
+}
+
+
+void doLow()
+{
+  PCF.write(4, LOW);
+  int x = PCF.read8();
+  Serial.print("Read ");
+  Serial.println(x, HEX);
+}
+
+
+void doToggle()
+{
+  PCF.toggle(4);
+  int x = PCF.read8();
+  Serial.print("Read ");
+  Serial.println(x, HEX);
+}
+
 
 void setup()
 {
@@ -17,6 +45,8 @@ void setup()
   Serial.println(__FILE__);
   Serial.print("PCF8574_LIB_VERSION:\t");
   Serial.println(PCF8574_LIB_VERSION);
+
+  Wire2.begin();
 
   if (!PCF.begin())
   {
@@ -34,6 +64,7 @@ void setup()
   delay(1000);
 }
 
+
 void loop()
 {
   Serial.println("HLT");
@@ -46,29 +77,5 @@ void loop()
   }
 }
 
-void doHigh()
-{
-  PCF.write(4, HIGH);
-  int x = PCF.read8();
-  Serial.print("Read ");
-  Serial.println(x, HEX);
-}
 
-void doLow()
-{
-  PCF.write(4, LOW);
-  int x = PCF.read8();
-  Serial.print("Read ");
-  Serial.println(x, HEX);
-}
-
-void doToggle()
-{
-  PCF.toggle(4);
-  int x = PCF.read8();
-  Serial.print("Read ");
-  Serial.println(x, HEX);
-}
-
-
-// -- END OF FILE --
+//  -- END OF FILE --

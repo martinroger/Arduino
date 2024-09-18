@@ -1,24 +1,28 @@
 //
 //    FILE: LTC2991_PWM.ino
 //  AUTHOR: Rob Tillaart
-//    DATE: 2021-05-13
-// PUPROSE: demo
+// PURPOSE: demo
+//     URL: https://github.com/RobTillaart/LTC2991
 
 
 #include "Wire.h"
 #include "LTC2991.h"
 
-LTC2991 LTC(0x20);
+
+LTC2991 LTC(0x48);  //  all address lines GND
+
 
 int speed = 10;
 int incr = 1;
+
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
-  Serial.print("LTC2991_LIB_VERSION:\t");
+  Serial.print("LTC2991_LIB_VERSION: ");
   Serial.println(LTC2991_LIB_VERSION);
+  Serial.println();
 
   Wire.begin();
   Wire.setClock(100000);
@@ -30,7 +34,6 @@ void setup()
   }
 
   LTC.enable_PWM(true);
-
 }
 
 
@@ -43,8 +46,8 @@ void loop()
     lastTime = millis();
 
     LTC.set_PWM(speed);
-    if (speed == 511) incr = -1; // reverse speed
-    if (speed == 0) incr = 1; // reverse speed
+    if (speed == 511) incr = -1;   //  reverse speed
+    if (speed == 0)   incr = 1;    //  reverse speed
     speed += incr;
 
     Serial.print(lastTime);
@@ -56,4 +59,4 @@ void loop()
 }
 
 
-// -- END OF FILE --
+//  -- END OF FILE --

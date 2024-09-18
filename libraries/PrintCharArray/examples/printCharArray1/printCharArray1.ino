@@ -1,22 +1,22 @@
 //
 //    FILE: printCharArray1.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.3.0
 // PURPOSE: demo
 //     URL: https://github.com/RobTillaart/PrintCharArray
-//
-//  HISTORY:
-//  0.1.0   2017-12-07  initial version
-//  0.3.0   2021-01-06  free() => available()
+
 
 #include "PrintCharArray.h"
 
 PrintCharArray ps;
 
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("PRINTCHARARRAY_VERSION: ");
+  Serial.println(PRINTCHARARRAY_VERSION);
+  Serial.println();
 
   Serial.println(ps.available());
   ps.println("Hello World");
@@ -31,9 +31,10 @@ void setup()
   Serial.println(ps.getBuffer());
 }
 
+
 void loop()
 {
-
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

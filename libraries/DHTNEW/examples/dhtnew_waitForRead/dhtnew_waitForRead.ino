@@ -1,35 +1,37 @@
 //
 //    FILE: dhtnew_waitForRead.ino
 //  AUTHOR: Mr-HaleYa
-// VERSION: 0.1.2
 // PURPOSE: DHTNEW library waitForRead example sketch for Arduino
 //     URL: https://github.com/RobTillaart/DHTNew
-//
-// HISTORY:
-// 0.1.0    2020-05-03 initial version
-// 0.1.1    2020-06-08 updated error handling
-// 0.1.2    2020-06-15 match 0.3.0 error handling
-//
-// DHT PIN layout from left to right
-// =================================
-// FRONT : DESCRIPTION  
-// pin 1 : VCC
-// pin 2 : DATA
-// pin 3 : Not Connected
-// pin 4 : GND
+
+//  DHT PIN layout from left to right
+//  =================================
+//  FRONT : DESCRIPTION  
+//  pin 1 : VCC
+//  pin 2 : DATA
+//  pin 3 : Not Connected
+//  pin 4 : GND
+
 
 #include <dhtnew.h>
 
-DHTNEW mySensor(16);
+DHTNEW mySensor(5);   //  ESP 16    UNO 5    MKR1010 5
+
 
 void setup()
 {
+  while(!Serial);    //  MKR1010 needs this
+
   Serial.begin(115200);
   Serial.println("\n");
   Serial.println("dhtnew_waitForRead.ino");
   Serial.print("LIBRARY VERSION: ");
   Serial.println(DHTNEW_LIB_VERSION);
   Serial.println();
+
+  //  MKR1010 needs this
+  //  mySensor.setDisableIRQ(false);
+
   Serial.println("This sketch shows the use of the setWaitForReading() flag (default value is false).");
   Serial.println("Setting the flag to true will make the sketch wait until the sensor is ready to take another reading.");
   Serial.println("Otherwise, if the sensor was not ready to take a new reading the previous data will be returned.");
@@ -56,23 +58,24 @@ void setup()
   Serial.println("\nDone...");
 }
 
+
 void loop()
 {
-
 }
+
 
 void test()
 {
-  // READ DATA
+  //  READ DATA
   uint32_t start = micros();
   int chk = mySensor.read();
   uint32_t stop = micros();
   uint32_t duration = stop - start;
 
-  // DISPLAY IF OLD OR NEW DATA
+  //  DISPLAY IF OLD OR NEW DATA
   if (duration > 50){Serial.print("NEW\t");}else{Serial.print("OLD\t");}
   
-  // DISPLAY DATA
+  //  DISPLAY DATA
   Serial.print(mySensor.getHumidity(), 1);
   Serial.print(",\t");
   Serial.print(mySensor.getTemperature(), 1);
@@ -118,4 +121,6 @@ void test()
   delay(100);
 }
 
-// END OF FILE
+
+//  -- END OF FILE --
+

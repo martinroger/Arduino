@@ -1,13 +1,13 @@
 //
 //    FILE: ra_FastAverageTest.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.2.0
 //    DATE: 2015-sep-04
-//
-// PUPROSE: demo to see if different average algorithm give different result
-//
+// PURPOSE: demo to see if different average algorithm give different result
+//     URL: https://github.com/RobTillaart/RunningAverage
+
 
 #include "RunningAverage.h"
+
 
 RunningAverage myRA(16);
 
@@ -18,17 +18,21 @@ float maxDiff = 0;
 
 uint32_t start, stop;
 
+
 void setup(void)
 {
   Serial.begin(115200);
-  Serial.print("\nDemo ");
+  Serial.println();
   Serial.println(__FILE__);
-  Serial.print("Version: ");
+  Serial.print("RUNNINGAVERAGE_LIB_VERSION: ");
   Serial.println(RUNNINGAVERAGE_LIB_VERSION);
-  myRA.clear(); // explicitly start clean
+
+  //  explicitly start clean
+  myRA.clear();
 
   measure_duration();
 }
+
 
 void loop()
 {
@@ -57,7 +61,6 @@ void measure_duration()
 }  
 
 
-
 void test(long n)
 {
   Serial.println("\nCNT\tAVG\t\tFASTAVG\t\tDIFF\t\tMAXDIFF");
@@ -66,10 +69,10 @@ void test(long n)
   {
     long rn = random(0, 1000);
     myRA.addValue(rn * 0.001);
-	if ( i % 1000 == 0)
-	{
-      // the order of the next two lines is important as getAverage() resets the _sum
-	  // used by the getFastAverage();
+    if ( i % 1000 == 0)
+    {
+      //  the order of the next two lines is important as getAverage() resets the _sum
+      //  used by the getFastAverage();
       favg = myRA.getFastAverage();
       avg = myRA.getAverage();
       diff = abs(avg - favg);
@@ -90,4 +93,6 @@ void test(long n)
   delay(100);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+

@@ -27,7 +27,9 @@
 
 unittest_setup()
 {
+  fprintf(stderr, "ANALOGPIN_LIB_VERSION: %s\n", (char *) ANALOGPIN_LIB_VERSION);
 }
+
 
 unittest_teardown()
 {
@@ -65,6 +67,7 @@ unittest(test_prescaler)
   }
 }
 
+
 unittest(test_noiseThreshold)
 {
   AnalogPin AP(0);
@@ -76,6 +79,7 @@ unittest(test_noiseThreshold)
   }
 }
 
+
 unittest(test_smooth)
 {
   AnalogPin AP(0);
@@ -86,6 +90,7 @@ unittest(test_smooth)
     assertEqual(i, AP.getSmoothWeight());
   }
 }
+
 
 unittest(test_read)
 {

@@ -1,9 +1,8 @@
 //
 //    FILE: BH1750FVI_angle_measurement.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo of BH1750FVI lux scanner library
-//    DATE: 2020-08-31
+//     URL: https://github.com/RobTillaart/BH1750FVI_RT
 //
 
 /*
@@ -22,8 +21,8 @@
    Lux level compared to the references.
 
    First trials are not not too bad, roughly within 15° accuracy
-
 */
+
 
 #include "BH1750FVI.h"
 
@@ -58,6 +57,7 @@ void setup()
   Serial.println();
 
   Wire.begin();
+
   myLux.powerOn();
   myLux.setContHighRes();
 
@@ -71,16 +71,17 @@ void setup()
   Serial.println(ref2);
 }
 
+
 void loop()
 {
   float val = measure(1, false);
 
-  val = map(val, ref2, ref1, 0, ref1);    // does not constrain...
+  val = map(val, ref2, ref1, 0, ref1);    //  does not constrain...
 
-  // prevent NAN
-  float f = val / ref1;    // map to 0..1 
-  if (f > 1) f = 1;        // constrain upper
-  if (f < -1) f = -1;      // constrain lower
+  //  prevent NAN
+  float f = val / ref1;    //  map to 0..1 
+  if (f > 1) f = 1;        //  constrain upper
+  if (f < -1) f = -1;      //  constrain lower
 
   Serial.print(val, 1);
   Serial.print("\t");
@@ -91,4 +92,5 @@ void loop()
   Serial.println();
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --

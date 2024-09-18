@@ -15,8 +15,9 @@
     "type": "git",
     "url": "https://github.com/RobTillaart/AM232X"
   },
-  "version": "0.3.2",
+  "version": "0.5.1",
   "license": "MIT",
-  "frameworks": "arduino",
-  "platforms": "*"
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "AM232X.h"
 }

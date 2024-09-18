@@ -1,19 +1,25 @@
 //
 //    FILE: MCP3002_analogRead.ino
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.1
 // PURPOSE: demo
-//    DATE: 2020-08-13
+//     URL: https://github.com/RobTillaart/MCP_ADC
+
 
 #include "MCP_ADC.h"
 
-MCP3002 mcp1;       // use HWSPI
-MCP3002 mcp2(6, 7); // use SWSPI
+
+MCP3002 mcp1;           //  use HWSPI
+MCP3002 mcp2(6, 7, 8);  //  use SWSPI
+
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println(__FILE__);
+  Serial.print("MCP_ADC_LIB_VERSION: ");
+  Serial.println(MCP_ADC_LIB_VERSION);
+
+  SPI.begin();
 
   mcp1.begin(10);
   mcp2.begin(5);
@@ -28,14 +34,16 @@ void setup()
   Serial.print(mcp2.channels());
   Serial.print("\t");
   Serial.println(mcp2.maxValue());
+  Serial.println();
 }
+
 
 void loop()
 {
   Serial.print("mcp1:\t");
   for (int channel = 0 ; channel < mcp1.channels(); channel++)
   {
-    uint16_t val = mcp1.analogRead(channel);
+    uint16_t val = mcp1.read(channel);
     Serial.print(val);
     Serial.print("\t");
   }
@@ -43,7 +51,7 @@ void loop()
   Serial.print("mcp2:\t");
   for (int channel = 0 ; channel < mcp2.channels(); channel++)
   {
-    uint16_t val = mcp2.analogRead(channel);
+    uint16_t val = mcp2.read(channel);
     Serial.print(val);
     Serial.print("\t");
   }
@@ -52,4 +60,6 @@ void loop()
   delay(1000);
 }
 
-// -- END OF FILE --
+
+//  -- END OF FILE --
+
